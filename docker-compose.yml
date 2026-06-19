@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: gpk_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-gudang_piala_kaltim}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-gudang_piala_kaltim}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gpk_backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-gudang_piala_kaltim}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-your-super-secret-key}
+      - ENVIRONMENT=development
+    depends_on:
+      db:
+        condition: service_healthy
+    # Using uvicorn with --reload for hot reloading
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gpk_frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Prevent local node_modules from overriding container's
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000/api/v1
+    depends_on:
+      - backend
+    # Using vite dev server for hot reloading
+    command: npm run dev -- --host 0.0.0.0
+
+volumes:
+  postgres_data:
