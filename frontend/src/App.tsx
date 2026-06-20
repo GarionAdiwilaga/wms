@@ -5,7 +5,7 @@ export default function App() {
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
           Gudang Piala Kaltim WMS
         </h1>
-        <p className="mt-4 text-slate-500">Frontend is successfully initialized.</p>
+        <p className="mt-4 text-slate-500">Frontend is successfully initialized!</p>
       </div>
     </div>
   )
