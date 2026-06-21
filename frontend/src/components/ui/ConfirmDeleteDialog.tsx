@@ -41,7 +41,7 @@ export function ConfirmDeleteDialog({
             disabled={isDeleting}
             className="border-slate-700 hover:bg-slate-800 hover:text-white"
           >
-            Cancel
+            Batal
           </Button>
           <Button
             variant="destructive"
@@ -49,7 +49,7 @@ export function ConfirmDeleteDialog({
             disabled={isDeleting}
             className="min-h-[44px]"
           >
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isDeleting ? "Menghapus..." : "Hapus"}
           </Button>
         </DialogFooter>
       </DialogContent>

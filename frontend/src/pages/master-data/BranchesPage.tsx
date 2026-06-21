@@ -17,8 +17,8 @@ import { Label } from '../../components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
 
 const branchSchema = z.object({
-  code: z.string().min(1, 'Code is required').toUpperCase(),
-  name: z.string().min(1, 'Name is required'),
+  code: z.string().min(1, 'Kode wajib diisi').toUpperCase(),
+  name: z.string().min(1, 'Nama wajib diisi'),
   location: z.string().nullable(),
   is_active: z.boolean(),
 });
@@ -90,59 +90,59 @@ export function BranchesPage() {
   };
 
   const columns: Column<Branch>[] = [
-    { header: 'Code', accessorKey: 'code' },
-    { header: 'Name', accessorKey: 'name' },
-    { header: 'Location', accessorKey: 'location' },
+    { header: 'Kode', accessorKey: 'code' },
+    { header: 'Nama Cabang', accessorKey: 'name' },
+    { header: 'Lokasi', accessorKey: 'location' },
     {
       header: 'Status',
       cell: (item) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.is_active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-800 text-slate-400'}`}>
-          {item.is_active ? 'Active' : 'Inactive'}
+          {item.is_active ? 'Aktif' : 'Non-aktif'}
         </span>
       ),
     },
     {
-      header: 'Actions',
+      header: 'Aksi',
       cell: (item) => canEdit ? (
         <div className="flex gap-2 justify-end md:justify-start">
           <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)} className="h-8 w-8 text-blue-400 hover:text-blue-300 hover:bg-blue-400/10"><Edit2 className="h-4 w-4" /></Button>
           <Button variant="ghost" size="icon" onClick={() => handleDeleteClick(item)} className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-400/10"><Trash2 className="h-4 w-4" /></Button>
         </div>
-      ) : <span className="text-slate-500 text-sm">Read Only</span>,
+      ) : <span className="text-slate-500 text-sm">Hanya Baca</span>,
     },
   ];
 
   if (isLoading) return <LoadingState />;
-  if (error) return <div className="text-red-500">Error loading branches.</div>;
+  if (error) return <div className="text-red-500">Gagal memuat cabang.</div>;
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Branches"
-        description="Manage warehouse locations and retail branches."
-        action={canEdit && <Button onClick={handleOpenCreate} className="bg-amber-500 hover:bg-amber-600 text-slate-950 min-h-[44px]"><Plus className="mr-2 h-4 w-4" /> Add Branch</Button>}
+        title="Cabang"
+        description="Kelola lokasi gudang dan cabang retail."
+        action={canEdit && <Button onClick={handleOpenCreate} className="bg-amber-500 hover:bg-amber-600 text-slate-950 min-h-[44px]"><Plus className="mr-2 h-4 w-4" /> Tambah Cabang</Button>}
       />
 
       {branches?.length === 0 ? (
-        <EmptyState title="No branches found" description="Get started by creating a new branch." />
+        <EmptyState title="Cabang tidak ditemukan" description="Mulai dengan membuat cabang baru." />
       ) : (
         <ResponsiveDataTable data={branches || []} columns={columns} keyExtractor={(i) => i.branch_id} />
       )}
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800">
-          <DialogHeader><DialogTitle className="text-white">{editingBranch ? 'Edit Branch' : 'Create Branch'}</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800 text-white">
+          <DialogHeader><DialogTitle className="text-white">{editingBranch ? 'Ubah Cabang' : 'Tambah Cabang'}</DialogTitle></DialogHeader>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-            <div className="space-y-2"><Label htmlFor="code">Code</Label><Input id="code" {...form.register('code')} className="bg-slate-950 border-slate-800 uppercase" />{form.formState.errors.code && <p className="text-sm text-red-500">{form.formState.errors.code.message}</p>}</div>
-            <div className="space-y-2"><Label htmlFor="name">Name</Label><Input id="name" {...form.register('name')} className="bg-slate-950 border-slate-800" />{form.formState.errors.name && <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>}</div>
-            <div className="space-y-2"><Label htmlFor="location">Location</Label><Input id="location" {...form.register('location')} className="bg-slate-950 border-slate-800" /></div>
-            <div className="flex items-center gap-2 mt-4"><input type="checkbox" id="is_active" {...form.register('is_active')} className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-amber-500" /><Label htmlFor="is_active">Active</Label></div>
-            <div className="flex justify-end gap-3 mt-6"><Button type="button" variant="outline" onClick={() => setIsFormOpen(false)} className="border-slate-700">Cancel</Button><Button type="submit" disabled={createBranch.isPending || updateBranch.isPending} className="bg-amber-500 hover:bg-amber-600 text-slate-950">{editingBranch ? 'Save Changes' : 'Create'}</Button></div>
+            <div className="space-y-2"><Label htmlFor="code">Kode</Label><Input id="code" placeholder="Contoh: BPN" {...form.register('code')} className="bg-slate-950 border-slate-800 uppercase text-white" />{form.formState.errors.code && <p className="text-sm text-red-500">{form.formState.errors.code.message}</p>}</div>
+            <div className="space-y-2"><Label htmlFor="name">Nama Cabang</Label><Input id="name" placeholder="Contoh: Balikpapan" {...form.register('name')} className="bg-slate-950 border-slate-800 text-white" />{form.formState.errors.name && <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>}</div>
+            <div className="space-y-2"><Label htmlFor="location">Lokasi / Alamat</Label><Input id="location" placeholder="Masukkan alamat cabang" {...form.register('location')} className="bg-slate-950 border-slate-800 text-white" /></div>
+            <div className="flex items-center gap-2 mt-4"><input type="checkbox" id="is_active" {...form.register('is_active')} className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-amber-500" /><Label htmlFor="is_active">Aktif</Label></div>
+            <div className="flex justify-end gap-3 mt-6"><Button type="button" variant="outline" onClick={() => setIsFormOpen(false)} className="border-slate-700 text-white bg-transparent hover:bg-slate-800">Batal</Button><Button type="submit" disabled={createBranch.isPending || updateBranch.isPending} className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold">{editingBranch ? 'Simpan' : 'Tambah'}</Button></div>
           </form>
         </DialogContent>
       </Dialog>
 
-      <ConfirmDeleteDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} onConfirm={confirmDelete} title="Delete Branch" description={`Are you sure you want to delete ${branchToDelete?.name}?`} isDeleting={deleteBranch.isPending} />
+      <ConfirmDeleteDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} onConfirm={confirmDelete} title="Hapus Cabang" description={`Apakah Anda yakin ingin menghapus cabang ${branchToDelete?.name}?`} isDeleting={deleteBranch.isPending} />
     </div>
   );
 }

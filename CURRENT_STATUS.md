@@ -13,6 +13,7 @@ Phase 2A - Item Catalog
 - Backend: Implemented paginated items endpoint, including metadata, sorting, and category/supplier/is_active filters.
 - Backend: Updated backend test suite (`test_item.py`) for the new paginated structure.
 - Backend: Created catalog seeder script `seed_catalog.py` for default Category and Supplier.
+- Frontend: Localized Master Data UI (buttons, headers, empty states, and placeholders) to Indonesian.
 
 ## Current Branch
 main
@@ -21,8 +22,7 @@ main
 Phase 2A Integration & Phase 2B Planning
 
 ## Next Task
-1. Frontend localization sweeps: Translate English buttons, descriptions, placeholders, empty states, and table headers to Indonesian (except standard workplace terms) across all Master Data views.
-2. Plan Phase 2B (Inventory Core / Ledger Engine).
+1. Plan Phase 2B (Inventory Core / Ledger Engine).
 
 ## Blockers
 None. Ready for Phase 2B.

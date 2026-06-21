@@ -22,8 +22,8 @@ import {
 } from '../../components/ui/dialog';
 
 const categorySchema = z.object({
-  code: z.string().min(1, 'Code is required').toUpperCase(),
-  name: z.string().min(1, 'Name is required'),
+  code: z.string().min(1, 'Kode wajib diisi').toUpperCase(),
+  name: z.string().min(1, 'Nama wajib diisi'),
   is_active: z.boolean(),
 });
 
@@ -92,18 +92,18 @@ export function CategoriesPage() {
   };
 
   const columns: Column<Category>[] = [
-    { header: 'Code', accessorKey: 'code' },
-    { header: 'Name', accessorKey: 'name' },
+    { header: 'Kode', accessorKey: 'code' },
+    { header: 'Nama Kategori', accessorKey: 'name' },
     {
       header: 'Status',
       cell: (item) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.is_active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-800 text-slate-400'}`}>
-          {item.is_active ? 'Active' : 'Inactive'}
+          {item.is_active ? 'Aktif' : 'Non-aktif'}
         </span>
       ),
     },
     {
-      header: 'Actions',
+      header: 'Aksi',
       cell: (item) => canEdit ? (
         <div className="flex gap-2 justify-end md:justify-start">
           <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)} className="h-8 w-8 text-blue-400 hover:text-blue-300 hover:bg-blue-400/10">
@@ -113,70 +113,70 @@ export function CategoriesPage() {
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
-      ) : <span className="text-slate-500 text-sm">Read Only</span>,
+      ) : <span className="text-slate-500 text-sm">Hanya Baca</span>,
     },
   ];
 
   if (isLoading) return <LoadingState />;
-  if (error) return <div className="text-red-500">Error loading categories.</div>;
+  if (error) return <div className="text-red-500">Gagal memuat kategori.</div>;
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Categories"
-        description="Manage item categories (e.g. Spareparts, Stickers, Raw Materials)."
+        title="Kategori"
+        description="Kelola kategori barang (contoh: Marmer, Akrilik, Figur, Resin)."
         action={
           canEdit && (
             <Button onClick={handleOpenCreate} className="bg-amber-500 hover:bg-amber-600 text-slate-950 min-h-[44px]">
-              <Plus className="mr-2 h-4 w-4" /> Add Category
+              <Plus className="mr-2 h-4 w-4" /> Tambah Kategori
             </Button>
           )
         }
       />
 
       {categories?.length === 0 ? (
-        <EmptyState title="No categories found" description="Get started by creating a new category." />
+        <EmptyState title="Kategori tidak ditemukan" description="Mulai dengan membuat kategori baru." />
       ) : (
         <ResponsiveDataTable data={categories || []} columns={columns} keyExtractor={(i) => i.category_id} />
       )}
 
       {/* Form Dialog */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800">
+        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800 text-white">
           <DialogHeader>
-            <DialogTitle className="text-white">{editingCategory ? 'Edit Category' : 'Create Category'}</DialogTitle>
+            <DialogTitle className="text-white">{editingCategory ? 'Ubah Kategori' : 'Tambah Kategori'}</DialogTitle>
           </DialogHeader>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
             <div className="space-y-2">
-              <Label htmlFor="code">Code</Label>
+              <Label htmlFor="code">Kode</Label>
               <Input
                 id="code"
                 {...form.register('code')}
-                className="bg-slate-950 border-slate-800 uppercase"
-                placeholder="e.g. SPR"
+                className="bg-slate-950 border-slate-800 uppercase text-white"
+                placeholder="Contoh: MRM"
               />
               {form.formState.errors.code && <p className="text-sm text-red-500">{form.formState.errors.code.message}</p>}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">Nama Kategori</Label>
               <Input
                 id="name"
                 {...form.register('name')}
-                className="bg-slate-950 border-slate-800"
-                placeholder="e.g. Spareparts"
+                className="bg-slate-950 border-slate-800 text-white"
+                placeholder="Contoh: Marmer"
               />
               {form.formState.errors.name && <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>}
             </div>
             
             <div className="flex items-center gap-2 mt-4">
               <input type="checkbox" id="is_active" {...form.register('is_active')} className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-amber-500" />
-              <Label htmlFor="is_active">Active</Label>
+              <Label htmlFor="is_active">Aktif</Label>
             </div>
 
             <div className="flex justify-end gap-3 mt-6">
-              <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)} className="border-slate-700">Cancel</Button>
-              <Button type="submit" disabled={createCategory.isPending || updateCategory.isPending} className="bg-amber-500 hover:bg-amber-600 text-slate-950">
-                {editingCategory ? 'Save Changes' : 'Create'}
+              <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)} className="border-slate-700 text-white bg-transparent hover:bg-slate-800">Batal</Button>
+              <Button type="submit" disabled={createCategory.isPending || updateCategory.isPending} className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold">
+                {editingCategory ? 'Simpan' : 'Tambah'}
               </Button>
             </div>
           </form>
@@ -187,8 +187,8 @@ export function CategoriesPage() {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={confirmDelete}
-        title="Delete Category"
-        description={`Are you sure you want to delete ${categoryToDelete?.name}? This action cannot be undone.`}
+        title="Hapus Kategori"
+        description={`Apakah Anda yakin ingin menghapus kategori ${categoryToDelete?.name}?`}
         isDeleting={deleteCategory.isPending}
       />
     </div>

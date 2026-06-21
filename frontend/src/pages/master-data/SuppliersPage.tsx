@@ -17,8 +17,8 @@ import { Label } from '../../components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
 
 const supplierSchema = z.object({
-  code: z.string().min(1, 'Code is required').toUpperCase(),
-  name: z.string().min(1, 'Name is required'),
+  code: z.string().min(1, 'Kode wajib diisi').toUpperCase(),
+  name: z.string().min(1, 'Nama wajib diisi'),
   contact_info: z.string().nullable(),
   is_active: z.boolean(),
 });
@@ -90,59 +90,59 @@ export function SuppliersPage() {
   };
 
   const columns: Column<Supplier>[] = [
-    { header: 'Code', accessorKey: 'code' },
-    { header: 'Name', accessorKey: 'name' },
-    { header: 'Contact Info', accessorKey: 'contact_info' },
+    { header: 'Kode', accessorKey: 'code' },
+    { header: 'Nama Supplier', accessorKey: 'name' },
+    { header: 'Info Kontak', accessorKey: 'contact_info' },
     {
       header: 'Status',
       cell: (item) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.is_active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-800 text-slate-400'}`}>
-          {item.is_active ? 'Active' : 'Inactive'}
+          {item.is_active ? 'Aktif' : 'Non-aktif'}
         </span>
       ),
     },
     {
-      header: 'Actions',
+      header: 'Aksi',
       cell: (item) => canEdit ? (
         <div className="flex gap-2 justify-end md:justify-start">
           <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)} className="h-8 w-8 text-blue-400 hover:text-blue-300 hover:bg-blue-400/10"><Edit2 className="h-4 w-4" /></Button>
           <Button variant="ghost" size="icon" onClick={() => handleDeleteClick(item)} className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-400/10"><Trash2 className="h-4 w-4" /></Button>
         </div>
-      ) : <span className="text-slate-500 text-sm">Read Only</span>,
+      ) : <span className="text-slate-500 text-sm">Hanya Baca</span>,
     },
   ];
 
   if (isLoading) return <LoadingState />;
-  if (error) return <div className="text-red-500">Error loading suppliers.</div>;
+  if (error) return <div className="text-red-500">Gagal memuat supplier.</div>;
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Suppliers"
-        description="Manage vendors and suppliers."
-        action={canEdit && <Button onClick={handleOpenCreate} className="bg-amber-500 hover:bg-amber-600 text-slate-950 min-h-[44px]"><Plus className="mr-2 h-4 w-4" /> Add Supplier</Button>}
+        title="Supplier"
+        description="Kelola supplier dan brand komponen trophy."
+        action={canEdit && <Button onClick={handleOpenCreate} className="bg-amber-500 hover:bg-amber-600 text-slate-950 min-h-[44px]"><Plus className="mr-2 h-4 w-4" /> Tambah Supplier</Button>}
       />
 
       {suppliers?.length === 0 ? (
-        <EmptyState title="No suppliers found" description="Get started by creating a new supplier." />
+        <EmptyState title="Supplier tidak ditemukan" description="Mulai dengan membuat supplier baru." />
       ) : (
         <ResponsiveDataTable data={suppliers || []} columns={columns} keyExtractor={(i) => i.supplier_id} />
       )}
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800">
-          <DialogHeader><DialogTitle className="text-white">{editingSupplier ? 'Edit Supplier' : 'Create Supplier'}</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800 text-white">
+          <DialogHeader><DialogTitle className="text-white">{editingSupplier ? 'Ubah Supplier' : 'Tambah Supplier'}</DialogTitle></DialogHeader>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-            <div className="space-y-2"><Label htmlFor="code">Code</Label><Input id="code" {...form.register('code')} className="bg-slate-950 border-slate-800 uppercase" />{form.formState.errors.code && <p className="text-sm text-red-500">{form.formState.errors.code.message}</p>}</div>
-            <div className="space-y-2"><Label htmlFor="name">Name</Label><Input id="name" {...form.register('name')} className="bg-slate-950 border-slate-800" />{form.formState.errors.name && <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>}</div>
-            <div className="space-y-2"><Label htmlFor="contact_info">Contact Info</Label><Input id="contact_info" {...form.register('contact_info')} className="bg-slate-950 border-slate-800" /></div>
-            <div className="flex items-center gap-2 mt-4"><input type="checkbox" id="is_active" {...form.register('is_active')} className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-amber-500" /><Label htmlFor="is_active">Active</Label></div>
-            <div className="flex justify-end gap-3 mt-6"><Button type="button" variant="outline" onClick={() => setIsFormOpen(false)} className="border-slate-700">Cancel</Button><Button type="submit" disabled={createSupplier.isPending || updateSupplier.isPending} className="bg-amber-500 hover:bg-amber-600 text-slate-950">{editingSupplier ? 'Save Changes' : 'Create'}</Button></div>
+            <div className="space-y-2"><Label htmlFor="code">Kode</Label><Input id="code" placeholder="Contoh: ONX" {...form.register('code')} className="bg-slate-950 border-slate-800 uppercase text-white" />{form.formState.errors.code && <p className="text-sm text-red-500">{form.formState.errors.code.message}</p>}</div>
+            <div className="space-y-2"><Label htmlFor="name">Nama Supplier</Label><Input id="name" placeholder="Contoh: ONIX Trophy" {...form.register('name')} className="bg-slate-950 border-slate-800 text-white" />{form.formState.errors.name && <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>}</div>
+            <div className="space-y-2"><Label htmlFor="contact_info">Info Kontak</Label><Input id="contact_info" placeholder="Contoh: WhatsApp / Alamat" {...form.register('contact_info')} className="bg-slate-950 border-slate-800 text-white" /></div>
+            <div className="flex items-center gap-2 mt-4"><input type="checkbox" id="is_active" {...form.register('is_active')} className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-amber-500" /><Label htmlFor="is_active">Aktif</Label></div>
+            <div className="flex justify-end gap-3 mt-6"><Button type="button" variant="outline" onClick={() => setIsFormOpen(false)} className="border-slate-700 text-white bg-transparent hover:bg-slate-800">Batal</Button><Button type="submit" disabled={createSupplier.isPending || updateSupplier.isPending} className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold">{editingSupplier ? 'Simpan' : 'Tambah'}</Button></div>
           </form>
         </DialogContent>
       </Dialog>
 
-      <ConfirmDeleteDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} onConfirm={confirmDelete} title="Delete Supplier" description={`Are you sure you want to delete ${supplierToDelete?.name}?`} isDeleting={deleteSupplier.isPending} />
+      <ConfirmDeleteDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} onConfirm={confirmDelete} title="Hapus Supplier" description={`Apakah Anda yakin ingin menghapus supplier ${supplierToDelete?.name}?`} isDeleting={deleteSupplier.isPending} />
     </div>
   );
 }

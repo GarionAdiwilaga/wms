@@ -63,3 +63,12 @@
 **Decision:** Supplier functions as both supplier and product brand in V1. Items from different suppliers are different products.
 **Business Rule:** The supplier is part of the product identity in this business.
 **Reason:** Reflects real-world inventory organization used by the warehouse staff.
+
+## 2026-06-22
+
+### Relative API Path & Same-Origin Proxy Routing
+**Decision:** All API requests in the frontend must use relative paths (e.g., `/api/v1`) rather than absolute URLs (e.g., `VITE_API_URL=http://localhost:8000/api/v1`).
+- **In Development**: Vite's dev server handles proxying `/api/v1` and `/uploads` directly to the `backend` container (`http://backend:8000`).
+- **In Production**: A reverse proxy (e.g., Caddy or Nginx) routes incoming requests from a single external domain, directing `/api/v1/*` and `/uploads/*` to the backend container, and everything else to the frontend container.
+**Business Rule:** The application must work on mobile browsers on the local network (under VPS/Local IP) and on production public URLs (e.g., Cloudflare Tunnel) without requiring frontend rebuilds or CORS configuration.
+**Reason:** Ensures the code is completely server-independent, avoids CORS issues in the browser, and eliminates the need to rebuild frontend images when hostnames or IP addresses change.

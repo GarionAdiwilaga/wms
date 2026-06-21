@@ -28,7 +28,7 @@
 - `[x]` Implement Authentication Pages (Login, Change Password) (Medium)
 - `[x]` Implement Master Data CRUD Hooks & API calls (React Query) (Medium)
 - `[x]` Implement Master Data UI (DataTables, Forms for Users, Branches, Categories, Suppliers, UOM) (Large)
-- `[ ]` Localize Master Data UI (translate headers, labels, buttons, and placeholders to Indonesian) (Small)
+- `[x]` Localize Master Data UI (translate headers, labels, buttons, and placeholders to Indonesian) (Small)
 
 ---
 
@@ -52,6 +52,10 @@
 ---
 
 ## Phase 2B: Inventory Core
+
+### 2B.0 Configuration & Proxy Setup
+- `[ ]` Configure Vite dev server proxy in `frontend/vite.config.ts` to route `/api/v1` and `/uploads` to the backend container (Medium)
+- `[ ]` Remove `VITE_API_URL` environment variable from `docker-compose.yml` (and template) to enable relative API routing on mobile browsers (Small)
 
 ### 2B.1 Backend Core
 - `[ ]` Define SQLAlchemy Models: `inventory_transactions`, `branch_stocks` (Medium)

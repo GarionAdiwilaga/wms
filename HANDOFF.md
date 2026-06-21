@@ -16,13 +16,13 @@ Completed:
 - Backend: Updated /items GET endpoint to return paginated response.
 - Backend: Updated test suite to pass against paginated endpoint.
 - Backend: Created `seed_catalog.py` and updated `seed_runner.py` to seed default Category ("MRM") and Supplier ("ONX").
+- Frontend: Localized Master Data UI elements (buttons, headers, empty states, descriptions, and placeholders) to Indonesian across all Master Data views.
 
 Current:
 - Phase 2A complete and fully verified. 
 
 Next:
-- Sweep Master Data components (`BranchesPage`, `CategoriesPage`, `SuppliersPage`, `UsersPage`, `UOMPage`, and `ConfirmDeleteDialog`) to localize English button labels (e.g. `Cancel` -> `Batal`, `Create` -> `Tambah`), placeholders, headers (`Code` -> `Kode`, `Name` -> `Nama`, `Actions` -> `Aksi`), empty states, and dialog descriptions to Indonesian.
-- Plan and implement Phase 2B Inventory Core.
+- Plan and implement Phase 2B Inventory Core (Ledger Engine).
 
 Notes:
 - The `wms/` directory contains its own `.git` repo and is the active root of the WMS codebase.
