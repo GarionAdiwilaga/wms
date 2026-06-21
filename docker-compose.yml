@@ -28,7 +28,7 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-gudang_piala_kaltim}
-      - SECRET_KEY=${SECRET_KEY:-your-super-secret-key}
+      - SECRET_KEY=${SECRET_KEY:-your-super-secret-key-for-development-only-32bytes}
       - INITIAL_ADMIN_PASSWORD=${INITIAL_ADMIN_PASSWORD:-admin123}
       - ENVIRONMENT=development
     depends_on:

@@ -15,6 +15,17 @@ class AuditService:
     """
 
     @staticmethod
+    def _serialize_dates(val: Any) -> Any:
+        from datetime import datetime
+        if isinstance(val, dict):
+            return {k: AuditService._serialize_dates(v) for k, v in val.items()}
+        elif isinstance(val, list):
+            return [AuditService._serialize_dates(v) for v in val]
+        elif isinstance(val, datetime):
+            return val.isoformat()
+        return val
+
+    @staticmethod
     def create_log(
         db: Session,
         user_id: int,
@@ -33,8 +44,8 @@ class AuditService:
             action=action,
             entity_type=entity_type,
             entity_id=entity_id,
-            old_values=old_values,
-            new_values=new_values,
+            old_values=AuditService._serialize_dates(old_values),
+            new_values=AuditService._serialize_dates(new_values),
             ip_address=ip_address
         )
         db.add(log)

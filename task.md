@@ -17,17 +17,17 @@
 
 ### 1.3 Backend APIs (Bottom-up)
 - `[x]` Define Pydantic schemas for Auth, Users, and Master Data (Branches, Categories, Suppliers, UOM) (Medium)
-- `[ ]` Implement Services for Auth, Users, and Master Data CRUD (integrating Audit Logging) (Medium)
-- `[ ]` Implement API Routers (`/auth`, `/users`, `/branches`, `/categories`, `/suppliers`, `/uom`) (Medium)
-- `[ ]` Write Unit & Integration tests for Auth, Master Data CRUD, and Audit Logging (Large)
+- `[x]` Implement Services for Auth, Users, and Master Data CRUD (integrating Audit Logging) (Medium)
+- `[x]` Implement API Routers (`/auth`, `/users`, `/branches`, `/categories`, `/suppliers`, `/uom`) (Medium)
+- `[x]` Write Unit & Integration tests for Auth, Master Data CRUD, and Audit Logging (Large)
 
 ### 1.4 Frontend Core & Master Data
-- `[ ]` Setup Axios client with JWT interceptors & global error handling (Small)
-- `[ ]` Setup `auth-store.ts` (Zustand) (Small)
-- `[ ]` Implement App Layout (Sidebar, Header, Branch Selector) (Medium)
-- `[ ]` Implement Authentication Pages (Login, Change Password) (Medium)
-- `[ ]` Implement Master Data CRUD Hooks & API calls (React Query) (Medium)
-- `[ ]` Implement Master Data UI (DataTables, Forms for Users, Branches, Categories, Suppliers, UOM) (Large)
+- `[x]` Setup Axios client with JWT interceptors & global error handling (Small)
+- `[x]` Setup `auth-store.ts` (Zustand) (Small)
+- `[x]` Implement App Layout (Sidebar, Header, Branch Selector) (Medium)
+- `[x]` Implement Authentication Pages (Login, Change Password) (Medium)
+- `[x]` Implement Master Data CRUD Hooks & API calls (React Query) (Medium)
+- `[x]` Implement Master Data UI (DataTables, Forms for Users, Branches, Categories, Suppliers, UOM) (Large)
 
 ---
 

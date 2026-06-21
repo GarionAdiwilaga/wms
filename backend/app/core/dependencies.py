@@ -1,14 +1,14 @@
 from typing import Annotated, Generator, Callable
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
 from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.security import decode_access_token
 from app.models.user import User
 
-# OAuth2 scheme extracts the Bearer token from the Authorization header
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+# HTTPBearer allows us to paste the token manually in Swagger UI since our login uses JSON
+security = HTTPBearer()
 
 def get_db() -> Generator[Session, None, None]:
     """
@@ -24,7 +24,11 @@ def get_db() -> Generator[Session, None, None]:
 
 # Type aliases for clean FastAPI dependency injection
 SessionDep = Annotated[Session, Depends(get_db)]
-TokenDep = Annotated[str, Depends(oauth2_scheme)]
+
+def get_token(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)]) -> str:
+    return credentials.credentials
+
+TokenDep = Annotated[str, Depends(get_token)]
 
 def get_current_user(db: SessionDep, token: TokenDep) -> User:
     """

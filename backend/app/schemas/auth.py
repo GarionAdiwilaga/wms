@@ -1,15 +1,16 @@
 from pydantic import BaseModel
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
+from app.schemas.user import UserResponse
 
-class TokenPayload(BaseModel):
-    sub: str | None = None
-    role: str | None = None
-    token_version: int | None = None
-
-class Login(BaseModel):
+class LoginRequest(BaseModel):
     username: str
     password: str
     remember_me: bool = False
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse
+
+class CurrentUserResponse(UserResponse):
+    pass
