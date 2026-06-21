@@ -5,8 +5,9 @@ from sqlalchemy.orm import Session
 from app.core.dependencies import get_db, get_current_active_user
 from app.models.user import User
 from app.models.item import Item
-from app.schemas.item import ItemCreate, ItemUpdate, ItemResponse
+from app.schemas.item import ItemCreate, ItemUpdate, ItemResponse, PaginatedItemResponse
 from app.repositories.item import ItemRepository
+import math
 from app.services.item import ItemService
 
 router = APIRouter()
@@ -21,20 +22,47 @@ def format_item(request: Request, item: Item) -> dict[str, Any]:
         data["image_url"] = str(request.base_url).rstrip("/") + item.image_path
     return data
 
-@router.get("", response_model=list[ItemResponse])
+@router.get("", response_model=PaginatedItemResponse)
 def read_items(
     request: Request,
     db: Session = Depends(get_db),
-    skip: int = 0,
-    limit: int = 100,
+    page: int = 1,
+    page_size: int = 10,
+    category_id: Optional[int] = None,
+    supplier_id: Optional[int] = None,
+    is_active: Optional[bool] = None,
     q: Optional[str] = None
 ) -> Any:
     """
     Retrieve items with optional search query and pagination.
     """
     repo = ItemRepository(db)
-    items = repo.search(q=q, skip=skip, limit=limit)
-    return [format_item(request, item) for item in items]
+    skip = (page - 1) * page_size
+    items = repo.search(
+        q=q, 
+        category_id=category_id,
+        supplier_id=supplier_id,
+        is_active=is_active,
+        skip=skip, 
+        limit=page_size
+    )
+    total = repo.count(
+        q=q,
+        category_id=category_id,
+        supplier_id=supplier_id,
+        is_active=is_active
+    )
+    
+    formatted_items = [format_item(request, item) for item in items]
+    total_pages = math.ceil(total / page_size) if page_size > 0 else 0
+    
+    return {
+        "data": formatted_items,
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "total_pages": total_pages
+    }
 
 @router.get("/lookup", response_model=ItemResponse)
 def lookup_item(

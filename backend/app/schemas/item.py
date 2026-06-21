@@ -1,6 +1,9 @@
 from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 from typing import Optional
+from app.schemas.category import CategoryResponse
+from app.schemas.supplier import SupplierResponse
+from app.schemas.uom import UOMResponse
 
 class ItemBase(BaseModel):
     name: str = Field(..., min_length=1)
@@ -31,5 +34,16 @@ class ItemResponse(ItemBase):
     image_url: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+    
+    category: Optional[CategoryResponse] = None
+    supplier: Optional[SupplierResponse] = None
+    uom: Optional[UOMResponse] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+class PaginatedItemResponse(BaseModel):
+    data: list[ItemResponse]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int

@@ -145,5 +145,5 @@ def test_search_item(db_client: TestClient, db_session: Session, test_user: User
     
     resp = db_client.get("/api/v1/items?q=Unique", headers=headers)
     assert resp.status_code == 200
-    assert len(resp.json()) == 1
-    assert resp.json()[0]["item_code"] == "CAT_TEST1-SUP_TEST1-SRCH1"
+    assert resp.json()["total"] == 1
+    assert resp.json()["data"][0]["item_code"] == "CAT_TEST1-SUP_TEST1-SRCH1"

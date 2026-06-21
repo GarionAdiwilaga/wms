@@ -12,6 +12,9 @@ class ItemRepository(CRUDBase[Item, ItemCreate, ItemUpdate]):
     def search(
         self, 
         q: Optional[str] = None, 
+        category_id: Optional[int] = None,
+        supplier_id: Optional[int] = None,
+        is_active: Optional[bool] = None,
         skip: int = 0, 
         limit: int = 100
     ) -> list[Item]:
@@ -27,10 +30,23 @@ class ItemRepository(CRUDBase[Item, ItemCreate, ItemUpdate]):
                 )
             )
             
+        if category_id is not None:
+            stmt = stmt.where(self.model.category_id == category_id)
+        if supplier_id is not None:
+            stmt = stmt.where(self.model.supplier_id == supplier_id)
+        if is_active is not None:
+            stmt = stmt.where(self.model.is_active == is_active)
+            
         stmt = stmt.order_by(self.model.created_at.desc()).offset(skip).limit(limit)
         return list(self.db.scalars(stmt).all())
         
-    def count(self, q: Optional[str] = None) -> int:
+    def count(
+        self, 
+        q: Optional[str] = None,
+        category_id: Optional[int] = None,
+        supplier_id: Optional[int] = None,
+        is_active: Optional[bool] = None
+    ) -> int:
         stmt = select(func.count(self.model.item_id))
         
         if q:
@@ -42,5 +58,12 @@ class ItemRepository(CRUDBase[Item, ItemCreate, ItemUpdate]):
                     self.model.name.ilike(search_term)
                 )
             )
+            
+        if category_id is not None:
+            stmt = stmt.where(self.model.category_id == category_id)
+        if supplier_id is not None:
+            stmt = stmt.where(self.model.supplier_id == supplier_id)
+        if is_active is not None:
+            stmt = stmt.where(self.model.is_active == is_active)
             
         return self.db.scalar(stmt) or 0

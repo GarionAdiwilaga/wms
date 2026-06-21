@@ -28,6 +28,7 @@
 - `[x]` Implement Authentication Pages (Login, Change Password) (Medium)
 - `[x]` Implement Master Data CRUD Hooks & API calls (React Query) (Medium)
 - `[x]` Implement Master Data UI (DataTables, Forms for Users, Branches, Categories, Suppliers, UOM) (Large)
+- `[ ]` Localize Master Data UI (translate headers, labels, buttons, and placeholders to Indonesian) (Small)
 
 ---
 

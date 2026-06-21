@@ -17,7 +17,7 @@ export const useUOMs = () => {
   return useQuery({
     queryKey: ['uoms'],
     queryFn: async (): Promise<UOM[]> => {
-      const response = await api.get('/uom/');
+      const response = await api.get('/uoms/');
       return response.data;
     },
   });
@@ -27,7 +27,7 @@ export const useCreateUOM = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: UOMCreate) => {
-      const response = await api.post('/uom/', data);
+      const response = await api.post('/uoms/', data);
       return response.data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['uoms'] }),
@@ -38,7 +38,7 @@ export const useUpdateUOM = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, data }: { id: number; data: UOMUpdate }) => {
-      const response = await api.put(`/uom/${id}`, data);
+      const response = await api.put(`/uoms/${id}`, data);
       return response.data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['uoms'] }),
@@ -49,7 +49,7 @@ export const useDeleteUOM = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: number) => {
-      await api.delete(`/uom/${id}`);
+      await api.delete(`/uoms/${id}`);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['uoms'] }),
   });
