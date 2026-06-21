@@ -26,3 +26,19 @@ If a major architectural, technical, or business decision is made during your se
 Before concluding your session or when the user indicates a handoff to a new chat, you MUST update:
 - `wms/CURRENT_STATUS.md`: Keep it structured with headings for `## Phase`, `## Last Completed`, `## Current Branch`, `## Current Focus`, `## Next Task`, and `## Blockers`.
 - `wms/HANDOFF.md`: Update it with the current `Date`, `Completed` items, `Current` focus, `Next` steps, and specific `Notes` that the next agent needs to know.
+
+## Ownership
+
+Architect:
+- Documentation (e.g. `ARCHITECTURE.md`, `PROJECT.md`, `requirements_analysis.md`, `implementation_plan.md`, `task.md`)
+- Decisions (`DECISIONS.md`)
+- Planning (`CURRENT_STATUS.md`, `HANDOFF.md`)
+
+Backend:
+- `backend/*`
+
+Frontend:
+- `frontend/*`
+
+Agents must not modify files owned by another role unless explicitly instructed.
+
