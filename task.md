@@ -34,18 +34,19 @@
 ## Phase 2A: Catalog
 
 ### 2A.1 Backend
-- `[ ]` Define SQLAlchemy Model: `items` (Small)
+- `[ ]` Define SQLAlchemy Model: `items` (including new optional `description` field) (Small)
 - `[ ]` Generate and apply Alembic migration for items (Small)
-- `[ ]` Define Pydantic schemas for Items (Small)
-- `[ ]` Implement `item_service.py` including QR code generation logic and image upload handling (Medium)
-- `[ ]` Implement API Router (`/items`) (Small)
-- `[ ]` Write Unit & Integration tests for Item CRUD, QR generation, and Image Upload (Medium)
+- `[ ]` Define Pydantic schemas for Items (`category_id`, `supplier_id`, `manual_code` for creation) (Small)
+- `[ ]` Implement `item_service.py` including `item_code` generation/validation, image upload handling, and immutability enforcement (Medium)
+- `[ ]` Implement API Routers (`/items`, `/items/lookup`) (Small)
+- `[ ]` Write Unit & Integration tests for Item CRUD, immutability rules, code generation, and Image Upload (Medium)
 
 ### 2A.2 Frontend
 - `[ ]` Implement Items API calls and React Query hooks (Small)
-- `[ ]` Implement Item Catalog UI (DataTable with filters) (Medium)
-- `[ ]` Implement Item Form UI (including Image Upload component) (Medium)
-- `[ ]` Implement QR Code viewing and printing UI (Small)
+- `[ ]` Build highly reusable `ItemSearch` component (Universal Search input + integrated QR scanner) designed to be reused across Item Catalog, Stock In, Outbound Cart, Transfer Cart, and Stock Opname (Medium)
+- `[ ]` Implement Item Catalog UI (Mobile-first DataTable/List with filters, prioritizing search) (Medium)
+- `[ ]` Implement Item Form UI (including Image Upload, and hiding/defaulting UOM to PCS) (Medium)
+- `[ ]` Implement QR Code generation (Frontend-only, encodes `item_code` string) (Small)
 
 ---
 
