@@ -40,5 +40,11 @@ Backend:
 Frontend:
 - `frontend/*`
 
+Runtime QA / Debugger:
+- Run verification tests, integration tests, container logs, and test/debug scripts.
+- Analyze errors and trace logs across frontend and backend.
+- Do not modify production application code directly.
+- Report findings and output structured task instructions for Backend and Frontend agents to resolve.
+
 Agents must not modify files owned by another role unless explicitly instructed.
 

@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.router import api_router
+from fastapi.staticfiles import StaticFiles
+import os
 
 app = FastAPI(
     title="Gudang Piala Kaltim WMS API",
@@ -16,3 +18,6 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix="/api/v1")
+
+os.makedirs("uploads/items", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

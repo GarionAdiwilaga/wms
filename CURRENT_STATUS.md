@@ -7,17 +7,18 @@ Phase 2A - Item Catalog
 - Phase 1 Stabilization
 - Git Audit and Gitignore setup
 - Architectural Decisions finalized for Phase 2A
+- Phase 2A Frontend (custom hooks, ItemSearch, form dialogs, printable QR, and catalog view)
+- Phase 2A Backend (Item models, schemas, repositories, endpoints, and testing)
 
 ## Current Branch
 main
 
 ## Current Focus
-Phase 2A Item Catalog Implementation
+Phase 2A Integration & Phase 2B Planning
 
 ## Next Task
-1. Database migration: Add `description` to `items` and ensure immutability constraints on identity fields if applicable.
-2. Backend APIs for Item CRUD, Lookup, and Image Upload.
-3. Frontend Item Catalog UI (Mobile-first, Cart-style preparation, Universal Search with integrated QR scanner).
+1. Integration testing between Frontend and Backend.
+2. Plan Phase 2B (Inventory Core / Ledger Engine).
 
 ## Blockers
-None. Ready for development.
+None. Ready for Runtime QA / Architecture.

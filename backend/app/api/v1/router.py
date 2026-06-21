@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import auth, branch, category, supplier, uom, user
+from app.api.v1.endpoints import auth, branch, category, supplier, uom, user, item
 
 api_router = APIRouter()
 
@@ -9,6 +9,7 @@ api_router.include_router(category.router, prefix="/categories", tags=["categori
 api_router.include_router(supplier.router, prefix="/suppliers", tags=["suppliers"])
 api_router.include_router(uom.router, prefix="/uoms", tags=["uoms"])
 api_router.include_router(user.router, prefix="/users", tags=["users"])
+api_router.include_router(item.router, prefix="/items", tags=["items"])
 
 
 @api_router.get("/health")

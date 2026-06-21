@@ -8,6 +8,7 @@ import { CategoriesPage } from './pages/master-data/CategoriesPage';
 import { BranchesPage } from './pages/master-data/BranchesPage';
 import { SuppliersPage } from './pages/master-data/SuppliersPage';
 import { UsersPage } from './pages/master-data/UsersPage';
+import { ItemsPage } from './pages/master-data/ItemsPage';
 import { UOMPage } from './pages/settings/UOMPage';
 
 const queryClient = new QueryClient({
@@ -30,7 +31,8 @@ function App() {
           
           <Route element={<ProtectedRoute />}>
             <Route element={<AppShell />}>
-              <Route path="/" element={<Navigate to="/master-data/categories" replace />} />
+              <Route path="/" element={<Navigate to="/master-data/items" replace />} />
+              <Route path="/master-data/items" element={<ItemsPage />} />
               <Route path="/master-data/categories" element={<CategoriesPage />} />
               <Route path="/master-data/branches" element={<BranchesPage />} />
               <Route path="/master-data/suppliers" element={<SuppliersPage />} />

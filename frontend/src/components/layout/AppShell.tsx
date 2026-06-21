@@ -8,7 +8,8 @@ import {
   Truck, 
   LogOut, 
   Ruler, 
-  LayoutDashboard
+  LayoutDashboard,
+  Layers
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
@@ -23,7 +24,8 @@ interface NavItem {
 }
 
 const masterDataItems: NavItem[] = [
-  { name: 'Categories', href: '/master-data/categories', icon: Package, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
+  { name: 'Items', href: '/master-data/items', icon: Package, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
+  { name: 'Categories', href: '/master-data/categories', icon: Layers, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
   { name: 'Branches', href: '/master-data/branches', icon: Building2, roles: ['super_admin', 'branch_head'] },
   { name: 'Suppliers', href: '/master-data/suppliers', icon: Truck, roles: ['super_admin', 'branch_head'] },
   { name: 'Users', href: '/master-data/users', icon: Users, roles: ['super_admin'] },
