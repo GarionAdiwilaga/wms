@@ -80,15 +80,20 @@
 ## Phase 3: Primary Warehouse Operations
 
 ### 3.1 Backend
-- `[ ]` Define SQLAlchemy Models: `stock_in_sessions`, `stock_in_lines`, `outbound_sessions`, `outbound_lines` including `status`, `reference_no`, `created_by`, `received_by`/`fulfilled_by` (Medium)
-- `[ ]` Generate and apply Alembic migration (Small)
-- `[ ]` Define Pydantic schemas for Stock In and Outbound (Small)
-- `[ ]` Implement `stock_in_service.py` (Thin orchestration layer: validates document, calls `execute_stock_changes` with `IN`) (Medium)
-- `[ ]` Implement `outbound_service.py` (Thin orchestration layer: validates document, calls `execute_stock_changes` with `OUT`) (Medium)
-- `[ ]` Implement API Routers (`/stock-in`, `/outbound`) (Medium)
-- `[ ]` Write Unit & Integration tests for Stock In and Outbound cart validations (Large)
+- `[x]` Define SQLAlchemy Models: `stock_in_sessions`, `stock_in_lines`, `outbound_sessions`, `outbound_lines` including `status`, `reference_no`, `created_by`, `received_by`/`fulfilled_by` (Medium)
+- `[x]` Generate and apply Alembic migration (Small)
+- `[x]` Define Pydantic schemas for Stock In and Outbound (Small)
+- `[x]` Implement `stock_in_service.py` (Thin orchestration layer: validates document, calls `execute_stock_changes` with `IN`) (Medium)
+- `[x]` Implement `outbound_service.py` (Thin orchestration layer: validates document, calls `execute_stock_changes` with `OUT`) (Medium)
+- `[x]` Implement API Routers (`/stock-in`, `/outbound`) (Medium)
+- `[x]` Write Unit & Integration tests for Stock In and Outbound cart validations (Large)
 
-### 3.2 Frontend
+### 3.2 Frontend Refinements (UI/UX & Theme)
+- `[ ]` Fix Menu Inconsistency: Ensure `Branch Stocks` appears in the mobile menu matching the desktop master data menu (Small)
+- `[ ]` Fix Mobile Drawer Direction: Since the burger button is on the top right, the drawer menu must slide in from the right side, not left (Small)
+- `[ ]` Apply Selected Global Theme Overhaul across the app (Medium)
+
+### 3.3 Frontend Warehouse Operations
 - `[ ]` Setup `cart-store.ts` (Outbound) and `stock-in-cart-store.ts` (Zustand with persistence middleware) (Small)
 - `[ ]` Implement API calls and React Query hooks for operations (Medium)
 - `[ ]` Implement Stock In UI (POS-style Cart workflow, ItemSearch integration, prevent duplicate rows) (Large)
