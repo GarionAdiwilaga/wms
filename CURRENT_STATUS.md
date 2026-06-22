@@ -1,28 +1,27 @@
 # Current Status
 
 ## Phase
-Phase 2A - Item Catalog
+Phase 3 - Primary Warehouse Operations (Stock In & Outbound)
 
 ## Last Completed
-- Phase 1 Stabilization
-- Git Audit and Gitignore setup
-- Architectural Decisions finalized for Phase 2A
-- Phase 2A Frontend (custom hooks, ItemSearch, form dialogs, printable QR, and catalog view)
-- Phase 2A Backend (Item models, schemas, repositories, endpoints, and testing)
-- Frontend: Fixed UOM client hook to use `/uoms/` endpoint prefix instead of `/uom/`
-- Backend: Implemented paginated items endpoint, including metadata, sorting, and category/supplier/is_active filters.
-- Backend: Updated backend test suite (`test_item.py`) for the new paginated structure.
-- Backend: Created catalog seeder script `seed_catalog.py` for default Category and Supplier.
-- Frontend: Localized Master Data UI (buttons, headers, empty states, and placeholders) to Indonesian.
+- Phase 2B Backend implementation (Models, deterministic locking, `/branch-stocks` and `/inventory/initial-load` endpoints, pytests).
+- Phase 2B Frontend implementation:
+  - Relative API proxy routing via Vite `/api/v1` and `/uploads` to container.
+  - Reusable, controlled `ItemSearch` component supporting QR scanning and text filtering.
+  - Custom `useBranchStocks` React Query hook for paginated stock data.
+  - Beautiful, touch-friendly `BranchStocksPage` with mobile cards, desktop tables, dynamic status badges, and RBAC-locked branch filters.
+  - Clean client-side item lookup map to resolve images directly from backend fields.
+  - Successful production build check with zero TypeScript/compilation warnings or errors.
 
 ## Current Branch
-main
+`main`
 
 ## Current Focus
-Phase 2A Integration & Phase 2B Planning
+Handoff to next agent for implementing Phase 3 (Stock In & Outbound).
 
 ## Next Task
-1. Plan Phase 2B (Inventory Core / Ledger Engine).
+- Design and implement Phase 3 backend models, endpoints, and validation for Stock In.
+- Build frontend "Stock In" cart screen with multi-item batch receiving, search/select, and quantity inputs.
 
 ## Blockers
-None. Ready for Phase 2B.
+None

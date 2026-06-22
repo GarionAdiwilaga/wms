@@ -6,19 +6,25 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 
 interface ItemSearchProps {
-  onSelect: (item: Item) => void;
+  onSelect?: (item: Item) => void;
   placeholder?: string;
   className?: string;
   clearOnSelect?: boolean;
+  value?: string;
+  onChange?: (value: string) => void;
+  showDropdown?: boolean;
 }
 
 export function ItemSearch({ 
   onSelect, 
   placeholder = 'Cari barang (nama, kode, merk)...', 
   className,
-  clearOnSelect = true
+  clearOnSelect = true,
+  value,
+  onChange,
+  showDropdown = true
 }: ItemSearchProps) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(value || '');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
@@ -27,6 +33,13 @@ export function ItemSearch({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scannerId = 'item-search-qr-reader';
+
+  // Sync state with value prop if controlled
+  useEffect(() => {
+    if (value !== undefined) {
+      setQuery(value);
+    }
+  }, [value]);
 
   // Fetch search results using our hook
   const { data: searchResults, isLoading } = useItems({
@@ -46,12 +59,12 @@ export function ItemSearch({
 
   // Open dropdown when query has length
   useEffect(() => {
-    if (debouncedQuery.trim().length >= 2) {
+    if (showDropdown && debouncedQuery.trim().length >= 2) {
       setIsDropdownOpen(true);
     } else {
       setIsDropdownOpen(false);
     }
-  }, [debouncedQuery]);
+  }, [debouncedQuery, showDropdown]);
 
   // Handle clicking outside of search component to close dropdown
   useEffect(() => {
@@ -72,15 +85,30 @@ export function ItemSearch({
   }, []);
 
   const handleSelect = (item: Item) => {
-    onSelect(item);
+    if (onSelect) {
+      onSelect(item);
+    }
     if (clearOnSelect) {
       setQuery('');
       setDebouncedQuery('');
+      if (onChange) {
+        onChange('');
+      }
     } else {
       setQuery(item.name);
       setDebouncedQuery(item.name);
+      if (onChange) {
+        onChange(item.name);
+      }
     }
     setIsDropdownOpen(false);
+  };
+
+  const handleInputChange = (val: string) => {
+    setQuery(val);
+    if (onChange) {
+      onChange(val);
+    }
   };
 
   const startScanning = async () => {
@@ -108,6 +136,9 @@ export function ItemSearch({
             // Populate the search field and stop scanning
             setQuery(decodedText);
             setDebouncedQuery(decodedText);
+            if (onChange) {
+              onChange(decodedText);
+            }
             stopScanning();
           },
           () => {
@@ -143,11 +174,11 @@ export function ItemSearch({
         <Input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => handleInputChange(e.target.value)}
           placeholder={placeholder}
           className="pl-10 pr-12 bg-slate-950 border-slate-800 focus-visible:ring-amber-500 text-white min-h-[44px]"
           onFocus={() => {
-            if (query.trim().length >= 2) {
+            if (showDropdown && query.trim().length >= 2) {
               setIsDropdownOpen(true);
             }
           }}
@@ -158,6 +189,9 @@ export function ItemSearch({
             onClick={() => {
               setQuery('');
               setDebouncedQuery('');
+              if (onChange) {
+                onChange('');
+              }
               setIsDropdownOpen(false);
             }}
             className="absolute right-12 text-slate-400 hover:text-white"
@@ -178,7 +212,7 @@ export function ItemSearch({
       </div>
 
       {/* Dropdown Results */}
-      {isDropdownOpen && (
+      {showDropdown && isDropdownOpen && (
         <div className="absolute z-40 mt-1 w-full rounded-md border border-slate-800 bg-slate-900 shadow-lg max-h-80 overflow-y-auto">
           {isLoading ? (
             <div className="p-4 text-center text-sm text-slate-400">Mencari...</div>

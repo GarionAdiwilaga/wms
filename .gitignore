@@ -42,3 +42,14 @@ frontend/*.tsbuildinfo
 # OS
 .DS_Store
 Thumbs.db
+
+# Virtual Environments
+venv/
+.venv/
+env/
+backend/venv/
+
+# Additional Python bytecode
+**/__pycache__/
+**/*.py[cod]
+**/*.pyc

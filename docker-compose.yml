@@ -47,8 +47,6 @@ services:
       - /app/node_modules # Prevent local node_modules from overriding container's
     ports:
       - "5173:5173"
-    environment:
-      - VITE_API_URL=http://localhost:8000/api/v1
     depends_on:
       - backend
     # Using vite dev server for hot reloading

@@ -72,3 +72,13 @@
 - **In Production**: A reverse proxy (e.g., Caddy or Nginx) routes incoming requests from a single external domain, directing `/api/v1/*` and `/uploads/*` to the backend container, and everything else to the frontend container.
 **Business Rule:** The application must work on mobile browsers on the local network (under VPS/Local IP) and on production public URLs (e.g., Cloudflare Tunnel) without requiring frontend rebuilds or CORS configuration.
 **Reason:** Ensures the code is completely server-independent, avoids CORS issues in the browser, and eliminates the need to rebuild frontend images when hostnames or IP addresses change.
+
+### Inventory Quantities (Integer / PCS)
+**Decision:** Inventory quantities are stored and calculated exclusively as integers representing PCS (pieces).
+**Business Rule:** All stock arithmetic must use integer PCS.
+**Reason:** Simplifies logic and avoids floating-point inaccuracies. UOM exists for future flexibility but does not affect current ledger math.
+
+### Reference Types & System Adjustments
+**Decision:** The `reference_type` column for ledger transactions includes both `manual` and `system`.
+**Business Rule:** `manual` is for user-initiated corrections, while `system` is for system-generated repair or migration operations.
+**Reason:** Distinguishes between human actions and automated system fixes in the audit trail.

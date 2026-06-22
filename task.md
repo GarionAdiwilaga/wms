@@ -54,23 +54,26 @@
 ## Phase 2B: Inventory Core
 
 ### 2B.0 Configuration & Proxy Setup
-- `[ ]` Configure Vite dev server proxy in `frontend/vite.config.ts` to route `/api/v1` and `/uploads` to the backend container (Medium)
-- `[ ]` Remove `VITE_API_URL` environment variable from `docker-compose.yml` (and template) to enable relative API routing on mobile browsers (Small)
+- `[x]` Configure Vite dev server proxy in `frontend/vite.config.ts` to route `/api/v1` and `/uploads` to the backend container (Medium)
+- `[x]` Remove `VITE_API_URL` environment variable from `docker-compose.yml` (and template) to enable relative API routing on mobile browsers (Small)
 
 ### 2B.1 Backend Core
-- `[ ]` Define SQLAlchemy Models: `inventory_transactions`, `branch_stocks` (Medium)
-- `[ ]` Generate and apply Alembic migration (Small)
-- `[ ]` Implement `inventory_service.py` (The Ledger Engine) (Large)
-  - `[ ]` Implement deterministic locking (sorting item_ids ascending)
-  - `[ ]` Implement negative stock prevention
-  - `[ ]` Implement atomic cache updates
-- `[ ]` Implement cache rebuild script/logic (Small)
-- `[ ]` Write Critical Unit & Integration tests for concurrent inventory updates, deadlocks, and negative stock (Large)
+- `[x]` Define SQLAlchemy Models: `inventory_transactions`, `branch_stocks` (Medium)
+- `[x]` Generate and apply Alembic migration (Small)
+- `[x]` Implement `inventory_service.py` (The Ledger Engine) with single `execute_stock_changes()` entry point (Large)
+  - `[x]` Implement deterministic locking (sorting item_ids ascending)
+  - `[x]` Implement negative stock prevention
+  - `[x]` Implement lock timeout (`SET LOCAL lock_timeout = '5s'`)
+  - `[x]` Implement domain exceptions (e.g., `InsufficientStockError`)
+  - `[x]` Implement atomic cache updates
+- `[x]` Implement cache rebuild script/logic (Small)
+- `[x]` Write Critical Unit & Integration tests for concurrent inventory updates, deadlocks, and negative stock (Large)
 
 ### 2B.2 Backend APIs & Frontend
-- `[ ]` Define Pydantic schemas and API Router for `/branch-stocks` (read-only) (Small)
-- `[ ]` Implement Branch Stocks API calls and React Query hooks (Small)
-- `[ ]` Implement Branch Stocks View UI (DataTable) (Medium)
+- `[x]` Define Pydantic schemas and API Router for `/branch-stocks` and `/inventory` (Small)
+- `[x]` Create `/inventory/initial-load` POST endpoint (Super Admin only) (Small)
+- `[x]` Implement Branch Stocks API calls and React Query hooks (Small)
+- `[x]` Implement Branch Stocks View UI (DataTable with low-stock toggle) (Medium)
 
 ---
 

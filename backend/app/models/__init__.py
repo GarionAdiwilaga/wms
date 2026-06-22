@@ -6,5 +6,6 @@ from app.models.supplier import Supplier
 from app.models.uom import UOM
 from app.models.audit_log import AuditLog
 from app.models.item import Item
+from app.models.inventory import InventoryTransaction, BranchStock
 
-__all__ = ["Base", "Branch", "User", "Category", "Supplier", "UOM", "AuditLog", "Item"]
+__all__ = ["Base", "Branch", "User", "Category", "Supplier", "UOM", "AuditLog", "Item", "InventoryTransaction", "BranchStock"]

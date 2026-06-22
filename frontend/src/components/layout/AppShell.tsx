@@ -9,7 +9,8 @@ import {
   LogOut, 
   Ruler, 
   LayoutDashboard,
-  Layers
+  Layers,
+  Database
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
@@ -24,10 +25,11 @@ interface NavItem {
 }
 
 const masterDataItems: NavItem[] = [
-  { name: 'Items', href: '/master-data/items', icon: Package, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
-  { name: 'Categories', href: '/master-data/categories', icon: Layers, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
-  { name: 'Branches', href: '/master-data/branches', icon: Building2, roles: ['super_admin', 'branch_head'] },
-  { name: 'Suppliers', href: '/master-data/suppliers', icon: Truck, roles: ['super_admin', 'branch_head'] },
+  { name: 'Barang', href: '/master-data/items', icon: Package, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
+  { name: 'Stok Gudang', href: '/inventory/branch-stocks', icon: Database, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
+  { name: 'Kategori', href: '/master-data/categories', icon: Layers, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
+  { name: 'Cabang', href: '/master-data/branches', icon: Building2, roles: ['super_admin', 'branch_head'] },
+  { name: 'Supplier', href: '/master-data/suppliers', icon: Truck, roles: ['super_admin', 'branch_head'] },
   { name: 'Users', href: '/master-data/users', icon: Users, roles: ['super_admin'] },
 ];
 

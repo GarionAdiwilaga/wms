@@ -10,6 +10,7 @@ import { SuppliersPage } from './pages/master-data/SuppliersPage';
 import { UsersPage } from './pages/master-data/UsersPage';
 import { ItemsPage } from './pages/master-data/ItemsPage';
 import { UOMPage } from './pages/settings/UOMPage';
+import { BranchStocksPage } from './pages/inventory/BranchStocksPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,6 +38,7 @@ function App() {
               <Route path="/master-data/branches" element={<BranchesPage />} />
               <Route path="/master-data/suppliers" element={<SuppliersPage />} />
               <Route path="/master-data/users" element={<UsersPage />} />
+              <Route path="/inventory/branch-stocks" element={<BranchStocksPage />} />
               <Route path="/settings/uom" element={<UOMPage />} />
             </Route>
           </Route>
