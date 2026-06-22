@@ -80,19 +80,19 @@
 ## Phase 3: Primary Warehouse Operations
 
 ### 3.1 Backend
-- `[ ]` Define SQLAlchemy Models: `stock_in_sessions`, `stock_in_lines`, `outbound_sessions`, `outbound_lines` (Medium)
+- `[ ]` Define SQLAlchemy Models: `stock_in_sessions`, `stock_in_lines`, `outbound_sessions`, `outbound_lines` including `status`, `reference_no`, `created_by`, `received_by`/`fulfilled_by` (Medium)
 - `[ ]` Generate and apply Alembic migration (Small)
 - `[ ]` Define Pydantic schemas for Stock In and Outbound (Small)
-- `[ ]` Implement `stock_in_service.py` (generates `IN` transactions via `inventory_service`) (Medium)
-- `[ ]` Implement `outbound_service.py` (generates `OUT` transactions via `inventory_service`, handles all-or-nothing validation) (Medium)
+- `[ ]` Implement `stock_in_service.py` (Thin orchestration layer: validates document, calls `execute_stock_changes` with `IN`) (Medium)
+- `[ ]` Implement `outbound_service.py` (Thin orchestration layer: validates document, calls `execute_stock_changes` with `OUT`) (Medium)
 - `[ ]` Implement API Routers (`/stock-in`, `/outbound`) (Medium)
 - `[ ]` Write Unit & Integration tests for Stock In and Outbound cart validations (Large)
 
 ### 3.2 Frontend
-- `[ ]` Setup `cart-store.ts` (Zustand with localStorage persistence) (Small)
+- `[ ]` Setup `cart-store.ts` (Outbound) and `stock-in-cart-store.ts` (Zustand with persistence middleware) (Small)
 - `[ ]` Implement API calls and React Query hooks for operations (Medium)
-- `[ ]` Implement Stock In UI (Batch receiving form, Session history) (Large)
-- `[ ]` Implement Outbound Cart UI (Scanner input, Cart management, Checkout modal) (Large)
+- `[ ]` Implement Stock In UI (POS-style Cart workflow, ItemSearch integration, prevent duplicate rows) (Large)
+- `[ ]` Implement Outbound Cart UI (POS-style Cart workflow, ItemSearch integration, prevent duplicate rows) (Large)
 
 ---
 
