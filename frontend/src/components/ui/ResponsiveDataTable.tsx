@@ -35,12 +35,12 @@ export function ResponsiveDataTable<T>({
   return (
     <div className="w-full">
       {/* Desktop View */}
-      <div className="hidden md:block rounded-md border border-slate-800 bg-slate-900 overflow-hidden">
+      <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden">
         <Table>
-          <TableHeader className="bg-slate-950">
-            <TableRow className="border-slate-800 hover:bg-slate-950">
+          <TableHeader className="bg-muted/50">
+            <TableRow className="border-border hover:bg-transparent">
               {columns.map((col, index) => (
-                <TableHead key={index} className="text-slate-400 font-semibold h-12">
+                <TableHead key={index} className="text-muted-foreground font-semibold h-12">
                   {col.header}
                 </TableHead>
               ))}
@@ -50,10 +50,10 @@ export function ResponsiveDataTable<T>({
             {data.map((item) => (
               <TableRow
                 key={keyExtractor(item)}
-                className="border-slate-800 hover:bg-slate-800/50 transition-colors"
+                className="border-border hover:bg-muted/30 transition-colors"
               >
                 {columns.map((col, colIndex) => (
-                  <TableCell key={colIndex} className="py-3 px-4">
+                  <TableCell key={colIndex} className="py-3.5 px-4 text-foreground">
                     {col.cell
                       ? col.cell(item)
                       : col.accessorKey
@@ -70,7 +70,7 @@ export function ResponsiveDataTable<T>({
       {/* Mobile Card View */}
       <div className="md:hidden space-y-4">
         {data.map((item) => (
-          <Card key={keyExtractor(item)} className="bg-slate-900 border-slate-800 shadow-sm">
+          <Card key={keyExtractor(item)} className="bg-card border-border shadow-lg rounded-xl">
             <CardContent className="p-4">
               {mobileCardContent ? (
                 mobileCardContent(item)
@@ -78,8 +78,8 @@ export function ResponsiveDataTable<T>({
                 <div className="space-y-2">
                   {columns.map((col, index) => (
                     <div key={index} className="flex justify-between items-start gap-4">
-                      <span className="text-xs font-medium text-slate-500">{col.header}</span>
-                      <div className="text-sm text-right text-slate-200">
+                      <span className="text-xs font-medium text-muted-foreground">{col.header}</span>
+                      <div className="text-sm text-right text-foreground">
                         {col.cell
                           ? col.cell(item)
                           : col.accessorKey

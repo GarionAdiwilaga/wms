@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { Plus, Edit2, QrCode, Search, X, Image as ImageIcon, Camera } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useAuthStore } from '../../store/auth-store';
 import { useCategories } from '../../hooks/useCategories';
 import { useSuppliers } from '../../hooks/useSuppliers';
@@ -38,6 +39,7 @@ export function ItemsPage() {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const scannerId = 'items-page-filter-scanner';
   const scannerInstanceRef = useRef<Html5Qrcode | null>(null);
+  const scanTimeoutRef = useRef<any>(null);
 
   // Fetch Items
   const { data: itemsResponse, isLoading, error, refetch } = useItems({
@@ -70,7 +72,12 @@ export function ItemsPage() {
   const startScanning = () => {
     setIsScanning(true);
     setCameraError(null);
-    setTimeout(async () => {
+
+    if (scanTimeoutRef.current) {
+      clearTimeout(scanTimeoutRef.current as any);
+    }
+
+    scanTimeoutRef.current = setTimeout(async () => {
       try {
         const html5Qrcode = new Html5Qrcode(scannerId);
         scannerInstanceRef.current = html5Qrcode;
@@ -96,19 +103,33 @@ export function ItemsPage() {
       } catch (err: any) {
         console.error(err);
         setCameraError('Gagal mengakses kamera. Pastikan izin kamera diberikan.');
+        scannerInstanceRef.current = null;
       }
     }, 300);
   };
 
   const stopScanning = () => {
-    if (scannerInstanceRef.current) {
-      scannerInstanceRef.current.stop()
-        .then(() => {
-          scannerInstanceRef.current = null;
-        })
-        .catch(console.error);
+    if (scanTimeoutRef.current) {
+      clearTimeout(scanTimeoutRef.current as any);
+      scanTimeoutRef.current = null;
     }
-    setIsScanning(false);
+
+    if (scannerInstanceRef.current) {
+      const stopPromise = scannerInstanceRef.current.isScanning
+        ? scannerInstanceRef.current.stop()
+        : Promise.resolve();
+        
+      stopPromise
+        .catch(console.error)
+        .finally(() => {
+          scannerInstanceRef.current = null;
+          setIsScanning(false);
+          setCameraError(null);
+        });
+    } else {
+      setIsScanning(false);
+      setCameraError(null);
+    }
   };
 
   // Desktop columns configuration
@@ -116,11 +137,11 @@ export function ItemsPage() {
     {
       header: 'Foto',
       cell: (item) => (
-        <div className="h-10 w-10 rounded overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center">
+        <div className="h-10 w-10 rounded-lg overflow-hidden bg-background border border-border flex items-center justify-center shadow-sm">
           {item.image_url ? (
             <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
           ) : (
-            <ImageIcon className="h-5 w-5 text-slate-600" />
+            <ImageIcon className="h-5 w-5 text-muted-foreground" />
           )}
         </div>
       ),
@@ -136,7 +157,7 @@ export function ItemsPage() {
     {
       header: 'Status',
       cell: (item) => (
-        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${item.is_active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-800 text-slate-400'}`}>
+        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${item.is_active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-muted text-muted-foreground'}`}>
           {item.is_active ? 'Aktif' : 'Non-aktif'}
         </span>
       ),
@@ -145,13 +166,17 @@ export function ItemsPage() {
       header: 'Aksi',
       cell: (item) => (
         <div className="flex gap-2">
-          <Button variant="ghost" size="icon" onClick={() => handleOpenQR(item)} className="h-8 w-8 text-amber-500 hover:text-amber-400 hover:bg-amber-500/10" title="Cetak QR">
-            <QrCode className="h-4 w-4" />
-          </Button>
-          {canEdit && (
-            <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)} className="h-8 w-8 text-blue-400 hover:text-blue-300 hover:bg-blue-400/10" title="Ubah">
-              <Edit2 className="h-4 w-4" />
+          <motion.div whileTap={{ scale: 0.9 }}>
+            <Button variant="ghost" size="icon" onClick={() => handleOpenQR(item)} className="h-8 w-8 text-amber-500 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg" title="Cetak QR">
+              <QrCode className="h-4 w-4" />
             </Button>
+          </motion.div>
+          {canEdit && (
+            <motion.div whileTap={{ scale: 0.9 }}>
+              <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)} className="h-8 w-8 text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 rounded-lg" title="Ubah">
+                <Edit2 className="h-4 w-4" />
+              </Button>
+            </motion.div>
           )}
         </div>
       ),
@@ -167,19 +192,21 @@ export function ItemsPage() {
         description="Daftar komponen trophy, plakat, medali, dan merchandise."
         action={
           canEdit && (
-            <Button onClick={handleOpenCreate} className="bg-amber-500 hover:bg-amber-600 text-slate-950 min-h-[44px]">
-              <Plus className="mr-2 h-4 w-4" /> Tambah Barang
-            </Button>
+            <motion.div whileTap={{ scale: 0.97 }}>
+              <Button onClick={handleOpenCreate} className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-primary-foreground min-h-[44px] shadow-md rounded-xl">
+                <Plus className="mr-2 h-4 w-4" /> Tambah Barang
+              </Button>
+            </motion.div>
           )
         }
       />
 
       {/* Filters Section */}
-      <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-4">
+      <div className="bg-card border border-border rounded-xl p-5 space-y-4 shadow-lg">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {/* Search Input */}
           <div className="relative flex items-center lg:col-span-2">
-            <Search className="absolute left-3 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Cari nama atau kode barang..."
@@ -188,18 +215,20 @@ export function ItemsPage() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="pl-9 pr-10 bg-slate-950 border-slate-800 focus-visible:ring-amber-500 text-white min-h-[40px]"
+              className="pl-9 pr-10 bg-background border-border focus-visible:ring-primary text-foreground min-h-[44px] rounded-xl shadow-sm"
             />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={startScanning}
-              className="absolute right-1 text-slate-400 hover:text-amber-500 hover:bg-transparent min-h-[36px] min-w-[36px]"
-              title="Filter dengan scan QR"
-            >
-              <Camera className="h-4 w-4" />
-            </Button>
+            <motion.div whileTap={{ scale: 0.9 }} className="absolute right-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={startScanning}
+                className="text-muted-foreground hover:text-primary hover:bg-transparent min-h-[36px] min-w-[36px] rounded-lg"
+                title="Filter dengan scan QR"
+              >
+                <Camera className="h-4 w-4" />
+              </Button>
+            </motion.div>
           </div>
 
           {/* Category Filter */}
@@ -210,7 +239,7 @@ export function ItemsPage() {
               setCategoryId(val || null);
               setPage(1);
             }}
-            className="w-full rounded-md border border-slate-800 bg-slate-950 p-2 text-sm text-white focus:border-amber-500 focus:outline-none min-h-[40px]"
+            className="w-full rounded-xl border border-border bg-background p-2 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none min-h-[44px] shadow-sm transition-colors"
           >
             <option value={0}>Semua Kategori</option>
             {categories?.map((c) => (
@@ -228,7 +257,7 @@ export function ItemsPage() {
               setSupplierId(val || null);
               setPage(1);
             }}
-            className="w-full rounded-md border border-slate-800 bg-slate-950 p-2 text-sm text-white focus:border-amber-500 focus:outline-none min-h-[40px]"
+            className="w-full rounded-xl border border-border bg-background p-2 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none min-h-[44px] shadow-sm transition-colors"
           >
             <option value={0}>Semua Merk/Supplier</option>
             {suppliers?.map((s) => (
@@ -246,7 +275,7 @@ export function ItemsPage() {
               setIsActive(val === 'all' ? null : val === 'active');
               setPage(1);
             }}
-            className="w-full rounded-md border border-slate-800 bg-slate-950 p-2 text-sm text-white focus:border-amber-500 focus:outline-none min-h-[40px]"
+            className="w-full rounded-xl border border-border bg-background p-2 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none min-h-[44px] shadow-sm transition-colors"
           >
             <option value="active">Aktif</option>
             <option value="inactive">Non-aktif</option>
@@ -264,13 +293,13 @@ export function ItemsPage() {
           {/* Mobile Card List View */}
           <div className="grid grid-cols-1 gap-4 md:hidden">
             {itemsResponse?.data.map((item) => (
-              <div key={item.item_id} className="bg-slate-900 border border-slate-800 rounded-lg p-4 flex gap-4 items-start relative shadow-md">
+              <div key={item.item_id} className="bg-card border border-border rounded-xl p-4 flex gap-4 items-start relative shadow-lg hover:shadow-xl transition-shadow">
                 {/* Thumbnail */}
-                <div className="h-16 w-16 rounded overflow-hidden bg-slate-950 border border-slate-850 flex items-center justify-center flex-shrink-0">
+                <div className="h-16 w-16 rounded-lg overflow-hidden bg-background border border-border flex items-center justify-center flex-shrink-0 shadow-sm">
                   {item.image_url ? (
                     <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
                   ) : (
-                    <ImageIcon className="h-6 w-6 text-slate-700" />
+                    <ImageIcon className="h-6 w-6 text-muted-foreground" />
                   )}
                 </div>
 
@@ -279,18 +308,18 @@ export function ItemsPage() {
                   <span className="font-mono text-xs font-bold text-amber-500 tracking-wide block mb-1">
                     {item.item_code}
                   </span>
-                  <h4 className="text-sm font-semibold text-white truncate mb-1">{item.name}</h4>
-                  <p className="text-xs text-slate-400 mb-1">
-                    Kategori: <span className="text-slate-300 font-medium">{item.category?.name || '-'}</span>
+                  <h4 className="text-sm font-semibold text-foreground truncate mb-1">{item.name}</h4>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Kategori: <span className="text-foreground font-medium">{item.category?.name || '-'}</span>
                   </p>
-                  <p className="text-xs text-slate-400 mb-2">
-                    Merk/Brand: <span className="text-slate-300 font-medium">{item.supplier?.name || '-'}</span>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Merk/Brand: <span className="text-foreground font-medium">{item.supplier?.name || '-'}</span>
                   </p>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border shadow-sm">
                       Min Stok: {item.minimum_stock}
                     </span>
-                    <span className={`text-[10px] px-2 py-0.5 rounded font-semibold ${item.is_active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-800 text-slate-400'}`}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-semibold border ${item.is_active ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-muted text-muted-foreground border-border'}`}>
                       {item.is_active ? 'Aktif' : 'Non-aktif'}
                     </span>
                   </div>
@@ -298,13 +327,17 @@ export function ItemsPage() {
 
                 {/* Actions overlay menu (secondary) */}
                 <div className="absolute top-3 right-3 flex flex-col gap-2">
-                  <Button variant="ghost" size="icon" onClick={() => handleOpenQR(item)} className="h-8 w-8 text-amber-500 hover:text-amber-400 hover:bg-amber-500/10" title="Cetak QR">
-                    <QrCode className="h-4 w-4" />
-                  </Button>
-                  {canEdit && (
-                    <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)} className="h-8 w-8 text-blue-400 hover:text-blue-300 hover:bg-blue-400/10" title="Ubah">
-                      <Edit2 className="h-4 w-4" />
+                  <motion.div whileTap={{ scale: 0.9 }}>
+                    <Button variant="ghost" size="icon" onClick={() => handleOpenQR(item)} className="h-8 w-8 text-amber-500 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg" title="Cetak QR">
+                      <QrCode className="h-4 w-4" />
                     </Button>
+                  </motion.div>
+                  {canEdit && (
+                    <motion.div whileTap={{ scale: 0.9 }}>
+                      <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)} className="h-8 w-8 text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 rounded-lg" title="Ubah">
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                    </motion.div>
                   )}
                 </div>
               </div>
@@ -312,35 +345,39 @@ export function ItemsPage() {
           </div>
 
           {/* Desktop Table View */}
-          <div className="hidden md:block">
+          <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden shadow-lg">
             <ResponsiveDataTable data={itemsResponse?.data || []} columns={columns} keyExtractor={(i) => i.item_id} />
           </div>
 
           {/* Pagination Controls */}
           {itemsResponse && itemsResponse.total_pages > 1 && (
-            <div className="flex items-center justify-between px-2 py-4 border-t border-slate-900">
-              <span className="text-xs text-slate-400">
+            <div className="flex items-center justify-between px-2 py-4 border-t border-border">
+              <span className="text-xs text-muted-foreground">
                 Menampilkan {((page - 1) * pageSize) + 1} - {Math.min(page * pageSize, itemsResponse.total)} dari {itemsResponse.total} barang
               </span>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === 1}
-                  onClick={() => setPage(p => Math.max(p - 1, 1))}
-                  className="border-slate-850 hover:bg-slate-900 text-white min-h-[36px]"
-                >
-                  Sebelumnya
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === itemsResponse.total_pages}
-                  onClick={() => setPage(p => Math.min(p + 1, itemsResponse.total_pages))}
-                  className="border-slate-850 hover:bg-slate-900 text-white min-h-[36px]"
-                >
-                  Selanjutnya
-                </Button>
+                <motion.div whileTap={{ scale: 0.97 }}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === 1}
+                    onClick={() => setPage(p => Math.max(p - 1, 1))}
+                    className="border-border hover:bg-accent text-foreground min-h-[36px] rounded-lg shadow-sm"
+                  >
+                    Sebelumnya
+                  </Button>
+                </motion.div>
+                <motion.div whileTap={{ scale: 0.97 }}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === itemsResponse.total_pages}
+                    onClick={() => setPage(p => Math.min(p + 1, itemsResponse.total_pages))}
+                    className="border-border hover:bg-accent text-foreground min-h-[36px] rounded-lg shadow-sm"
+                  >
+                    Selanjutnya
+                  </Button>
+                </motion.div>
               </div>
             </div>
           )}

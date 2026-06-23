@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from "./dialog";
 import { Button } from "./button";
+import { motion } from "framer-motion";
 
 interface ConfirmDeleteDialogProps {
   open: boolean;
@@ -35,22 +36,26 @@ export function ConfirmDeleteDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="mt-4 gap-2 sm:gap-0">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isDeleting}
-            className="border-slate-700 hover:bg-slate-800 hover:text-white"
-          >
-            Batal
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={onConfirm}
-            disabled={isDeleting}
-            className="min-h-[44px]"
-          >
-            {isDeleting ? "Menghapus..." : "Hapus"}
-          </Button>
+          <motion.div whileTap={{ scale: 0.97 }}>
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isDeleting}
+              className="border-slate-700 hover:bg-slate-800 hover:text-white rounded-xl min-h-[44px]"
+            >
+              Batal
+            </Button>
+          </motion.div>
+          <motion.div whileTap={{ scale: 0.97 }}>
+            <Button
+              variant="destructive"
+              onClick={onConfirm}
+              disabled={isDeleting}
+              className="min-h-[44px] rounded-xl"
+            >
+              {isDeleting ? "Menghapus..." : "Hapus"}
+            </Button>
+          </motion.div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

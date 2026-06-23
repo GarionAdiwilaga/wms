@@ -1,5 +1,27 @@
 # Architectural Decisions
 
+## 2026-06-18
+
+### Authentication
+**Decision:** Username/password + JWT access token. No refresh tokens. Password reset by Super Admin only. Users can change own password.
+**Business Rule:** Internal application with limited users.
+**Reason:** Simpler implementation and maintenance.
+
+### Entity Scope
+**Decision:** Items, Categories, Suppliers are all global (shared across branches).
+**Business Rule:** Shared inventory catalog across all branches.
+**Reason:** Simpler administration and reporting.
+
+### Transfer Variance
+**Decision:** Transfer variances are explicit, permanent, and not auto-corrected. Mismatch triggers automatic audit entry.
+**Business Rule:** Variance represents damaged, missing, or otherwise unreceived inventory.
+**Reason:** Prevents hidden inventory problems and leaves a trail for manual investigation.
+
+### Item Identity (Supplier as Brand)
+**Decision:** Supplier functions as both supplier and product brand in V1. Items from different suppliers are different products.
+**Business Rule:** The supplier is part of the product identity in this business.
+**Reason:** Reflects real-world inventory organization used by the warehouse staff.
+
 ## 2026-06-21
 
 ### Mobile-First & Touch-First Design
@@ -42,28 +64,6 @@
 **Business Rule:** Image upload has high business value and should be prioritized.
 **Reason:** Simple, effective, and no need for cloud storage (S3) for this internal application.
 
-## 2026-06-18
-
-### Authentication
-**Decision:** Username/password + JWT access token. No refresh tokens. Password reset by Super Admin only. Users can change own password.
-**Business Rule:** Internal application with limited users.
-**Reason:** Simpler implementation and maintenance.
-
-### Entity Scope
-**Decision:** Items, Categories, Suppliers are all global (shared across branches).
-**Business Rule:** Shared inventory catalog across all branches.
-**Reason:** Simpler administration and reporting.
-
-### Transfer Variance
-**Decision:** Transfer variances are explicit, permanent, and not auto-corrected. Mismatch triggers automatic audit entry.
-**Business Rule:** Variance represents damaged, missing, or otherwise unreceived inventory.
-**Reason:** Prevents hidden inventory problems and leaves a trail for manual investigation.
-
-### Item Identity (Supplier as Brand)
-**Decision:** Supplier functions as both supplier and product brand in V1. Items from different suppliers are different products.
-**Business Rule:** The supplier is part of the product identity in this business.
-**Reason:** Reflects real-world inventory organization used by the warehouse staff.
-
 ## 2026-06-22
 
 ### Relative API Path & Same-Origin Proxy Routing
@@ -82,3 +82,13 @@
 **Decision:** The `reference_type` column for ledger transactions includes both `manual` and `system`.
 **Business Rule:** `manual` is for user-initiated corrections, while `system` is for system-generated repair or migration operations.
 **Reason:** Distinguishes between human actions and automated system fixes in the audit trail.
+
+### Stock In & Outbound Architecture (Thin Services)
+**Decision:** `StockInService` and `OutboundService` must be thin orchestration layers.
+**Business Rule:** They only validate documents/stock and delegate all ledger mutations to `InventoryService.execute_stock_changes()`.
+**Reason:** Centralizes stock logic and prevents duplicate or conflicting ledger updates.
+
+### Cart UI & Duplicate Prevention
+**Decision:** Both Stock In and Outbound use a POS-style Cart workflow (Search → Add → Qty), not traditional forms. Duplicate items in the cart are strictly prevented.
+**Business Rule:** Selecting an existing item in a cart must increment its quantity, not create a new line. Both carts must use persisted state.
+**Reason:** Matches real-world warehouse workflows, reduces errors, and survives mobile app switching.

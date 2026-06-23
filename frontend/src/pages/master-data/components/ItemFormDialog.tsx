@@ -17,6 +17,7 @@ import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Label } from '../../../components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
+import { motion } from 'framer-motion';
 
 const itemSchema = z.object({
   name: z.string().min(1, 'Nama barang wajib diisi'),
@@ -348,15 +349,17 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
                   onChange={handleImageChange}
                   className="hidden"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => document.getElementById('image-file-input')?.click()}
-                  className="border-slate-800 bg-slate-950 hover:bg-slate-850 text-white min-h-[44px]"
-                >
-                  <Upload className="mr-2 h-4 w-4 text-slate-400" />
-                  Pilih Foto
-                </Button>
+                <motion.div whileTap={{ scale: 0.97 }}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => document.getElementById('image-file-input')?.click()}
+                    className="border-slate-800 bg-slate-950 hover:bg-slate-850 text-white min-h-[44px] rounded-xl"
+                  >
+                    <Upload className="mr-2 h-4 w-4 text-slate-400" />
+                    Pilih Foto
+                  </Button>
+                </motion.div>
                 <p className="text-xs text-slate-400 mt-2">
                   Format gambar disarankan persegi/square. Upload foto adalah langkah opsional.
                 </p>
@@ -377,21 +380,25 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
 
           {/* Submit Actions */}
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="border-slate-700 bg-transparent hover:bg-slate-800 text-white"
-            >
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              disabled={createItem.isPending || updateItem.isPending || uploadImage.isPending}
-              className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold"
-            >
-              {isEdit ? 'Simpan' : 'Tambah'}
-            </Button>
+            <motion.div whileTap={{ scale: 0.97 }}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                className="border-slate-700 bg-transparent hover:bg-slate-800 text-white rounded-xl min-h-[44px]"
+              >
+                Batal
+              </Button>
+            </motion.div>
+            <motion.div whileTap={{ scale: 0.97 }}>
+              <Button
+                type="submit"
+                disabled={createItem.isPending || updateItem.isPending || uploadImage.isPending}
+                className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-primary-foreground font-semibold rounded-xl min-h-[44px]"
+              >
+                {isEdit ? 'Simpan' : 'Tambah'}
+              </Button>
+            </motion.div>
           </div>
         </form>
       </DialogContent>

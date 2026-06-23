@@ -1,4 +1,4 @@
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation, useOutlet } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth-store';
 import { 
   Menu, 
@@ -16,6 +16,7 @@ import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import { useState } from 'react';
 import { cn } from '../../lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface NavItem {
   name: string;
@@ -40,7 +41,9 @@ const settingsItems: NavItem[] = [
 export function AppShell() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
+  const outlet = useOutlet();
 
   const handleLogout = () => {
     logout();
@@ -126,19 +129,21 @@ export function AppShell() {
 
       {/* Mobile Header & Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="md:hidden flex h-16 items-center justify-between border-b border-slate-800 bg-slate-900 px-4">
+        <header className="md:hidden flex h-16 items-center justify-between border-b border-slate-800 bg-slate-900/95 backdrop-blur-sm px-4 sticky top-0 z-40">
           <div className="flex items-center gap-3">
             <LayoutDashboard className="h-6 w-6 text-amber-500" />
             <span className="font-bold text-lg">Gudang Piala</span>
           </div>
           <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="min-h-[48px] min-w-[48px]">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle navigation</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] bg-slate-900 border-slate-800 p-0 flex flex-col">
+            <motion.div whileTap={{ scale: 0.9 }} className="inline-block">
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="min-h-[48px] min-w-[48px]">
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">Toggle navigation</span>
+                </Button>
+              </SheetTrigger>
+            </motion.div>
+            <SheetContent side="right" className="w-[300px] bg-slate-900 border-slate-800 p-0 flex flex-col">
               <div className="flex h-16 items-center px-6 border-b border-slate-800">
                 <LayoutDashboard className="h-6 w-6 text-amber-500 mr-3" />
                 <span className="font-bold text-lg">Gudang Piala</span>
@@ -164,7 +169,20 @@ export function AppShell() {
         </header>
 
         <main className="flex-1 overflow-y-auto bg-slate-950 p-4 md:p-8">
-          <Outlet />
+          <AnimatePresence mode="wait">
+            {outlet && (
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 10, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.99 }}
+                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="h-full"
+              >
+                {outlet}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </main>
       </div>
     </div>

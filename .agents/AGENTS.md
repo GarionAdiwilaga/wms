@@ -14,7 +14,15 @@ Before taking action or generating plans on a new task, you MUST read:
 - `wms/DECISIONS.md` (or search it) to ensure you do not violate previously settled architectural or business rules.
 
 ### 2. Execution (During Task)
-If a major architectural, technical, or business decision is made during your session, you MUST append it to `wms/DECISIONS.md`. Format it strictly:
+If a major architectural, technical, or business decision is made during your session, you MUST append it to `wms/DECISIONS.md`. 
+
+**CRITICAL RULES FOR DECISIONS.md:**
+1. NEVER overwrite the entire file or delete past decisions.
+2. ALWAYS group decisions under the correct `## YYYY-MM-DD` date heading.
+3. If the date heading exists, append your decision below it (do not create a duplicate date heading).
+4. Keep the date headings in chronological order.
+
+Format your decisions strictly:
 ```markdown
 ### [Topic Name]
 **Decision:** [What was decided]

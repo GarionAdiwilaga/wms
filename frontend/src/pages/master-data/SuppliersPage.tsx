@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 import { useSuppliers, useCreateSupplier, useUpdateSupplier, useDeleteSupplier, Supplier } from '../../hooks/useSuppliers';
 import { useAuthStore } from '../../store/auth-store';
@@ -105,8 +106,12 @@ export function SuppliersPage() {
       header: 'Aksi',
       cell: (item) => canEdit ? (
         <div className="flex gap-2 justify-end md:justify-start">
-          <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)} className="h-8 w-8 text-blue-400 hover:text-blue-300 hover:bg-blue-400/10"><Edit2 className="h-4 w-4" /></Button>
-          <Button variant="ghost" size="icon" onClick={() => handleDeleteClick(item)} className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-400/10"><Trash2 className="h-4 w-4" /></Button>
+          <motion.div whileTap={{ scale: 0.9 }}>
+            <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)} className="h-8 w-8 text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 rounded-lg"><Edit2 className="h-4 w-4" /></Button>
+          </motion.div>
+          <motion.div whileTap={{ scale: 0.9 }}>
+            <Button variant="ghost" size="icon" onClick={() => handleDeleteClick(item)} className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-lg"><Trash2 className="h-4 w-4" /></Button>
+          </motion.div>
         </div>
       ) : <span className="text-slate-500 text-sm">Hanya Baca</span>,
     },
@@ -120,7 +125,13 @@ export function SuppliersPage() {
       <PageHeader
         title="Supplier"
         description="Kelola supplier dan brand komponen trophy."
-        action={canEdit && <Button onClick={handleOpenCreate} className="bg-amber-500 hover:bg-amber-600 text-slate-950 min-h-[44px]"><Plus className="mr-2 h-4 w-4" /> Tambah Supplier</Button>}
+        action={canEdit && (
+          <motion.div whileTap={{ scale: 0.97 }}>
+            <Button onClick={handleOpenCreate} className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-primary-foreground min-h-[44px] shadow-md rounded-xl">
+              <Plus className="mr-2 h-4 w-4" /> Tambah Supplier
+            </Button>
+          </motion.div>
+        )}
       />
 
       {suppliers?.length === 0 ? (
@@ -137,7 +148,16 @@ export function SuppliersPage() {
             <div className="space-y-2"><Label htmlFor="name">Nama Supplier</Label><Input id="name" placeholder="Contoh: ONIX Trophy" {...form.register('name')} className="bg-slate-950 border-slate-800 text-white" />{form.formState.errors.name && <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>}</div>
             <div className="space-y-2"><Label htmlFor="contact_info">Info Kontak</Label><Input id="contact_info" placeholder="Contoh: WhatsApp / Alamat" {...form.register('contact_info')} className="bg-slate-950 border-slate-800 text-white" /></div>
             <div className="flex items-center gap-2 mt-4"><input type="checkbox" id="is_active" {...form.register('is_active')} className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-amber-500" /><Label htmlFor="is_active">Aktif</Label></div>
-            <div className="flex justify-end gap-3 mt-6"><Button type="button" variant="outline" onClick={() => setIsFormOpen(false)} className="border-slate-700 text-white bg-transparent hover:bg-slate-800">Batal</Button><Button type="submit" disabled={createSupplier.isPending || updateSupplier.isPending} className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold">{editingSupplier ? 'Simpan' : 'Tambah'}</Button></div>
+            <div className="flex justify-end gap-3 mt-6">
+              <motion.div whileTap={{ scale: 0.97 }}>
+                <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)} className="border-slate-700 text-white bg-transparent hover:bg-slate-800 rounded-xl min-h-[44px]">Batal</Button>
+              </motion.div>
+              <motion.div whileTap={{ scale: 0.97 }}>
+                <Button type="submit" disabled={createSupplier.isPending || updateSupplier.isPending} className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-primary-foreground font-semibold rounded-xl min-h-[44px]">
+                  {editingSupplier ? 'Simpan' : 'Tambah'}
+                </Button>
+              </motion.div>
+            </div>
           </form>
         </DialogContent>
       </Dialog>

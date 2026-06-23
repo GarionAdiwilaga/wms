@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Image as ImageIcon, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useAuthStore } from '../../store/auth-store';
 import { useBranches } from '../../hooks/useBranches';
 import { useCategories } from '../../hooks/useCategories';
@@ -122,7 +123,7 @@ export function BranchStocksPage() {
       />
 
       {/* Filters Section */}
-      <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-4">
+      <div className="bg-card border border-border rounded-xl p-5 space-y-4 shadow-lg">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {/* Reusable ItemSearch as Page Filter */}
           <div className="lg:col-span-2">
@@ -143,7 +144,7 @@ export function BranchStocksPage() {
                 setBranchId(val || null);
                 setPage(1);
               }}
-              className="w-full rounded-md border border-slate-800 bg-slate-950 p-2 text-sm text-white focus:border-amber-500 focus:outline-none min-h-[44px]"
+              className="w-full rounded-xl border border-border bg-background p-2 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none min-h-[44px] shadow-sm transition-colors"
             >
               <option value={0}>Semua Cabang</option>
               {branches?.map((b) => (
@@ -153,7 +154,7 @@ export function BranchStocksPage() {
               ))}
             </select>
           ) : (
-            <div className="w-full rounded-md border border-slate-850 bg-slate-950/50 p-3 text-sm text-slate-400 min-h-[44px] flex items-center">
+            <div className="w-full rounded-xl border border-border bg-background/50 p-3 text-sm text-muted-foreground min-h-[44px] flex items-center shadow-sm">
               Cabang: {branchMap[currentUser?.branch_id ?? 0] || 'Memuat...'}
             </div>
           )}
@@ -166,7 +167,7 @@ export function BranchStocksPage() {
               setCategoryId(val || null);
               setPage(1);
             }}
-            className="w-full rounded-md border border-slate-800 bg-slate-950 p-2 text-sm text-white focus:border-amber-500 focus:outline-none min-h-[44px]"
+            className="w-full rounded-xl border border-border bg-background p-2 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none min-h-[44px] shadow-sm transition-colors"
           >
             <option value={0}>Semua Kategori</option>
             {categories?.map((c) => (
@@ -184,7 +185,7 @@ export function BranchStocksPage() {
               setSupplierId(val || null);
               setPage(1);
             }}
-            className="w-full rounded-md border border-slate-800 bg-slate-950 p-2 text-sm text-white focus:border-amber-500 focus:outline-none min-h-[44px]"
+            className="w-full rounded-xl border border-border bg-background p-2 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none min-h-[44px] shadow-sm transition-colors"
           >
             <option value={0}>Semua Merk/Supplier</option>
             {suppliers?.map((s) => (
@@ -197,7 +198,7 @@ export function BranchStocksPage() {
 
         {/* Checkbox and Reset Filters Row */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-          <label className="inline-flex items-center gap-2 text-sm text-slate-300 cursor-pointer select-none min-h-[44px]">
+          <label className="inline-flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none min-h-[44px]">
             <input
               type="checkbox"
               checked={lowStockOnly}
@@ -205,19 +206,21 @@ export function BranchStocksPage() {
                 setLowStockOnly(e.target.checked);
                 setPage(1);
               }}
-              className="h-4 w-4 rounded border-slate-800 bg-slate-950 text-amber-500 focus:ring-amber-500 focus:ring-offset-slate-900"
+              className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary focus:ring-offset-background"
             />
             Tampilkan Stok Menipis Saja
           </label>
 
           {hasActiveFilters && (
-            <Button
-              variant="ghost"
-              onClick={handleResetFilters}
-              className="text-slate-400 hover:text-white hover:bg-slate-800 min-h-[44px] px-4"
-            >
-              Reset Filter
-            </Button>
+            <motion.div whileTap={{ scale: 0.97 }}>
+              <Button
+                variant="ghost"
+                onClick={handleResetFilters}
+                className="text-muted-foreground hover:text-foreground hover:bg-accent min-h-[44px] px-4 rounded-lg"
+              >
+                Reset Filter
+              </Button>
+            </motion.div>
           )}
         </div>
       </div>
@@ -241,14 +244,14 @@ export function BranchStocksPage() {
               return (
                 <div
                   key={`${stock.branch_id}-${stock.item_id}`}
-                  className="bg-slate-900 border border-slate-800 rounded-lg p-4 flex gap-4 items-start relative shadow-md"
+                  className="bg-card border border-border rounded-xl p-4 flex gap-4 items-start relative shadow-lg hover:shadow-xl transition-shadow"
                 >
                   {/* Thumbnail Image */}
-                  <div className="h-16 w-16 rounded overflow-hidden bg-slate-950 border border-slate-850 flex items-center justify-center flex-shrink-0">
+                  <div className="h-16 w-16 rounded-lg overflow-hidden bg-background border border-border flex items-center justify-center flex-shrink-0">
                     {image ? (
                       <img src={image} alt={stock.item_name} className="h-full w-full object-cover" />
                     ) : (
-                      <ImageIcon className="h-6 w-6 text-slate-700" />
+                      <ImageIcon className="h-6 w-6 text-muted-foreground" />
                     )}
                   </div>
 
@@ -257,25 +260,25 @@ export function BranchStocksPage() {
                     <span className="font-mono text-xs font-bold text-amber-500 tracking-wide block mb-1">
                       {stock.item_code}
                     </span>
-                    <h4 className="text-sm font-semibold text-white truncate mb-1">{stock.item_name}</h4>
+                    <h4 className="text-sm font-semibold text-foreground truncate mb-1">{stock.item_name}</h4>
                     
                     {isSuperAdmin && (
-                      <p className="text-xs text-slate-400 mb-1">
-                        Cabang: <span className="text-slate-300 font-medium">{branchMap[stock.branch_id] || '-'}</span>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Cabang: <span className="text-foreground font-medium">{branchMap[stock.branch_id] || '-'}</span>
                       </p>
                     )}
                     
-                    <p className="text-xs text-slate-400 mb-1">
-                      Kategori: <span className="text-slate-300 font-medium">{stock.category_name || '-'}</span>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Kategori: <span className="text-foreground font-medium">{stock.category_name || '-'}</span>
                     </p>
-                    <p className="text-xs text-slate-400 mb-2.5">
-                      Merk/Supplier: <span className="text-slate-300 font-medium">{stock.supplier_name || '-'}</span>
+                    <p className="text-xs text-muted-foreground mb-2.5">
+                      Merk/Supplier: <span className="text-foreground font-medium">{stock.supplier_name || '-'}</span>
                     </p>
 
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-805">
-                      <div className="text-xs text-slate-400">
-                        Stok: <span className="text-sm font-bold text-white">{stock.quantity} {stock.uom_name || 'PCS'}</span>
-                        <span className="text-[10px] text-slate-500 ml-1.5">(Min: {stock.minimum_stock})</span>
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border">
+                      <div className="text-xs text-muted-foreground">
+                        Stok: <span className="text-sm font-bold text-foreground">{stock.quantity} {stock.uom_name || 'PCS'}</span>
+                        <span className="text-[10px] text-muted-foreground ml-1.5">(Min: {stock.minimum_stock})</span>
                       </div>
                       {renderStatusBadge(stock)}
                     </div>
@@ -286,25 +289,25 @@ export function BranchStocksPage() {
           </div>
 
           {/* Desktop Table View */}
-          <div className="hidden md:block rounded-md border border-slate-800 bg-slate-900 overflow-hidden shadow-md">
+          <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden shadow-lg">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-950 border-b border-slate-800">
-                  <th className="py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Foto</th>
-                  <th className="py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Kode Barang</th>
-                  <th className="py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Nama Barang</th>
+                <tr className="bg-muted/50 border-b border-border">
+                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Foto</th>
+                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Kode Barang</th>
+                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Nama Barang</th>
                   {isSuperAdmin && (
-                    <th className="py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Cabang</th>
+                    <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Cabang</th>
                   )}
-                  <th className="py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Kategori</th>
-                  <th className="py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Merk/Supplier</th>
-                  <th className="py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Stok</th>
-                  <th className="py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Min. Stok</th>
-                  <th className="py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Status</th>
-                  <th className="py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Terakhir Update</th>
+                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Kategori</th>
+                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Merk/Supplier</th>
+                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider text-right">Stok</th>
+                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider text-right">Min. Stok</th>
+                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider text-center">Status</th>
+                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider text-right">Terakhir Update</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-border">
                 {stocksResponse?.data.map((stock) => {
                   const image = itemImageMap[stock.item_id];
                   const formattedDate = new Date(stock.updated_at).toLocaleDateString('id-ID', {
@@ -318,30 +321,30 @@ export function BranchStocksPage() {
                   return (
                     <tr
                       key={`${stock.branch_id}-${stock.item_id}`}
-                      className="hover:bg-slate-800/30 transition-colors"
+                      className="hover:bg-muted/30 transition-colors"
                     >
-                      <td className="py-3 px-4">
-                        <div className="h-10 w-10 rounded overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center">
+                      <td className="py-3.5 px-4">
+                        <div className="h-10 w-10 rounded-lg overflow-hidden bg-background border border-border flex items-center justify-center shadow-sm">
                           {image ? (
                             <img src={image} alt={stock.item_name} className="h-full w-full object-cover" />
                           ) : (
-                            <ImageIcon className="h-5 w-5 text-slate-600" />
+                            <ImageIcon className="h-5 w-5 text-muted-foreground" />
                           )}
                         </div>
                       </td>
-                      <td className="py-3 px-4 font-mono font-bold text-amber-500">{stock.item_code}</td>
-                      <td className="py-3 px-4 text-white font-medium">{stock.item_name}</td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-amber-500">{stock.item_code}</td>
+                      <td className="py-3.5 px-4 text-foreground font-medium">{stock.item_name}</td>
                       {isSuperAdmin && (
-                        <td className="py-3 px-4 text-slate-300">{branchMap[stock.branch_id] || '-'}</td>
+                        <td className="py-3.5 px-4 text-foreground/90">{branchMap[stock.branch_id] || '-'}</td>
                       )}
-                      <td className="py-3 px-4 text-slate-300">{stock.category_name || '-'}</td>
-                      <td className="py-3 px-4 text-slate-300">{stock.supplier_name || '-'}</td>
-                      <td className="py-3 px-4 text-white font-bold text-right">
+                      <td className="py-3.5 px-4 text-muted-foreground">{stock.category_name || '-'}</td>
+                      <td className="py-3.5 px-4 text-muted-foreground">{stock.supplier_name || '-'}</td>
+                      <td className="py-3.5 px-4 text-foreground font-bold text-right">
                         {stock.quantity} {stock.uom_name || 'PCS'}
                       </td>
-                      <td className="py-3 px-4 text-slate-400 text-right">{stock.minimum_stock}</td>
-                      <td className="py-3 px-4 text-center">{renderStatusBadge(stock)}</td>
-                      <td className="py-3 px-4 text-slate-400 text-xs text-right">{formattedDate}</td>
+                      <td className="py-3.5 px-4 text-muted-foreground text-right">{stock.minimum_stock}</td>
+                      <td className="py-3.5 px-4 text-center">{renderStatusBadge(stock)}</td>
+                      <td className="py-3.5 px-4 text-muted-foreground text-xs text-right">{formattedDate}</td>
                     </tr>
                   );
                 })}
@@ -351,29 +354,33 @@ export function BranchStocksPage() {
 
           {/* Pagination Controls */}
           {stocksResponse && stocksResponse.total_pages > 1 && (
-            <div className="flex items-center justify-between px-2 py-4 border-t border-slate-900">
-              <span className="text-xs text-slate-400">
+            <div className="flex items-center justify-between px-2 py-4 border-t border-border">
+              <span className="text-xs text-muted-foreground">
                 Menampilkan {((page - 1) * pageSize) + 1} - {Math.min(page * pageSize, stocksResponse.total)} dari {stocksResponse.total} item
               </span>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                  className="border-slate-850 hover:bg-slate-900 text-white min-h-[36px]"
-                >
-                  Sebelumnya
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === stocksResponse.total_pages}
-                  onClick={() => setPage((p) => Math.min(p + 1, stocksResponse.total_pages))}
-                  className="border-slate-850 hover:bg-slate-900 text-white min-h-[36px]"
-                >
-                  Selanjutnya
-                </Button>
+                <motion.div whileTap={{ scale: 0.97 }}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === 1}
+                    onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                    className="border-border hover:bg-accent text-foreground min-h-[36px] rounded-lg shadow-sm"
+                  >
+                    Sebelumnya
+                  </Button>
+                </motion.div>
+                <motion.div whileTap={{ scale: 0.97 }}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === stocksResponse.total_pages}
+                    onClick={() => setPage((p) => Math.min(p + 1, stocksResponse.total_pages))}
+                    className="border-border hover:bg-accent text-foreground min-h-[36px] rounded-lg shadow-sm"
+                  >
+                    Selanjutnya
+                  </Button>
+                </motion.div>
               </div>
             </div>
           )}

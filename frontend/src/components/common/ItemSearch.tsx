@@ -4,6 +4,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { useItems, Item } from '../../hooks/useItems';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
+import { motion } from 'framer-motion';
 
 interface ItemSearchProps {
   onSelect?: (item: Item) => void;
@@ -32,6 +33,7 @@ export function ItemSearch({
   
   const dropdownRef = useRef<HTMLDivElement>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const scanTimeoutRef = useRef<any>(null);
   const scannerId = 'item-search-qr-reader';
 
   // Sync state with value prop if controlled
@@ -115,8 +117,12 @@ export function ItemSearch({
     setIsScanning(true);
     setCameraError(null);
 
+    if (scanTimeoutRef.current) {
+      clearTimeout(scanTimeoutRef.current as any);
+    }
+
     // Give react time to mount the reader div
-    setTimeout(async () => {
+    scanTimeoutRef.current = setTimeout(async () => {
       try {
         const html5Qrcode = new Html5Qrcode(scannerId);
         scannerRef.current = html5Qrcode;
@@ -148,22 +154,35 @@ export function ItemSearch({
       } catch (err: any) {
         console.error('Camera access failed:', err);
         setCameraError('Gagal mengakses kamera. Pastikan izin kamera diberikan.');
-        // Scanner didn't start, keep scanning active but show error
+        scannerRef.current = null;
       }
     }, 300);
   };
 
   const stopScanning = () => {
+    if (scanTimeoutRef.current) {
+      clearTimeout(scanTimeoutRef.current as any);
+      scanTimeoutRef.current = null;
+    }
+
     if (scannerRef.current) {
-      scannerRef.current.stop()
-        .then(() => {
-          scannerRef.current = null;
-        })
+      const stopPromise = scannerRef.current.isScanning 
+        ? scannerRef.current.stop() 
+        : Promise.resolve();
+        
+      stopPromise
         .catch((err) => {
           console.error('Error stopping scanner:', err);
+        })
+        .finally(() => {
+          scannerRef.current = null;
+          setIsScanning(false);
+          setCameraError(null);
         });
+    } else {
+      setIsScanning(false);
+      setCameraError(null);
     }
-    setIsScanning(false);
   };
 
   return (
@@ -199,16 +218,18 @@ export function ItemSearch({
             <X className="h-5 w-5" />
           </button>
         )}
-        <Button
-          type="button"
-          size="icon"
-          variant="ghost"
-          onClick={startScanning}
-          className="absolute right-1 text-slate-400 hover:text-amber-500 hover:bg-transparent min-h-[40px] min-w-[40px]"
-          title="Scan QR Code"
-        >
-          <QrCode className="h-5 w-5" />
-        </Button>
+        <motion.div whileTap={{ scale: 0.9 }} className="absolute right-1">
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            onClick={startScanning}
+            className="text-slate-400 hover:text-amber-500 hover:bg-transparent min-h-[40px] min-w-[40px] rounded-lg"
+            title="Scan QR Code"
+          >
+            <QrCode className="h-5 w-5" />
+          </Button>
+        </motion.div>
       </div>
 
       {/* Dropdown Results */}

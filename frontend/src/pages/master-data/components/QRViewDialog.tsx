@@ -3,6 +3,7 @@ import { Printer } from 'lucide-react';
 import { Item } from '../../../hooks/useItems';
 import { Button } from '../../../components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
+import { motion } from 'framer-motion';
 
 interface QRViewDialogProps {
   open: boolean;
@@ -101,22 +102,26 @@ export function QRViewDialog({ open, onOpenChange, item }: QRViewDialogProps) {
 
           {/* Action buttons */}
           <div className="flex w-full gap-3 pt-4 border-t border-slate-800">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="flex-1 border-slate-700 bg-transparent hover:bg-slate-800 text-white"
-            >
-              Tutup
-            </Button>
-            <Button
-              type="button"
-              onClick={handlePrint}
-              className="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold"
-            >
-              <Printer className="mr-2 h-4 w-4" />
-              Cetak Label
-            </Button>
+            <motion.div whileTap={{ scale: 0.97 }} className="flex-1">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                className="w-full border-slate-700 bg-transparent hover:bg-slate-800 text-white rounded-xl min-h-[44px]"
+              >
+                Tutup
+              </Button>
+            </motion.div>
+            <motion.div whileTap={{ scale: 0.97 }} className="flex-1">
+              <Button
+                type="button"
+                onClick={handlePrint}
+                className="w-full bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-primary-foreground font-semibold rounded-xl min-h-[44px]"
+              >
+                <Printer className="mr-2 h-4 w-4" />
+                Cetak Label
+              </Button>
+            </motion.div>
           </div>
         </div>
       </DialogContent>

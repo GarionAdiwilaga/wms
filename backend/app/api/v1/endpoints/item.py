@@ -22,7 +22,7 @@ def format_item(request: Request, item: Item) -> dict[str, Any]:
         data["image_url"] = str(request.base_url).rstrip("/") + item.image_path
     return data
 
-@router.get("", response_model=PaginatedItemResponse)
+@router.get("/", response_model=PaginatedItemResponse)
 def read_items(
     request: Request,
     db: Session = Depends(get_db),
@@ -91,7 +91,7 @@ def read_item(
     item = service.get(id)
     return format_item(request, item)
 
-@router.post("", response_model=ItemResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=ItemResponse, status_code=status.HTTP_201_CREATED)
 def create_item(
     request: Request,
     item_in: ItemCreate,

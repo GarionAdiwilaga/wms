@@ -35,7 +35,7 @@ def test_create_item(db_client: TestClient, db_session: Session, test_user: User
         "manual_code": "001"
     }
     
-    resp = db_client.post("/api/v1/items", json=data, headers=headers)
+    resp = db_client.post("/api/v1/items/", json=data, headers=headers)
     assert resp.status_code == 201
     content = resp.json()
     assert content["item_code"] == "CAT_TEST1-SUP_TEST1-001"
@@ -51,9 +51,9 @@ def test_create_item_duplicate_code(db_client: TestClient, db_session: Session, 
         "supplier_id": master_data["supplier_id"],
         "manual_code": "002"
     }
-    db_client.post("/api/v1/items", json=data, headers=headers)
+    db_client.post("/api/v1/items/", json=data, headers=headers)
     
-    resp = db_client.post("/api/v1/items", json=data, headers=headers)
+    resp = db_client.post("/api/v1/items/", json=data, headers=headers)
     assert resp.status_code == 400
     assert "already exists" in resp.json()["detail"]
 
@@ -66,7 +66,7 @@ def test_update_item_immutability(db_client: TestClient, db_session: Session, te
         "supplier_id": master_data["supplier_id"],
         "manual_code": "003"
     }
-    create_resp = db_client.post("/api/v1/items", json=data, headers=headers)
+    create_resp = db_client.post("/api/v1/items/", json=data, headers=headers)
     item_id = create_resp.json()["item_id"]
     
     update_data = {
@@ -90,7 +90,7 @@ def test_delete_item_is_disabled(db_client: TestClient, db_session: Session, tes
         "supplier_id": master_data["supplier_id"],
         "manual_code": "005"
     }
-    create_resp = db_client.post("/api/v1/items", json=data, headers=headers)
+    create_resp = db_client.post("/api/v1/items/", json=data, headers=headers)
     item_id = create_resp.json()["item_id"]
     
     delete_resp = db_client.delete(f"/api/v1/items/{item_id}", headers=headers)
@@ -105,7 +105,7 @@ def test_upload_image(db_client: TestClient, db_session: Session, test_user: Use
         "supplier_id": master_data["supplier_id"],
         "manual_code": "006"
     }
-    create_resp = db_client.post("/api/v1/items", json=data, headers=headers)
+    create_resp = db_client.post("/api/v1/items/", json=data, headers=headers)
     item_id = create_resp.json()["item_id"]
     
     file_content = b"fake image content"
@@ -126,7 +126,7 @@ def test_lookup_item(db_client: TestClient, db_session: Session, test_user: User
         "supplier_id": master_data["supplier_id"],
         "manual_code": "007"
     }
-    db_client.post("/api/v1/items", json=data, headers=headers)
+    db_client.post("/api/v1/items/", json=data, headers=headers)
     
     resp = db_client.get("/api/v1/items/lookup?item_code=CAT_TEST1-SUP_TEST1-007", headers=headers)
     assert resp.status_code == 200
@@ -141,9 +141,9 @@ def test_search_item(db_client: TestClient, db_session: Session, test_user: User
         "supplier_id": master_data["supplier_id"],
         "manual_code": "SRCH1"
     }
-    db_client.post("/api/v1/items", json=data, headers=headers)
+    db_client.post("/api/v1/items/", json=data, headers=headers)
     
-    resp = db_client.get("/api/v1/items?q=Unique", headers=headers)
+    resp = db_client.get("/api/v1/items/?q=Unique", headers=headers)
     assert resp.status_code == 200
     assert resp.json()["total"] == 1
     assert resp.json()["data"][0]["item_code"] == "CAT_TEST1-SUP_TEST1-SRCH1"
