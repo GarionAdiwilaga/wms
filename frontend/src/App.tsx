@@ -14,6 +14,12 @@ import { BranchStocksPage } from './pages/inventory/BranchStocksPage';
 import { StockInPage } from './pages/operations/StockInPage';
 import { OutboundPage } from './pages/operations/OutboundPage';
 import { HistoryPage } from './pages/operations/HistoryPage';
+import { TransfersPage } from './pages/operations/TransfersPage';
+import { TransferCreatePage } from './pages/operations/TransferCreatePage';
+import { TransferDetailPage } from './pages/operations/TransferDetailPage';
+import { TransferReceivePage } from './pages/operations/TransferReceivePage';
+import { StockOpnamePage } from './pages/operations/StockOpnamePage';
+import { StockOpnameDetailPage } from './pages/operations/StockOpnameDetailPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +50,12 @@ function App() {
               <Route path="/inventory/branch-stocks" element={<BranchStocksPage />} />
               <Route path="/operations/stock-in" element={<StockInPage />} />
               <Route path="/operations/outbound" element={<OutboundPage />} />
+              <Route path="/operations/transfers" element={<TransfersPage />} />
+              <Route path="/operations/transfers/new" element={<TransferCreatePage />} />
+              <Route path="/operations/transfers/:id" element={<TransferDetailPage />} />
+              <Route path="/operations/transfers/:id/receive" element={<TransferReceivePage />} />
+              <Route path="/operations/stock-opname" element={<StockOpnamePage />} />
+              <Route path="/operations/stock-opname/:id" element={<StockOpnameDetailPage />} />
               <Route path="/operations/history" element={<HistoryPage />} />
               <Route path="/settings/uom" element={<UOMPage />} />
             </Route>

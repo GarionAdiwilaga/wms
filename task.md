@@ -113,9 +113,9 @@
 - `[x]` Write Unit & Integration tests for Transfer states, variance logic, and Opname adjustments (Large)
 
 ### 4.2 Frontend
-- `[ ]` Implement API calls and React Query hooks (Medium)
-- `[ ]` Implement Transfers UI (Create Draft, Ship, Receive with variance input, History) (Large)
-- `[ ]` Implement Stock Opname UI (Physical count input form, History) (Large)
+- `[x]` Implement API calls and React Query hooks (Medium)
+- `[x]` Implement Transfers UI (Create Draft, Ship, Receive with variance input, History) (Large)
+- `[x]` Implement Stock Opname UI (Physical count input form, History) (Large)
 
 ---
 

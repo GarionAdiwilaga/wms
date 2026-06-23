@@ -11,9 +11,11 @@ import {
   LayoutDashboard,
   Layers,
   Database,
-  Archive,
-  ShoppingCart,
-  History
+  Archive, 
+  ShoppingCart, 
+  History,
+  ArrowLeftRight,
+  ClipboardList
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
@@ -40,6 +42,8 @@ const masterDataItems: NavItem[] = [
 const operationsItems: NavItem[] = [
   { name: 'Stok Masuk', href: '/operations/stock-in', icon: Archive, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
   { name: 'Barang Keluar', href: '/operations/outbound', icon: ShoppingCart, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
+  { name: 'Mutasi Barang', href: '/operations/transfers', icon: ArrowLeftRight, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
+  { name: 'Opname Stok', href: '/operations/stock-opname', icon: ClipboardList, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
   { name: 'Riwayat', href: '/operations/history', icon: History, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
 ];
 
