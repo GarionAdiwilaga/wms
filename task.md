@@ -123,5 +123,23 @@
 
 ---
 
-- `[ ]` Implement Dashboard UI (Summary Cards, Charts/Lists) (Medium)
-- `[ ]` Implement Reports UI (Filter form, PDF download actions) (Medium)
+## Phase 5: Reports & Analytics
+
+### 5.1 Operational Reports
+- `[ ]` Implement Stock Report (Current stock by branch)
+- `[ ]` Implement Low Stock Report (quantity <= minimum_stock)
+- `[ ]` Implement Item History Report (Chronological history per item)
+- `[ ]` Implement Inventory Movement Report (IN, OUT, TRANSFER, OPNAME with `balance_after`)
+- `[ ]` Implement CSV Export capability
+- `[ ]` Implement XLSX Export capability
+
+### 5.2 Management & Audit Reports
+- `[ ]` Implement Transfer Variance Report (Quantity, Reason, Notes)
+- `[ ]` Implement Audit Log Report (Filters: user_id, action, entity_type)
+
+### 5.3 Frontend Reporting UI
+- `[ ]` Shared Report Framework (`ReportFilterBar`, `ReportExportButtons`, `ReportTable`)
+- `[ ]` Operational Reports UI (Stock, Low Stock, Item History, Movements)
+- `[ ]` Management Reports UI (Transfer Variance, Audit Logs)
+- `[ ]` Navigation & RBAC Integration (Super Admin / Branch Head rules)
+- `[ ]` Mobile Responsive Layouts (Card collapse for tables)
