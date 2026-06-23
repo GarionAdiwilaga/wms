@@ -126,20 +126,17 @@
 ## Phase 5: Reports & Analytics
 
 ### 5.1 Operational Reports
-- `[ ]` Implement Stock Report (Current stock by branch)
-- `[ ]` Implement Low Stock Report (quantity <= minimum_stock)
-- `[ ]` Implement Item History Report (Chronological history per item)
-- `[ ]` Implement Inventory Movement Report (IN, OUT, TRANSFER, OPNAME with `balance_after`)
-- `[ ]` Implement CSV Export capability
-- `[ ]` Implement XLSX Export capability
+- `[x]` Backend: Implement `ReportService` and `/reports/stock`, `/low-stock`, `/item-history`, `/movements`
+- `[x]` Backend: Implement native CSV/XLSX streaming endpoints that strictly respect query parameters
+- `[x]` Frontend: Build `ReportFilterBar` (with Date Presets: Today, 7D, 30D, Month)
+- `[x]` Frontend: Persist active filters in `localStorage`
+- `[x]` Frontend: Link "Export" buttons to download the EXACT filtered view currently on screen
+- `[x]` Frontend: Item History accessible via `Reports` menu AND directly from `Item Detail` screen
+- `[x]` Frontend: Build pages for Stock, Low Stock (with red badges), Item History, and Movements
 
 ### 5.2 Management & Audit Reports
-- `[ ]` Implement Transfer Variance Report (Quantity, Reason, Notes)
-- `[ ]` Implement Audit Log Report (Filters: user_id, action, entity_type)
-
-### 5.3 Frontend Reporting UI
-- `[ ]` Shared Report Framework (`ReportFilterBar`, `ReportExportButtons`, `ReportTable`)
-- `[ ]` Operational Reports UI (Stock, Low Stock, Item History, Movements)
-- `[ ]` Management Reports UI (Transfer Variance, Audit Logs)
-- `[ ]` Navigation & RBAC Integration (Super Admin / Branch Head rules)
-- `[ ]` Mobile Responsive Layouts (Card collapse for tables)
+- `[x]` Backend: Implement `/reports/transfer-variance` and `/audit-logs`
+- `[x]` Frontend: Build Transfer Variance Report Page with Summary Metrics (Total Transfers, With Variance, Lost Units)
+- `[x]` Frontend: Build Audit Log Report Page with human-friendly entity labels and expandable JSON rows
+- `[x]` Frontend: Navigation & RBAC Integration (Super Admin / Branch Head rules)
+- `[x]` Frontend: Mobile Responsive Layouts (Card collapse for tables)

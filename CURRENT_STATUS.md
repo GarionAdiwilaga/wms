@@ -2,27 +2,27 @@
 
 ## Phase
 - **Phase 5 Reports & Analytics**:
-  - Phase 5 architecture has been defined and locked in `DECISIONS.md`.
-  - Full end-to-end implementation plan (Phases 5.1 - 5.3) is finalized.
+  - Phase 5.1 & 5.2 backend reports and Phase 5.3 frontend reports, item details, sidebar navigation, and RBAC scopes are fully implemented and verified.
 
 ## Last Completed
-- **Phase 4 QA E2E & Full-System Audit**:
-  - Generated full audit report confirming 100% test passes.
-- **Phase 4.3 UI Polish & Backend Maintenance**:
-  - Resolved all frontend accessibility warnings.
-  - Resolved backend deprecation warnings.
-  - Git tag `v0.9-core-complete` created and pushed.
+- **Phase 5.3 Frontend Reports & Analytics**:
+  - Implemented custom React Query hooks for all 6 reports in `useReports.ts`.
+  - Implemented `ReportFilterBar` (with localStorage persistence and date preset calculations), `ReportExportButtons` (authenticated blob stream XLSX/CSV downloads), and `ReportTable` (desktop grid to mobile card responsive collapse).
+  - Implemented 6 specialized report pages: Stock, Low Stock, Item History, Movements (with rolling balance), Transfer Variance (with summary metrics), and Audit Log (collapsible raw JSON changes).
+  - Implemented `ItemDetailPage` showing item profile attributes and branch stock distribution with low-stock status indicators.
+  - Linked item names and item codes in the main catalog (`ItemsPage.tsx`) to `ItemDetailPage`.
+  - Configured `AppShell.tsx` navigation sidebar to show **Laporan & Analisis** (restricted to `super_admin` and `branch_head`).
+  - Registered all new pages in `App.tsx`.
+  - Verified 100% successful frontend production compile inside container with zero errors.
 
 ## Current Branch
 `main`
 
 ## Current Focus
-Phase 5 - Reports & Analytics (PDF generation & Activity dashboards)
+Ready for Phase 6 or manual acceptance testing.
 
 ## Next Task
-1. Design database query aggregation models for low stock, movement log, outbound usage, and supplier activity reports.
-2. Implement backend endpoints to compile beautiful, concise PDF documents for the 7 standard reports.
-3. Build the Frontend Reports Dashboard showing quick triggers to generate/view PDFs.
+1. Execute final manual validation of reports, filter persistence, and exports on local dev setup.
 
 ## Blockers
 None

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Plus, Edit2, QrCode, Search, X, Image as ImageIcon, Camera } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth-store';
 import { useCategories } from '../../hooks/useCategories';
 import { useSuppliers } from '../../hooks/useSuppliers';
@@ -148,9 +149,20 @@ export function ItemsPage() {
     },
     { 
       header: 'Kode', 
-      cell: (item) => <span className="font-mono font-bold text-amber-500">{item.item_code}</span> 
+      cell: (item) => (
+        <Link to={`/master-data/items/${item.item_id}`} className="font-mono font-bold text-amber-500 hover:text-amber-400 hover:underline">
+          {item.item_code}
+        </Link>
+      ) 
     },
-    { header: 'Nama Barang', accessorKey: 'name' },
+    { 
+      header: 'Nama Barang', 
+      cell: (item) => (
+        <Link to={`/master-data/items/${item.item_id}`} className="font-semibold text-foreground hover:text-amber-500 hover:underline">
+          {item.name}
+        </Link>
+      )
+    },
     { header: 'Kategori', cell: (item) => item.category?.name || '-' },
     { header: 'Merk/Supplier', cell: (item) => item.supplier?.name || '-' },
     { header: 'Stok Minimal', accessorKey: 'minimum_stock' },
@@ -317,10 +329,14 @@ export function ItemsPage() {
 
                 {/* Details */}
                 <div className="flex-1 min-w-0 pr-8">
-                  <span className="font-mono text-xs font-bold text-amber-500 tracking-wide block mb-1">
+                  <Link to={`/master-data/items/${item.item_id}`} className="font-mono text-xs font-bold text-amber-500 tracking-wide block mb-1 hover:underline">
                     {item.item_code}
-                  </span>
-                  <h4 className="text-sm font-semibold text-foreground truncate mb-1">{item.name}</h4>
+                  </Link>
+                  <h4 className="text-sm font-semibold text-foreground truncate mb-1">
+                    <Link to={`/master-data/items/${item.item_id}`} className="hover:text-amber-500 hover:underline">
+                      {item.name}
+                    </Link>
+                  </h4>
                   <p className="text-xs text-muted-foreground mb-1">
                     Kategori: <span className="text-foreground font-medium">{item.category?.name || '-'}</span>
                   </p>

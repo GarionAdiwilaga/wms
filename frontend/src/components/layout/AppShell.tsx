@@ -15,7 +15,9 @@ import {
   ShoppingCart, 
   History,
   ArrowLeftRight,
-  ClipboardList
+  ClipboardList,
+  AlertTriangle,
+  BarChart3
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
@@ -45,6 +47,15 @@ const operationsItems: NavItem[] = [
   { name: 'Mutasi Barang', href: '/operations/transfers', icon: ArrowLeftRight, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
   { name: 'Opname Stok', href: '/operations/stock-opname', icon: ClipboardList, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
   { name: 'Riwayat', href: '/operations/history', icon: History, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
+];
+
+const reportsItems: NavItem[] = [
+  { name: 'Laporan Stok', href: '/reports/stock', icon: Database, roles: ['super_admin', 'branch_head'] },
+  { name: 'Stok Menipis', href: '/reports/low-stock', icon: AlertTriangle, roles: ['super_admin', 'branch_head'] },
+  { name: 'Riwayat Barang', href: '/reports/item-history', icon: History, roles: ['super_admin', 'branch_head'] },
+  { name: 'Mutasi Stok', href: '/reports/movements', icon: BarChart3, roles: ['super_admin', 'branch_head'] },
+  { name: 'Selisih Mutasi', href: '/reports/transfer-variance', icon: ClipboardList, roles: ['super_admin', 'branch_head'] },
+  { name: 'Log Audit', href: '/reports/audit-logs', icon: Users, roles: ['super_admin', 'branch_head'] },
 ];
 
 const settingsItems: NavItem[] = [
@@ -112,6 +123,32 @@ export function AppShell() {
           ))}
         </div>
       </div>
+
+      {(user?.role === 'super_admin' || user?.role === 'branch_head') && (
+        <div>
+          <h3 className="mb-2 px-4 text-xs font-semibold tracking-tight text-slate-400 uppercase">
+            Laporan & Analisis
+          </h3>
+          <div className="space-y-1">
+            {reportsItems.map((item) => (
+              <NavLink
+                key={item.href}
+                to={item.href}
+                onClick={onClick}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors min-h-[48px]",
+                    isActive ? "bg-amber-500/10 text-amber-500" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  )
+                }
+              >
+                <item.icon className="h-5 w-5" />
+                {item.name}
+              </NavLink>
+            ))}
+          </div>
+        </div>
+      )}
 
       {user?.role === 'super_admin' && (
         <div>

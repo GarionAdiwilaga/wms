@@ -9,6 +9,7 @@ import { BranchesPage } from './pages/master-data/BranchesPage';
 import { SuppliersPage } from './pages/master-data/SuppliersPage';
 import { UsersPage } from './pages/master-data/UsersPage';
 import { ItemsPage } from './pages/master-data/ItemsPage';
+import { ItemDetailPage } from './pages/master-data/ItemDetailPage';
 import { UOMPage } from './pages/settings/UOMPage';
 import { BranchStocksPage } from './pages/inventory/BranchStocksPage';
 import { StockInPage } from './pages/operations/StockInPage';
@@ -20,6 +21,14 @@ import { TransferDetailPage } from './pages/operations/TransferDetailPage';
 import { TransferReceivePage } from './pages/operations/TransferReceivePage';
 import { StockOpnamePage } from './pages/operations/StockOpnamePage';
 import { StockOpnameDetailPage } from './pages/operations/StockOpnameDetailPage';
+
+// Reports
+import { StockReportPage } from './pages/reports/StockReportPage';
+import { LowStockReportPage } from './pages/reports/LowStockReportPage';
+import { ItemHistoryReportPage } from './pages/reports/ItemHistoryReportPage';
+import { InventoryMovementReportPage } from './pages/reports/InventoryMovementReportPage';
+import { TransferVarianceReportPage } from './pages/reports/TransferVarianceReportPage';
+import { AuditLogReportPage } from './pages/reports/AuditLogReportPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +52,7 @@ function App() {
             <Route element={<AppShell />}>
               <Route path="/" element={<Navigate to="/master-data/items" replace />} />
               <Route path="/master-data/items" element={<ItemsPage />} />
+              <Route path="/master-data/items/:id" element={<ItemDetailPage />} />
               <Route path="/master-data/categories" element={<CategoriesPage />} />
               <Route path="/master-data/branches" element={<BranchesPage />} />
               <Route path="/master-data/suppliers" element={<SuppliersPage />} />
@@ -57,6 +67,16 @@ function App() {
               <Route path="/operations/stock-opname" element={<StockOpnamePage />} />
               <Route path="/operations/stock-opname/:id" element={<StockOpnameDetailPage />} />
               <Route path="/operations/history" element={<HistoryPage />} />
+              
+              {/* Reports & Analytics */}
+              <Route path="/reports/stock" element={<StockReportPage />} />
+              <Route path="/reports/low-stock" element={<LowStockReportPage />} />
+              <Route path="/reports/item-history" element={<ItemHistoryReportPage />} />
+              <Route path="/reports/item-history/:itemId" element={<ItemHistoryReportPage />} />
+              <Route path="/reports/movements" element={<InventoryMovementReportPage />} />
+              <Route path="/reports/transfer-variance" element={<TransferVarianceReportPage />} />
+              <Route path="/reports/audit-logs" element={<AuditLogReportPage />} />
+
               <Route path="/settings/uom" element={<UOMPage />} />
             </Route>
           </Route>

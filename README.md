@@ -34,12 +34,12 @@ This system replaces spreadsheet-based inventory tracking with a centralized web
 - [x] Implemented Stock Opname snapshots with automatic ledger adjustment calculation.
 - [x] Enforced strict UI accessibility (A11y) rules.
 
-### Phase 5: Reports & Analytics (In Progress)
-- [ ] Implement backend `ReportService` aggregations.
-- [ ] Operational Reports (Stock, Low Stock, Item History, Movements).
-- [ ] Management Reports (Transfer Variance, Audit Logs).
-- [ ] CSV / XLSX Export capability.
-- [ ] Shared Frontend Report Framework (`ReportFilterBar`, `ReportTable`).
+### Phase 5: Reports & Analytics (Complete)
+- [x] Implement backend `ReportService` aggregations.
+- [x] Operational Reports (Stock, Low Stock, Item History, Movements).
+- [x] Management Reports (Transfer Variance, Audit Logs).
+- [x] CSV / XLSX Export capability.
+- [x] Shared Frontend Report Framework (`ReportFilterBar`, `ReportTable`).
 
 ---
 *For detailed architecture, see `ARCHITECTURE.md`.*

@@ -4,3 +4,11 @@ from app.schemas.branch import BranchBase, BranchCreate, BranchUpdate, BranchRes
 from app.schemas.category import CategoryBase, CategoryCreate, CategoryUpdate, CategoryResponse
 from app.schemas.supplier import SupplierBase, SupplierCreate, SupplierUpdate, SupplierResponse
 from app.schemas.uom import UOMBase, UOMCreate, UOMUpdate, UOMResponse
+from app.schemas.report import (
+    StockReportRow, StockReportResponse,
+    LowStockReportRow, LowStockReportResponse,
+    ItemHistoryReportRow, ItemHistoryReportResponse,
+    InventoryMovementReportRow, InventoryMovementReportResponse,
+    TransferVarianceReportRow, TransferVarianceReportSummary, TransferVarianceReportResponse,
+    AuditLogReportRow, AuditLogReportResponse
+)
