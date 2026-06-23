@@ -13,49 +13,33 @@ This system replaces spreadsheet-based inventory tracking with a centralized web
 ## Development Progress
 
 ### Phase 1: Foundation, Master Data & Audit (Complete)
-- [x] Setup Docker Compose (PostgreSQL, Backend, Frontend)
-- [x] Initialize FastAPI backend structure & core config
-- [x] Initialize Vite + React + TS frontend, configure Shadcn UI & Tailwind
-- [x] Define SQLAlchemy Models: `branches`, `users`, `categories`, `suppliers`, `uom`, `audit_logs`
-- [x] Generate and apply initial Alembic migration
-- [x] Implement core security (Password hashing, JWT generation)
-- [x] Implement core dependencies (Session injection, role verification)
-- [x] Implement audit service to record entity changes immutably
-- [x] Write seed script for default super admin, branches, and UOMs
-- [x] Define Pydantic schemas & Implement Services for Auth, Users, Master Data CRUD
-- [x] Implement API Routers (`/auth`, `/users`, `/branches`, `/categories`, `/suppliers`, `/uom`)
-- [x] Setup Axios client with JWT interceptors & global error handling
-- [x] Implement App Layout (Sidebar, Header, Branch Selector)
-- [x] Implement Authentication Pages (Login, Change Password)
-- [x] Implement Master Data CRUD Hooks & API calls (React Query)
-- [x] Implement Master Data UI (DataTables, Forms)
+- [x] Initialized infrastructure, backend APIs, and frontend SPA.
+- [x] Implemented Master Data CRUD (Branches, Users, Categories, Suppliers, UOM).
+- [x] Built Audit Logging service and basic RBAC.
 
-### Phase 2A: Catalog (In Progress)
-- [ ] Define SQLAlchemy Model: `items` & Alembic migration
-- [ ] Define Pydantic schemas for Items
-- [ ] Implement `item_service.py` including image upload handling
-- [ ] Implement API Router (`/items`)
-- [ ] Implement Items API calls and React Query hooks
-- [ ] Implement Item Catalog UI & Item Form UI (including Image Upload component)
-- [ ] Implement QR Code viewing and printing UI
+### Phase 2: Catalog & Inventory Core (Complete)
+- [x] Built Item Catalog with Image Uploads and Barcode scanning support.
+- [x] Built `InventoryService` Ledger Engine with deterministic row-level locking.
+- [x] Enforced immutable `inventory_transactions` and continuous cache strategy.
 
-### Phase 2B: Inventory Core (Pending)
-- [ ] Define Models: `inventory_transactions`, `branch_stocks`
-- [ ] Implement `inventory_service.py` (Ledger Engine with deterministic locking)
-- [ ] Implement cache rebuild script/logic
-- [ ] Implement Branch Stocks View UI
+### Phase 3: Primary Warehouse Operations (Complete)
+- [x] Implemented Initial Stock Loads.
+- [x] Implemented Stock In and Outbound cart APIs.
+- [x] Built resilient frontend POS-style workflows using Zustand persistent carts and spring physics.
+- [x] Handled concurrency and `InsufficientStockError` rollbacks.
 
-### Phase 3: Primary Warehouse Operations (Pending)
-- [ ] Implement Stock In APIs and UI
-- [ ] Implement Outbound Cart APIs and UI
+### Phase 4: Multi-Branch & Reconciliation (Complete)
+- [x] Implemented strict Transfer state machines (`draft`, `in_transit`, `received`, `cancelled`).
+- [x] Implemented irrevocable Transfer Receives with Variance reason tracking for transit losses.
+- [x] Implemented Stock Opname snapshots with automatic ledger adjustment calculation.
+- [x] Enforced strict UI accessibility (A11y) rules.
 
-### Phase 4: Multi-Branch & Reconciliation (Pending)
-- [ ] Implement Branch Transfers APIs and UI
-- [ ] Implement Stock Opname APIs and UI
-
-### Phase 5: Dashboards & Reporting (Pending)
-- [ ] Implement Dashboard APIs and UI
-- [ ] Implement PDF Generation Service and Reports UI
+### Phase 5: Reports & Analytics (In Progress)
+- [ ] Implement backend `ReportService` aggregations.
+- [ ] Operational Reports (Stock, Low Stock, Item History, Movements).
+- [ ] Management Reports (Transfer Variance, Audit Logs).
+- [ ] CSV / XLSX Export capability.
+- [ ] Shared Frontend Report Framework (`ReportFilterBar`, `ReportTable`).
 
 ---
 *For detailed architecture, see `ARCHITECTURE.md`.*
