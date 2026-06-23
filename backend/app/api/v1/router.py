@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import auth, branch, category, supplier, uom, user, item, inventory, branch_stocks, stock_in, outbound
+from app.api.v1.endpoints import auth, branch, category, supplier, uom, user, item, inventory, branch_stocks, stock_in, outbound, transfer, stock_opname
 
 api_router = APIRouter()
 
@@ -14,6 +14,8 @@ api_router.include_router(inventory.router, prefix="/inventory", tags=["inventor
 api_router.include_router(branch_stocks.router, prefix="/branch-stocks", tags=["branch_stocks"])
 api_router.include_router(stock_in.router, prefix="/stock-in", tags=["stock-in"])
 api_router.include_router(outbound.router, prefix="/outbound", tags=["outbound"])
+api_router.include_router(transfer.router, prefix="/transfers", tags=["transfers"])
+api_router.include_router(stock_opname.router, prefix="/stock-opname", tags=["stock-opname"])
 
 
 @api_router.get("/health")

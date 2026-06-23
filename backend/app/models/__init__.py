@@ -9,6 +9,8 @@ from app.models.item import Item
 from app.models.inventory import InventoryTransaction, BranchStock
 from app.models.stock_in import StockInSession, StockInLine
 from app.models.outbound import OutboundSession, OutboundLine
+from app.models.transfer import Transfer, TransferLine
+from app.models.stock_opname import StockOpnameSession, StockOpnameLine
 
 __all__ = [
     "Base",
@@ -25,4 +27,8 @@ __all__ = [
     "StockInLine",
     "OutboundSession",
     "OutboundLine",
+    "Transfer",
+    "TransferLine",
+    "StockOpnameSession",
+    "StockOpnameLine",
 ]

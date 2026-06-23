@@ -4,22 +4,30 @@
 Phase 4 - Multi-Branch & Reconciliation
 
 ## Last Completed
-- **Phase 3 Frontend Warehouse Operations**:
-  - Implemented POS-style Stock In and Outbound cart screens.
-  - Setup Zustand persistence for carts to survive refreshes.
-  - Applied `AnimatePresence` spring physics to cart items.
-  - Implemented frontend explicit capture and rendering of `400 InsufficientStockError` for Outbound race conditions.
-  - Compiled successfully with no warnings.
+- **Phase 4.1 Backend implementation**:
+  - Implemented database models for `Transfer`, `TransferLine`, `StockOpnameSession`, and `StockOpnameLine`.
+  - Added support for draft-completed states on Stock Opname, and complete lifecycle on Transfers (`draft`, `in_transit`, `received`, `cancelled`).
+  - Successfully generated and applied Alembic database migration.
+  - Implemented repositories, services, and endpoints (`/transfers` and `/stock-opname`) with RBAC branch restrictions.
+  - Implemented correct ledger adjustments using `'IN'` and `'OUT'` transaction types with `'transfer'` and `'opname'` reference types.
+  - Passed all 45 integration tests verifying transfer state machine transitions, immutable receipts, and Stock Opname snapshot adjustments.
+- **Phase 4.1 Backend QA Verification**:
+  - Verified all 45 integration tests pass.
+  - Programmatically validated full Transfer State Machine lifecycle, ledger logic, and receipt immutability.
+  - Verified Stock Opname snapshot fields, variance calculations, and conditional ledger generation (IN/OUT/omitted).
+  - Checked RBAC constraints (branch/role protections).
+  - Confirmed database migration head (`d9bcc51a8bf1`) and clean Git hygiene.
 
 ## Current Branch
 `main`
 
 ## Current Focus
-Phase 4 Backend Planning & Architecture (Transfers & Stock Opname)
+Handoff to next agent for implementing Phase 4.2 Frontend (Transfers & Stock Opname UI).
 
 ## Next Task
-1. Research and design the backend architecture for `transfers` and `stock_opname_sessions`.
-2. Draft implementation plan for the Phase 4 backend models and state machines.
+1. Setup frontend hooks and API client calls for transfers and stock opname.
+2. Build Transfers UI screen (Create draft, ship, receive, cancel, list view, variance inputs).
+3. Build Stock Opname UI count screen (draft saving, physical counts list, complete session).
 
 ## Blockers
 None
