@@ -104,13 +104,15 @@
 ## Phase 4: Multi-Branch & Reconciliation
 
 ### 4.1 Backend
-- `[ ]` Define SQLAlchemy Models: `transfers`, `transfer_lines`, `stock_opname_sessions`, `stock_opname_lines` (Medium)
-- `[ ]` Generate and apply Alembic migration (Small)
+- `[ ]` Define SQLAlchemy Models: `transfers`, `transfer_lines` (must include `received_notes` on transfer, `variance_reason` on lines) (Medium)
+- `[ ]` Define SQLAlchemy Models: `stock_opname_sessions`, `stock_opname_lines` (must explicitly store `system_quantity`, `physical_quantity`, `variance`) (Medium)
+- `[ ]` Update `inventory_transactions` check constraint to allow `reference_type = 'opname'` (Small)
+- `[ ]` Generate and apply Alembic migration for Phase 4 models (Small)
 - `[ ]` Define Pydantic schemas for Transfers and Stock Opname (Medium)
-- `[ ]` Implement `transfer_service.py` (State machine, variance logic, cancellation rules) (Large)
-- `[ ]` Implement `opname_service.py` (Variance calculation, immediate adjustment generation) (Medium)
+- `[ ]` Implement `transfer_service.py` (Strict state machine: `draft`, `in_transit`, `received`, `cancelled`. One-time immutable receipt, variance calculation, origin/destination ledger impacts) (Large)
+- `[ ]` Implement `opname_service.py` (Atomic variance calculation, `IN`/`OUT` adjustment generation with `opname` reference_type) (Medium)
 - `[ ]` Implement API Routers (`/transfers`, `/stock-opname`) (Medium)
-- `[ ]` Write Unit & Integration tests for Transfer states, variance logic, and Opname adjustments (Large)
+- `[ ]` Write Unit & Integration tests for Transfer states, floating stock, immutable receipts, and Opname snapshot variance logic (Large)
 
 ### 4.2 Frontend
 - `[ ]` Implement API calls and React Query hooks (Medium)
