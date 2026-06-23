@@ -100,8 +100,10 @@ export function TransfersPage() {
         {/* Branch selection for Super Admin */}
         {isSuperAdmin && (
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Cabang</label>
+            <label htmlFor="branch_filter" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Cabang</label>
             <select
+              id="branch_filter"
+              name="branch_filter"
               value={branchFilter}
               onChange={(e) => {
                 setBranchFilter(e.target.value);
@@ -121,8 +123,10 @@ export function TransfersPage() {
 
         {/* Status Selection */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</label>
+          <label htmlFor="status_filter" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</label>
           <select
+            id="status_filter"
+            name="status_filter"
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value);

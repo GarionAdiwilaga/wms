@@ -342,9 +342,11 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
 
               {/* Upload Button */}
               <div className="flex-1">
+                <label htmlFor="image-file-input" className="sr-only">Upload Foto Barang</label>
                 <input
                   type="file"
                   id="image-file-input"
+                  name="image_file"
                   accept="image/*"
                   onChange={handleImageChange}
                   className="hidden"

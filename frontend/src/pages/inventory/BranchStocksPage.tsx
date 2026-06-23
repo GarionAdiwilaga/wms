@@ -137,22 +137,27 @@ export function BranchStocksPage() {
 
           {/* Branch Filter (Super Admin Only) */}
           {isSuperAdmin ? (
-            <select
-              value={branchId || 0}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                setBranchId(val || null);
-                setPage(1);
-              }}
-              className="w-full rounded-xl border border-border bg-background p-2 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none min-h-[44px] shadow-sm transition-colors"
-            >
-              <option value={0}>Semua Cabang</option>
-              {branches?.map((b) => (
-                <option key={b.branch_id} value={b.branch_id}>
-                  {b.name}
-                </option>
-              ))}
-            </select>
+            <>
+              <label htmlFor="branch_filter" className="sr-only">Cabang</label>
+              <select
+                id="branch_filter"
+                name="branch_filter"
+                value={branchId || 0}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setBranchId(val || null);
+                  setPage(1);
+                }}
+                className="w-full rounded-xl border border-border bg-background p-2 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none min-h-[44px] shadow-sm transition-colors"
+              >
+                <option value={0}>Semua Cabang</option>
+                {branches?.map((b) => (
+                  <option key={b.branch_id} value={b.branch_id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            </>
           ) : (
             <div className="w-full rounded-xl border border-border bg-background/50 p-3 text-sm text-muted-foreground min-h-[44px] flex items-center shadow-sm">
               Cabang: {branchMap[currentUser?.branch_id ?? 0] || 'Memuat...'}
@@ -160,7 +165,10 @@ export function BranchStocksPage() {
           )}
 
           {/* Category Filter */}
+          <label htmlFor="category_filter" className="sr-only">Kategori</label>
           <select
+            id="category_filter"
+            name="category_filter"
             value={categoryId || 0}
             onChange={(e) => {
               const val = Number(e.target.value);
@@ -178,7 +186,10 @@ export function BranchStocksPage() {
           </select>
 
           {/* Supplier Filter */}
+          <label htmlFor="supplier_filter" className="sr-only">Supplier</label>
           <select
+            id="supplier_filter"
+            name="supplier_filter"
             value={supplierId || 0}
             onChange={(e) => {
               const val = Number(e.target.value);
@@ -198,8 +209,10 @@ export function BranchStocksPage() {
 
         {/* Checkbox and Reset Filters Row */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-          <label className="inline-flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none min-h-[44px]">
+          <label htmlFor="low_stock_only" className="inline-flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none min-h-[44px]">
             <input
+              id="low_stock_only"
+              name="low_stock_only"
               type="checkbox"
               checked={lowStockOnly}
               onChange={(e) => {

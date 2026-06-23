@@ -396,11 +396,12 @@ export function TransferDetailPage() {
               <Label htmlFor="cancellation_reason" className="text-slate-300">Alasan Pembatalan</Label>
               <textarea
                 id="cancellation_reason"
+                name="cancellation_reason"
                 placeholder="Contoh: Barang kurang/rusak sebelum dikirim, kesalahan pilih cabang tujuan, dll..."
                 value={cancelReason}
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setCancelReason(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent resize-none"
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm resize-none"
                 required
               />
             </div>

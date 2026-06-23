@@ -205,7 +205,10 @@ export function TransferCreatePage() {
                             </Button>
                           </motion.div>
                           
+                          <label htmlFor={`sent-qty-${item.item_id}`} className="sr-only">Jumlah Kiriman {item.name}</label>
                           <input
+                            id={`sent-qty-${item.item_id}`}
+                            name={`sent_qty_${item.item_id}`}
                             type="number"
                             value={item.sent_quantity}
                             onChange={(e) => updateQuantity(item.item_id, parseInt(e.target.value) || 1)}
@@ -254,9 +257,11 @@ export function TransferCreatePage() {
 
             {/* Source Branch */}
             <div className="space-y-2">
-              <Label>Cabang Asal</Label>
+              <Label htmlFor="source_branch">Cabang Asal</Label>
               {isSuperAdmin ? (
                 <select
+                  id="source_branch"
+                  name="source_branch_id"
                   value={sourceBranchId || ''}
                   onChange={(e) => setSourceBranchId(Number(e.target.value) || null)}
                   className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
@@ -281,6 +286,7 @@ export function TransferCreatePage() {
               <Label htmlFor="dest_branch">Cabang Tujuan</Label>
               <select
                 id="dest_branch"
+                name="dest_branch_id"
                 value={destBranchId || ''}
                 onChange={(e) => setDestBranchId(Number(e.target.value) || null)}
                 className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
@@ -300,6 +306,7 @@ export function TransferCreatePage() {
               <Label htmlFor="notes">Catatan Mutasi (Opsional)</Label>
               <textarea
                 id="notes"
+                name="notes"
                 placeholder="Tuliskan keterangan detail pengiriman, kurir, atau alasan mutasi..."
                 value={notes}
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setNotes(e.target.value)}

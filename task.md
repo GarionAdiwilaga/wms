@@ -117,17 +117,11 @@
 - `[x]` Implement Transfers UI (Create Draft, Ship, Receive with variance input, History) (Large)
 - `[x]` Implement Stock Opname UI (Physical count input form, History) (Large)
 
+### 4.3 Quick Polish Sprint & Core Freeze
+- `[x]` Frontend: Fix all A11y warnings (ids, names, labels) without functional/style changes (Small)
+- `[x]` Backend: Resolve FastAPI `httpx` test client and Passlib `crypt` deprecation warnings (Small)
+
 ---
 
-## Phase 5: Dashboards & Reporting
-
-### 5.1 Backend
-- `[ ]` Implement `dashboard_service.py` and API Router (`/dashboard`) (Medium)
-- `[ ]` Implement PDF Generation Service (ReportLab/WeasyPrint) (Large)
-- `[ ]` Implement `report_service.py` to aggregate data for 7 standard reports (Large)
-- `[ ]` Implement API Router (`/reports`) (Medium)
-- `[ ]` Write Unit & Integration tests for Dashboard metrics and PDF generation (Medium)
-
-### 5.2 Frontend
 - `[ ]` Implement Dashboard UI (Summary Cards, Charts/Lists) (Medium)
 - `[ ]` Implement Reports UI (Filter form, PDF download actions) (Medium)

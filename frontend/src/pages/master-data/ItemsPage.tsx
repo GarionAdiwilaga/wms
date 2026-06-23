@@ -207,7 +207,10 @@ export function ItemsPage() {
           {/* Search Input */}
           <div className="relative flex items-center lg:col-span-2">
             <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
+            <label htmlFor="search_items" className="sr-only">Cari Barang</label>
             <Input
+              id="search_items"
+              name="search_items"
               type="text"
               placeholder="Cari nama atau kode barang..."
               value={search}
@@ -232,7 +235,10 @@ export function ItemsPage() {
           </div>
 
           {/* Category Filter */}
+          <label htmlFor="category_filter" className="sr-only">Kategori</label>
           <select
+            id="category_filter"
+            name="category_filter"
             value={categoryId || 0}
             onChange={(e) => {
               const val = Number(e.target.value);
@@ -250,7 +256,10 @@ export function ItemsPage() {
           </select>
 
           {/* Supplier Filter */}
+          <label htmlFor="supplier_filter" className="sr-only">Supplier</label>
           <select
+            id="supplier_filter"
+            name="supplier_filter"
             value={supplierId || 0}
             onChange={(e) => {
               const val = Number(e.target.value);
@@ -268,7 +277,10 @@ export function ItemsPage() {
           </select>
 
           {/* Status Filter */}
+          <label htmlFor="status_filter" className="sr-only">Status</label>
           <select
+            id="status_filter"
+            name="status_filter"
             value={isActive === null ? 'all' : isActive ? 'active' : 'inactive'}
             onChange={(e) => {
               const val = e.target.value;

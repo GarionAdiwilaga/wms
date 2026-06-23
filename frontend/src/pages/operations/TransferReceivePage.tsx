@@ -198,7 +198,10 @@ export function TransferReceivePage() {
                           {/* Received Qty count input */}
                           <div className="flex flex-col items-end">
                             <span className="text-[10px] text-slate-500 block mb-0.5">Diterima Fisik</span>
+                            <label htmlFor={`received_qty_${line.line_id}`} className="sr-only">Jumlah Diterima {line.item_name}</label>
                             <input
+                              id={`received_qty_${line.line_id}`}
+                              name={`received_qty_${line.line_id}`}
                               type="number"
                               value={line.received_quantity}
                               onChange={(e) => handleQtyChange(line.line_id, parseInt(e.target.value) || 0)}
@@ -230,8 +233,10 @@ export function TransferReceivePage() {
                           className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-800"
                         >
                           <div className="space-y-1">
-                            <Label className="text-[10px] uppercase font-bold text-slate-400">Alasan Selisih</Label>
+                            <Label htmlFor={`variance_reason_${line.line_id}`} className="text-[10px] uppercase font-bold text-slate-400">Alasan Selisih</Label>
                             <select
+                              id={`variance_reason_${line.line_id}`}
+                              name={`variance_reason_${line.line_id}`}
                               value={line.variance_reason}
                               onChange={(e) => handleReasonChange(line.line_id, e.target.value)}
                               className="w-full h-8 px-2 bg-slate-950 border border-slate-850 rounded-md text-xs text-white focus:outline-none focus:ring-1 focus:ring-primary"
@@ -244,8 +249,10 @@ export function TransferReceivePage() {
                           </div>
                           
                           <div className="space-y-1">
-                            <Label className="text-[10px] uppercase font-bold text-slate-400">Catatan Selisih (Opsional)</Label>
+                            <Label htmlFor={`variance_notes_${line.line_id}`} className="text-[10px] uppercase font-bold text-slate-400">Catatan Selisih (Opsional)</Label>
                             <input
+                              id={`variance_notes_${line.line_id}`}
+                              name={`variance_notes_${line.line_id}`}
                               type="text"
                               placeholder="Keterangan kondisi fisik barang..."
                               value={line.variance_notes}
@@ -285,6 +292,7 @@ export function TransferReceivePage() {
               <Label htmlFor="received_notes">Catatan Penerimaan (Opsional)</Label>
               <textarea
                 id="received_notes"
+                name="received_notes"
                 placeholder="Catatan umum mengenai kondisi pengiriman paket..."
                 value={receivedNotes}
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setReceivedNotes(e.target.value)}

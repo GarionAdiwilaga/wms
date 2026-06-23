@@ -277,7 +277,10 @@ export function StockOpnameDetailPage() {
                                   </Button>
                                 </motion.div>
                                 
+                                <label htmlFor={`physical_qty_${line.line_id}`} className="sr-only">Jumlah Fisik {line.item_name}</label>
                                 <input
+                                  id={`physical_qty_${line.line_id}`}
+                                  name={`physical_qty_${line.line_id}`}
                                   type="number"
                                   value={line.physical_quantity}
                                   onChange={(e) => handleQtyChange(line.line_id, parseInt(e.target.value) || 0)}
@@ -351,6 +354,7 @@ export function StockOpnameDetailPage() {
                 {session.status === 'draft' ? (
                   <textarea
                     id="session_notes"
+                    name="session_notes"
                     value={notes}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setNotes(e.target.value)}
                     rows={3}

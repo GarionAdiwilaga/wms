@@ -174,8 +174,10 @@ export function StockOpnamePage() {
         {/* Branch selection for Super Admin */}
         {isSuperAdmin && (
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Cabang</label>
+            <label htmlFor="branch_filter" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Cabang</label>
             <select
+              id="branch_filter"
+              name="branch_filter"
               value={branchFilter}
               onChange={(e) => {
                 setBranchFilter(e.target.value);
@@ -195,8 +197,10 @@ export function StockOpnamePage() {
 
         {/* Status Selection */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</label>
+          <label htmlFor="status_filter" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</label>
           <select
+            id="status_filter"
+            name="status_filter"
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value);
@@ -337,25 +341,32 @@ export function StockOpnamePage() {
           <form onSubmit={handleStartOpname} className="space-y-4 pt-2">
             {/* Branch Selection */}
             <div className="space-y-2">
-              <Label>Gudang Cabang</Label>
               {isSuperAdmin ? (
-                <select
-                  value={opnameBranchId || ''}
-                  onChange={(e) => setOpnameBranchId(Number(e.target.value) || null)}
-                  className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
-                  required
-                >
-                  <option value="">Pilih Gudang...</option>
-                  {branches?.filter(b => b.is_active).map((b) => (
-                    <option key={b.branch_id} value={b.branch_id}>
-                      {b.name}
-                    </option>
-                  ))}
-                </select>
+                <>
+                  <Label htmlFor="opname_branch">Gudang Cabang</Label>
+                  <select
+                    id="opname_branch"
+                    name="opname_branch_id"
+                    value={opnameBranchId || ''}
+                    onChange={(e) => setOpnameBranchId(Number(e.target.value) || null)}
+                    className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
+                    required
+                  >
+                    <option value="">Pilih Gudang...</option>
+                    {branches?.filter(b => b.is_active).map((b) => (
+                      <option key={b.branch_id} value={b.branch_id}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </>
               ) : (
-                <div className="h-10 px-3 py-2 bg-slate-900 border border-slate-850 rounded-lg text-sm text-slate-350 flex items-center font-medium">
-                  {getBranchName(user?.branch_id || 0)}
-                </div>
+                <>
+                  <Label>Gudang Cabang</Label>
+                  <div className="h-10 px-3 py-2 bg-slate-900 border border-slate-850 rounded-lg text-sm text-slate-350 flex items-center font-medium">
+                    {getBranchName(user?.branch_id || 0)}
+                  </div>
+                </>
               )}
             </div>
 
@@ -364,6 +375,7 @@ export function StockOpnamePage() {
               <Label htmlFor="opname_category">Kategori Barang</Label>
               <select
                 id="opname_category"
+                name="opname_category_id"
                 value={opnameCategoryId || ''}
                 onChange={(e) => setOpnameCategoryId(Number(e.target.value) || null)}
                 className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
@@ -383,6 +395,7 @@ export function StockOpnamePage() {
               <Label htmlFor="opname_notes">Catatan/Keterangan (Opsional)</Label>
               <textarea
                 id="opname_notes"
+                name="opname_notes"
                 placeholder="Contoh: Audit stok pertengahan tahun, opname berkala bulanan..."
                 value={opnameNotes}
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setOpnameNotes(e.target.value)}

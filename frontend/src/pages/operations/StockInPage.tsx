@@ -199,7 +199,10 @@ export function StockInPage() {
                             </Button>
                           </motion.div>
                           
+                          <label htmlFor={`qty-${item.item_id}`} className="sr-only">Jumlah {item.name}</label>
                           <input
+                            id={`qty-${item.item_id}`}
+                            name={`qty-${item.item_id}`}
                             type="number"
                             value={item.quantity}
                             onChange={(e) => updateQuantity(item.item_id, parseInt(e.target.value) || 1)}
@@ -248,9 +251,11 @@ export function StockInPage() {
 
             {/* Branch display or select */}
             <div className="space-y-2">
-              <Label>Gudang Tujuan</Label>
+              <Label htmlFor="branch_select">Gudang Tujuan</Label>
               {isSuperAdmin ? (
                 <select
+                  id="branch_select"
+                  name="branch_id"
                   value={branchId || ''}
                   onChange={(e) => setBranchId(Number(e.target.value) || null)}
                   className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
@@ -274,6 +279,7 @@ export function StockInPage() {
               <Label htmlFor="reference_no">No. Referensi (Opsional)</Label>
               <Input
                 id="reference_no"
+                name="reference_no"
                 type="text"
                 placeholder="Contoh: PO-2026-0001"
                 value={referenceNo}
@@ -287,6 +293,7 @@ export function StockInPage() {
               <Label htmlFor="supplier_invoice_no">No. Invoice Supplier (Opsional)</Label>
               <Input
                 id="supplier_invoice_no"
+                name="supplier_invoice_no"
                 type="text"
                 placeholder="Contoh: INV/Supplier/XYZ-99"
                 value={supplierInvoiceNo}
@@ -302,6 +309,7 @@ export function StockInPage() {
                 <Calendar className="absolute left-3 h-4 w-4 text-slate-400 pointer-events-none" />
                 <Input
                   id="transaction_date"
+                  name="transaction_date"
                   type="datetime-local"
                   value={transactionDate}
                   onChange={(e) => setFields({ transactionDate: e.target.value })}
@@ -318,6 +326,7 @@ export function StockInPage() {
               <Label htmlFor="notes">Catatan Tambahan (Opsional)</Label>
               <textarea
                 id="notes"
+                name="notes"
                 placeholder="Keterangan pengiriman, kondisi barang, dll."
                 value={notes}
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setFields({ notes: e.target.value })}

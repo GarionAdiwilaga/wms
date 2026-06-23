@@ -190,7 +190,10 @@ export function ItemSearch({
       {/* Search Input Bar */}
       <div className="relative flex items-center">
         <Search className="absolute left-3 h-5 w-5 text-slate-400" />
+        <label htmlFor="item-search-query" className="sr-only">Cari Barang</label>
         <Input
+          id="item-search-query"
+          name="item-search-query"
           type="text"
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
