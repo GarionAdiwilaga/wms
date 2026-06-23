@@ -89,15 +89,15 @@
 - `[x]` Write Unit & Integration tests for Stock In and Outbound cart validations (Large)
 
 ### 3.2 Frontend Refinements (UI/UX & Theme)
-- `[ ]` Fix Menu Inconsistency: Ensure `Branch Stocks` appears in the mobile menu matching the desktop master data menu (Small)
-- `[ ]` Fix Mobile Drawer Direction: Since the burger button is on the top right, the drawer menu must slide in from the right side, not left (Small)
-- `[ ]` Apply Selected Global Theme Overhaul across the app (Medium)
+- `[x]` Fix Menu Inconsistency: Ensure `Branch Stocks` appears in the mobile menu matching the desktop master data menu (Small)
+- `[x]` Fix Mobile Drawer Direction: Since the burger button is on the top right, the drawer menu must slide in from the right side, not left (Small)
+- `[x]` Apply Selected Global Theme Overhaul across the app (Medium)
 
 ### 3.3 Frontend Warehouse Operations
-- `[ ]` Setup `cart-store.ts` (Outbound) and `stock-in-cart-store.ts` (Zustand with persistence middleware) (Small)
-- `[ ]` Implement API calls and React Query hooks for operations (Medium)
-- `[ ]` Implement Stock In UI (POS-style Cart workflow, ItemSearch integration, prevent duplicate rows) (Large)
-- `[ ]` Implement Outbound Cart UI (POS-style Cart workflow, ItemSearch integration, prevent duplicate rows) (Large)
+- `[x]` Setup `cart-store.ts` (Outbound) and `stock-in-cart-store.ts` (Zustand with persistence middleware) (Small)
+- `[x]` Implement API calls and React Query hooks for operations (Medium)
+- `[x]` Implement Stock In UI (POS-style Cart workflow, ItemSearch integration, prevent duplicate rows) (Large)
+- `[x]` Implement Outbound Cart UI (POS-style Cart workflow, ItemSearch integration, prevent duplicate rows) (Large)
 
 ---
 

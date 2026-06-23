@@ -1,34 +1,25 @@
 # Current Status
 
 ## Phase
-Phase 3 - Primary Warehouse Operations
+Phase 4 - Multi-Branch & Reconciliation
 
 ## Last Completed
-- Phase 3.0 UI/UX Theme Overhaul & Navigation Fixes:
-  - Installed `framer-motion` and `@fontsource/outfit` dependencies.
-  - Applied global typography: `Outfit` (sans-serif) for general app body.
-  - Set strict `0.75rem` (`rounded-xl`) theme border radius and `shadow-lg` Bento Box styling across panels.
-  - Refactored mobile navigation drawer side to `right` to match trigger burger button location.
-  - Synced "Stok Gudang" in mobile drawer navigation links list.
-  - Added clean layout page entrance transitions using Framer Motion.
-  - Refined buttons, cards, selects, and pagination inputs with bouncy spring physical feedback (`scale: 0.97`) and gradients.
-  - Resolved page transition layout flash bug using `useOutlet` in `AppShell.tsx`.
-  - Made mobile drawer header sticky and burger menu button bouncy.
-  - Fixed QR camera scanner lockup/close issue when camera permissions are denied, adding robust lifecycle timeout clearing and promise handling.
-  - Propagated bouncy spring physical feedback (`whileTap`) to all master data buttons (Branches, Categories, Suppliers, Users, UOM) and CRUD dialog controls.
-  - Compiled cleanly with zero TS compiler warnings/errors.
-- Phase 2B Frontend & Backend (relative base paths, controlled `ItemSearch` page filter, `useBranchStocks` custom query hook, and `BranchStocksPage`).
+- **Phase 3 Frontend Warehouse Operations**:
+  - Implemented POS-style Stock In and Outbound cart screens.
+  - Setup Zustand persistence for carts to survive refreshes.
+  - Applied `AnimatePresence` spring physics to cart items.
+  - Implemented frontend explicit capture and rendering of `400 InsufficientStockError` for Outbound race conditions.
+  - Compiled successfully with no warnings.
 
 ## Current Branch
 `main`
 
 ## Current Focus
-Handoff to next agent for implementing Phase 3.3 (Frontend Warehouse Operations: Stock In & Outbound Carts).
+Phase 4 Backend Planning & Architecture (Transfers & Stock Opname)
 
 ## Next Task
-- Setup Zustand stores for Outbound Cart (`cart-store.ts`) and Stock In (`stock-in-cart-store.ts`) with local persistence middleware.
-- Build POS-style Stock In Cart page using the new Bento Box card layout and Framer Motion spring physics.
-- Build POS-style Outbound Cart page using matching styles and quantity ledger checks.
+1. Research and design the backend architecture for `transfers` and `stock_opname_sessions`.
+2. Draft implementation plan for the Phase 4 backend models and state machines.
 
 ## Blockers
 None

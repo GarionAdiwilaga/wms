@@ -10,7 +10,10 @@ import {
   Ruler, 
   LayoutDashboard,
   Layers,
-  Database
+  Database,
+  Archive,
+  ShoppingCart,
+  History
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
@@ -34,6 +37,12 @@ const masterDataItems: NavItem[] = [
   { name: 'Users', href: '/master-data/users', icon: Users, roles: ['super_admin'] },
 ];
 
+const operationsItems: NavItem[] = [
+  { name: 'Stok Masuk', href: '/operations/stock-in', icon: Archive, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
+  { name: 'Barang Keluar', href: '/operations/outbound', icon: ShoppingCart, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
+  { name: 'Riwayat', href: '/operations/history', icon: History, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
+];
+
 const settingsItems: NavItem[] = [
   { name: 'UOM', href: '/settings/uom', icon: Ruler, roles: ['super_admin'] },
 ];
@@ -52,6 +61,30 @@ export function AppShell() {
 
   const NavLinks = ({ onClick }: { onClick?: () => void }) => (
     <nav className="space-y-6">
+      <div>
+        <h3 className="mb-2 px-4 text-xs font-semibold tracking-tight text-slate-400 uppercase">
+          Warehouse Operations
+        </h3>
+        <div className="space-y-1">
+          {operationsItems.filter(i => user && i.roles.includes(user.role)).map((item) => (
+            <NavLink
+              key={item.href}
+              to={item.href}
+              onClick={onClick}
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors min-h-[48px]",
+                  isActive ? "bg-amber-500/10 text-amber-500" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                )
+              }
+            >
+              <item.icon className="h-5 w-5" />
+              {item.name}
+            </NavLink>
+          ))}
+        </div>
+      </div>
+
       <div>
         <h3 className="mb-2 px-4 text-xs font-semibold tracking-tight text-slate-400 uppercase">
           Master Data

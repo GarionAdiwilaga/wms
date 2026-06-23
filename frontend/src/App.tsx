@@ -11,6 +11,9 @@ import { UsersPage } from './pages/master-data/UsersPage';
 import { ItemsPage } from './pages/master-data/ItemsPage';
 import { UOMPage } from './pages/settings/UOMPage';
 import { BranchStocksPage } from './pages/inventory/BranchStocksPage';
+import { StockInPage } from './pages/operations/StockInPage';
+import { OutboundPage } from './pages/operations/OutboundPage';
+import { HistoryPage } from './pages/operations/HistoryPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -39,6 +42,9 @@ function App() {
               <Route path="/master-data/suppliers" element={<SuppliersPage />} />
               <Route path="/master-data/users" element={<UsersPage />} />
               <Route path="/inventory/branch-stocks" element={<BranchStocksPage />} />
+              <Route path="/operations/stock-in" element={<StockInPage />} />
+              <Route path="/operations/outbound" element={<OutboundPage />} />
+              <Route path="/operations/history" element={<HistoryPage />} />
               <Route path="/settings/uom" element={<UOMPage />} />
             </Route>
           </Route>
