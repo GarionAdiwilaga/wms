@@ -183,7 +183,7 @@ export function UsersPage() {
               <div className="space-y-2">
                 <Label htmlFor="branch_id">Cabang Tugas</Label>
                 <select id="branch_id" {...form.register('branch_id', { valueAsNumber: true })} className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-800 rounded-md text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent">
-                  <option value={NaN}>Pilih Cabang...</option>
+                  <option value="">Pilih Cabang...</option>
                   {branches?.filter(b => b.is_active).map(b => (
                     <option key={b.branch_id} value={b.branch_id}>{b.name}</option>
                   ))}

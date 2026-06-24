@@ -49,12 +49,13 @@ class ServiceBase(Generic[RepositoryType, ModelType, CreateSchemaType, UpdateSch
         pk_name = f"{self.entity_name.lower()}_id"
         pk_value = getattr(obj, pk_name, getattr(obj, "id", None))
         
+        new_values = obj_in if isinstance(obj_in, dict) else obj_in.model_dump()
         self.audit_service.log_create(
             db=self.repository.db,
             user_id=current_user.user_id,
             entity_type=self.entity_name,
             entity_id=pk_value,
-            new_values=obj_in.model_dump()
+            new_values=new_values
         )
         self.repository.db.commit()
         return obj
@@ -64,7 +65,7 @@ class ServiceBase(Generic[RepositoryType, ModelType, CreateSchemaType, UpdateSch
         
         # Serialize old values for audit
         old_values = {}
-        update_data = obj_in.model_dump(exclude_unset=True)
+        update_data = obj_in if isinstance(obj_in, dict) else obj_in.model_dump(exclude_unset=True)
         for field in update_data:
             if hasattr(db_obj, field):
                 old_values[field] = getattr(db_obj, field)

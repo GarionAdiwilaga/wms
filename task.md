@@ -140,3 +140,26 @@
 - `[x]` Frontend: Build Audit Log Report Page with human-friendly entity labels and expandable JSON rows
 - `[x]` Frontend: Navigation & RBAC Integration (Super Admin / Branch Head rules)
 - `[x]` Frontend: Mobile Responsive Layouts (Card collapse for tables)
+
+### 5.3 Quick Polish Sprint & Core Freeze
+- `[x]` Frontend: Fix all A11y warnings (ids, names, labels) without functional/style changes (Small)
+- `[x]` Backend: Resolve FastAPI `httpx` test client and Passlib `crypt` deprecation warnings (Small)
+
+### 5.4 QA Feedback Hotfixes
+- `[x]` Backend: Fix RBAC to allow `warehouse_staff` to create, ship, receive, and cancel Transfers (`Mutasi Barang`).
+- `[x]` Backend: Enhance Item Search to query against Category name and Supplier name via outer joins.
+
+---
+
+## Phase 6: Dashboards, PDF & Advanced Analytics (Planning)
+
+### 6.1 Dashboards
+- `[ ]` Define Dashboard Metrics (must consume `ReportService`)
+- `[ ]` Backend: Implement `/api/v1/dashboards` endpoint
+- `[ ]` Frontend: Build Dashboard UI (Summary Cards, Charts)
+
+### 6.2 Advanced Reporting
+- `[ ]` Backend: Implement Scheduled Snapshot Engine (`daily_stock_snapshots`)
+- `[ ]` Backend: Implement Dead Stock Analysis Report (>90 days no movement)
+- `[ ]` Backend: Implement PDF Generation Service (WeasyPrint/ReportLab)
+- `[ ]` Frontend: Integrate PDF Export buttons and new report pages

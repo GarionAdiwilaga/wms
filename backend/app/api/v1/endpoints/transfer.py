@@ -64,7 +64,7 @@ def format_transfer(transfer: Transfer) -> dict[str, Any]:
 @router.post("/", response_model=TransferResponse, status_code=status.HTTP_201_CREATED)
 def create_transfer(
     transfer_in: TransferCreate,
-    current_user: User = Depends(require_role(["super_admin", "branch_head"])),
+    current_user: User = Depends(require_role(["super_admin", "branch_head", "warehouse_staff"])),
     service: TransferService = Depends(get_transfer_service)
 ) -> Any:
     # RBAC check: non-super_admin can only create from own branch
@@ -143,7 +143,7 @@ def read_transfer(
 def update_transfer(
     id: int,
     transfer_in: TransferUpdate,
-    current_user: User = Depends(require_role(["super_admin", "branch_head"])),
+    current_user: User = Depends(require_role(["super_admin", "branch_head", "warehouse_staff"])),
     service: TransferService = Depends(get_transfer_service)
 ) -> Any:
     transfer = service.get(id)
@@ -162,7 +162,7 @@ def update_transfer(
 @router.post("/{id}/ship", response_model=TransferResponse)
 def ship_transfer(
     id: int,
-    current_user: User = Depends(require_role(["super_admin", "branch_head"])),
+    current_user: User = Depends(require_role(["super_admin", "branch_head", "warehouse_staff"])),
     service: TransferService = Depends(get_transfer_service)
 ) -> Any:
     transfer = service.get(id)
@@ -182,7 +182,7 @@ def ship_transfer(
 def receive_transfer(
     id: int,
     receive_in: TransferReceive,
-    current_user: User = Depends(require_role(["super_admin", "branch_head"])),
+    current_user: User = Depends(require_role(["super_admin", "branch_head", "warehouse_staff"])),
     service: TransferService = Depends(get_transfer_service)
 ) -> Any:
     transfer = service.get(id)
@@ -202,7 +202,7 @@ def receive_transfer(
 def cancel_transfer(
     id: int,
     cancel_in: TransferCancel,
-    current_user: User = Depends(require_role(["super_admin", "branch_head"])),
+    current_user: User = Depends(require_role(["super_admin", "branch_head", "warehouse_staff"])),
     service: TransferService = Depends(get_transfer_service)
 ) -> Any:
     transfer = service.get(id)
