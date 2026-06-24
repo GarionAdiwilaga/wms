@@ -19,7 +19,7 @@ import { Label } from '../../components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
 
 const userSchema = z.object({
-  username: z.string().min(1, 'Username wajib diisi'),
+  username: z.string().min(1, 'Username wajib diisi').regex(/^[a-z0-9._-]+$/, 'Username hanya boleh huruf kecil, angka, -, _, ., dan tanpa spasi'),
   password: z.string().min(6, 'Minimal 6 karakter').optional().or(z.literal('')),
   full_name: z.string().min(1, 'Nama lengkap wajib diisi'),
   role: z.enum(['super_admin', 'branch_head', 'warehouse_staff']),
