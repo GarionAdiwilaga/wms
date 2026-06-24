@@ -12,6 +12,7 @@ import { PageHeader } from '../../components/ui/PageHeader';
 import { Button } from '../../components/ui/button';
 import { LoadingState } from '../../components/ui/LoadingState';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { PaginationControl } from '../../components/ui/PaginationControl';
 
 export function BranchStocksPage() {
   const currentUser = useAuthStore((state) => state.user);
@@ -23,7 +24,7 @@ export function BranchStocksPage() {
 
   // Filters State
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(20);
   const [search, setSearch] = useState('');
   
   // Set default branch for branch heads / staff or empty for super admin (all branches)
@@ -366,36 +367,15 @@ export function BranchStocksPage() {
           </div>
 
           {/* Pagination Controls */}
-          {stocksResponse && stocksResponse.total_pages > 1 && (
-            <div className="flex items-center justify-between px-2 py-4 border-t border-border">
-              <span className="text-xs text-muted-foreground">
-                Menampilkan {((page - 1) * pageSize) + 1} - {Math.min(page * pageSize, stocksResponse.total)} dari {stocksResponse.total} item
-              </span>
-              <div className="flex gap-2">
-                <motion.div whileTap={{ scale: 0.97 }}>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page === 1}
-                    onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                    className="border-border hover:bg-accent text-foreground min-h-[36px] rounded-lg shadow-sm"
-                  >
-                    Sebelumnya
-                  </Button>
-                </motion.div>
-                <motion.div whileTap={{ scale: 0.97 }}>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page === stocksResponse.total_pages}
-                    onClick={() => setPage((p) => Math.min(p + 1, stocksResponse.total_pages))}
-                    className="border-border hover:bg-accent text-foreground min-h-[36px] rounded-lg shadow-sm"
-                  >
-                    Selanjutnya
-                  </Button>
-                </motion.div>
-              </div>
-            </div>
+          {stocksResponse && (
+            <PaginationControl
+              currentPage={page}
+              totalPages={stocksResponse.total_pages}
+              totalItems={stocksResponse.total}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+            />
           )}
         </div>
       )}

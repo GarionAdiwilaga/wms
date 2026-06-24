@@ -1,12 +1,11 @@
 import { useState } from 'react';
+import { PaginationControl } from '../../components/ui/PaginationControl';
 import { useAuthStore } from '../../store/auth-store';
 import { useTransferVarianceReport, ReportFilters, TransferVarianceReportRow } from '../../hooks/useReports';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { ReportFilterBar } from '../../components/reports/ReportFilterBar';
 import { ReportExportButtons } from '../../components/reports/ReportExportButtons';
 import { ReportTable, ReportColumn } from '../../components/reports/ReportTable';
-import { Button } from '../../components/ui/button';
-import { motion } from 'framer-motion';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { Calendar, AlertTriangle, ArrowRight, ClipboardCheck } from 'lucide-react';
 
@@ -38,7 +37,7 @@ export function TransferVarianceReportPage() {
   }
 
   const [page, setPage] = useState(1);
-  const pageSize = 20;
+  const [pageSize, setPageSize] = useState(20);
 
   const [filters, setFilters] = useState<ReportFilters>(() => {
     const initialFilters = {
@@ -145,7 +144,7 @@ export function TransferVarianceReportPage() {
           title="Selisih Mutasi Barang"
           description="Pantau laporan audit barang hilang atau rusak selama transit pengiriman antarcabang."
         />
-        {data && data.items.length > 0 && (
+        {data && data.data.length > 0 && (
           <ReportExportButtons
             endpoint="/reports/transfer-variance"
             filename="laporan_selisih_transfer"
@@ -204,7 +203,7 @@ export function TransferVarianceReportPage() {
 
       {/* Data Table */}
       <ReportTable
-        data={data?.items || []}
+        data={data?.data || []}
         columns={columns}
         keyExtractor={(r) => `${r.transfer_number}-${r.item_code}`}
         isLoading={isLoading}
@@ -212,37 +211,17 @@ export function TransferVarianceReportPage() {
       />
 
       {/* Pagination */}
-      {data && totalPages > 1 && (
-        <div className="flex justify-between items-center px-2 py-4 border-t border-border">
-          <span className="text-xs text-muted-foreground">
-            Menampilkan {((page - 1) * pageSize) + 1} - {Math.min(page * pageSize, data.total)} dari {data.total} item selisih
-          </span>
-          <div className="flex gap-2">
-            <motion.div whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                className="rounded-lg border-slate-800 hover:bg-slate-800 text-white min-h-[38px] px-3"
-              >
-                Sebelumnya
-              </Button>
-            </motion.div>
-            <motion.div whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                className="rounded-lg border-slate-800 hover:bg-slate-800 text-white min-h-[38px] px-3"
-              >
-                Selanjutnya
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-      )}
+          {/* Pagination Controls */}
+          {data && (
+            <PaginationControl
+              currentPage={page}
+              totalPages={totalPages}
+              totalItems={data.total}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+            />
+          )}
     </div>
   );
 }

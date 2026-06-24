@@ -115,7 +115,9 @@ def test_upload_image(db_client: TestClient, db_session: Session, test_user: Use
         upload_resp = db_client.post(f"/api/v1/items/{item_id}/image", files=files, headers=headers)
     assert upload_resp.status_code == 200
     assert upload_resp.json()["image_path"].startswith("/uploads/items/")
-    assert upload_resp.json()["image_url"].startswith("http")
+    # image_url is now a relative path (same as image_path) so the frontend
+    # can load it through the Vite proxy or any production reverse proxy
+    assert upload_resp.json()["image_url"].startswith("/uploads/items/")
 
 def test_lookup_item(db_client: TestClient, db_session: Session, test_user: User, master_data: dict):
     headers = get_auth_headers(test_user.user_id, "super_admin")

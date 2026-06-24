@@ -134,7 +134,7 @@ def test_stock_report_super_admin(db_client: TestClient, test_data):
     response = db_client.get("/api/v1/reports/stock?search=002", headers=headers)
     assert response.status_code == 200
     assert response.json()["total"] == 1
-    assert response.json()["items"][0]["item_code"] == "CAT-SUP-002"
+    assert response.json()["data"][0]["item_code"] == "CAT-SUP-002"
 
 def test_low_stock_report(db_client: TestClient, test_data):
     headers = get_auth_headers(test_data["admin"].user_id, "super_admin")
@@ -142,7 +142,7 @@ def test_low_stock_report(db_client: TestClient, test_data):
     assert response.status_code == 200
     content = response.json()
     assert content["total"] == 1 # Only Item 1 at Branch A is low stock
-    item = content["items"][0]
+    item = content["data"][0]
     assert item["item_code"] == "CAT-SUP-001"
     assert item["branch_name"] == "Branch A"
     assert item["quantity"] == 5
@@ -179,8 +179,8 @@ def test_item_history_report(db_client: TestClient, db_session: Session, test_da
     assert response.status_code == 200
     content = response.json()
     assert content["total"] == 2
-    assert content["items"][0]["transaction_type"] == "OUT"
-    assert content["items"][1]["transaction_type"] == "IN"
+    assert content["data"][0]["transaction_type"] == "OUT"
+    assert content["data"][1]["transaction_type"] == "IN"
 
 def test_inventory_movement_report_balance_after(db_client: TestClient, db_session: Session, test_data):
     # Populating sequential movements to test running balance after date filters
@@ -226,7 +226,7 @@ def test_inventory_movement_report_balance_after(db_client: TestClient, db_sessi
     content = response.json()
     assert content["total"] == 3
     # Check that latest transaction is first, but running balance calculated chronologically
-    items = content["items"]
+    items = content["data"]
     assert items[0]["transaction_type"] == "IN"
     assert items[0]["balance_after"] == 12 # 10 - 3 + 5
     assert items[1]["transaction_type"] == "OUT"
@@ -243,8 +243,8 @@ def test_inventory_movement_report_balance_after(db_client: TestClient, db_sessi
     assert response.status_code == 200
     content = response.json()
     assert content["total"] == 2
-    assert content["items"][0]["balance_after"] == 12
-    assert content["items"][1]["balance_after"] == 7
+    assert content["data"][0]["balance_after"] == 12
+    assert content["data"][1]["balance_after"] == 7
 
 def test_transfer_variance_report(db_client: TestClient, db_session: Session, test_data):
     # Create Received Transfer with Variance
@@ -278,7 +278,7 @@ def test_transfer_variance_report(db_client: TestClient, db_session: Session, te
     assert content["total"] >= 1
     
     # Find our created transfer
-    tr_item = next((item for item in content["items"] if item["transfer_number"] == "TRF-20260101-001"), None)
+    tr_item = next((item for item in content["data"] if item["transfer_number"] == "TRF-20260101-001"), None)
     assert tr_item is not None
     assert tr_item["variance"] == 2
     assert tr_item["variance_reason"] == "Pecah"
@@ -309,7 +309,7 @@ def test_audit_log_report(db_client: TestClient, db_session: Session, test_data)
     assert response.status_code == 200
     content = response.json()
     assert content["total"] == 1
-    assert content["items"][0]["operator_name"] == "Branch Head A"
+    assert content["data"][0]["operator_name"] == "Branch Head A"
 
 def test_csv_export_streaming(db_client: TestClient, test_data):
     headers = get_auth_headers(test_data["admin"].user_id, "super_admin")

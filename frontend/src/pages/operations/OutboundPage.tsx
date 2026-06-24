@@ -35,6 +35,7 @@ export function OutboundPage() {
   const createOutbound = useCreateOutbound();
 
   const [formError, setFormError] = useState<string | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isCheckingStock, setIsCheckingStock] = useState(false);
 
@@ -47,9 +48,10 @@ export function OutboundPage() {
 
   const handleItemSelect = async (selectedItem: any) => {
     setFormError(null);
+    setSearchError(null);
     const activeBranchId = user?.role === 'super_admin' ? branchId : user?.branch_id;
     if (!activeBranchId) {
-      setFormError('Cabang wajib dipilih sebelum memilih barang');
+      setSearchError('Cabang asal wajib dipilih terlebih dahulu (pada form Info Checkout) sebelum mencari atau memilih barang.');
       return;
     }
 
@@ -153,6 +155,14 @@ export function OutboundPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left Column: Selector & Cart Items */}
         <div className="lg:col-span-2 space-y-6">
+          {searchError && (
+            <div className="text-sm bg-amber-500/10 border border-amber-500/20 text-amber-400 p-4 rounded-xl font-medium flex items-center justify-between shadow-sm">
+              <span>{searchError}</span>
+              <Button variant="ghost" size="icon" onClick={() => setSearchError(null)} className="h-6 w-6 text-amber-400 hover:text-amber-300">
+                &times;
+              </Button>
+            </div>
+          )}
           {/* Item Search Bento Box */}
           <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
             <h3 className="font-semibold text-lg text-white flex items-center gap-2">
@@ -299,7 +309,7 @@ export function OutboundPage() {
         <div className="space-y-6">
           <form onSubmit={handleCheckout} className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
             <h3 className="font-semibold text-lg text-white border-b border-slate-800 pb-3">
-              Checkout Info
+              Info Checkout
             </h3>
 
             {/* Branch display or select */}

@@ -5,6 +5,9 @@ from sqlalchemy import text
 from app.models.inventory import InventoryTransaction, BranchStock
 from app.schemas.inventory import StockChangeLine
 from fastapi import HTTPException, status
+import logging
+
+logger = logging.getLogger(__name__)
 
 class InsufficientStockError(Exception):
     def __init__(self, message: str):
@@ -106,6 +109,14 @@ class InventoryService:
             db.commit()
             for t in transactions:
                 db.refresh(t)
+            
+            logger.info("Stock change processed", extra={
+                "transaction_type": transaction_type,
+                "reference_type": reference_type,
+                "reference_id": reference_id,
+                "items_count": len(lines),
+                "branch_id": branch_id
+            })
             return transactions
 
         except IntegrityError as e:
@@ -115,6 +126,7 @@ class InventoryService:
             raise
         except Exception as e:
             db.rollback()
+            logger.error("Stock change failed", exc_info=True, extra={"reference_type": reference_type, "items_count": len(lines)})
             raise
 
     def rebuild_cache(

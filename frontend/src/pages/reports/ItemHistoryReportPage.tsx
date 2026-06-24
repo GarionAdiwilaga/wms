@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '../../components/ui/button';
+import { PaginationControl } from '../../components/ui/PaginationControl';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth-store';
 import { useItem } from '../../hooks/useItems';
@@ -8,8 +11,6 @@ import { ItemSearch } from '../../components/common/ItemSearch';
 import { ReportFilterBar } from '../../components/reports/ReportFilterBar';
 import { ReportExportButtons } from '../../components/reports/ReportExportButtons';
 import { ReportTable, ReportColumn } from '../../components/reports/ReportTable';
-import { Button } from '../../components/ui/button';
-import { motion } from 'framer-motion';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { Calendar, User, Search, RefreshCw, FileText } from 'lucide-react';
 
@@ -56,7 +57,7 @@ export function ItemHistoryReportPage() {
   const { data: item, isLoading: isLoadingItem } = useItem(selectedItemId || 0);
 
   const [page, setPage] = useState(1);
-  const pageSize = 20;
+  const [pageSize, setPageSize] = useState(20);
 
   const [filters, setFilters] = useState<ReportFilters>(() => {
     const initialFilters = {
@@ -174,7 +175,7 @@ export function ItemHistoryReportPage() {
           title="Riwayat Stok Barang"
           description="Lacak kartu stok kronologis transaksi per item barang."
         />
-        {selectedItemId && data && data.items.length > 0 && (
+        {selectedItemId && data && data.data.length > 0 && (
           <ReportExportButtons
             endpoint={`/reports/item-history/${selectedItemId}`}
             filename={`riwayat_barang_${item?.item_code || selectedItemId}`}
@@ -239,43 +240,23 @@ export function ItemHistoryReportPage() {
 
           {/* Data Table */}
           <ReportTable
-            data={data?.items || []}
+            data={data?.data || []}
             columns={columns}
             keyExtractor={(r) => r.transaction_id}
             isLoading={isLoadingHistory || isLoadingItem}
           />
 
           {/* Pagination */}
-          {data && totalPages > 1 && (
-            <div className="flex justify-between items-center px-2 py-4 border-t border-border">
-              <span className="text-xs text-muted-foreground">
-                Menampilkan {((page - 1) * pageSize) + 1} - {Math.min(page * pageSize, data.total)} dari {data.total} transaksi
-              </span>
-              <div className="flex gap-2">
-                <motion.div whileTap={{ scale: 0.95 }}>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                    className="rounded-lg border-slate-800 hover:bg-slate-800 text-white min-h-[38px] px-3"
-                  >
-                    Sebelumnya
-                  </Button>
-                </motion.div>
-                <motion.div whileTap={{ scale: 0.95 }}>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page >= totalPages}
-                    onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                    className="rounded-lg border-slate-800 hover:bg-slate-800 text-white min-h-[38px] px-3"
-                  >
-                    Selanjutnya
-                  </Button>
-                </motion.div>
-              </div>
-            </div>
+          {/* Pagination Controls */}
+          {data && (
+            <PaginationControl
+              currentPage={page}
+              totalPages={totalPages}
+              totalItems={data.total}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+            />
           )}
         </>
       )}

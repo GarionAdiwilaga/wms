@@ -12,7 +12,7 @@ export interface StockReportRow {
 }
 
 export interface StockReportResponse {
-  items: StockReportRow[];
+  data: StockReportRow[];
   total: number;
 }
 
@@ -28,7 +28,7 @@ export interface LowStockReportRow {
 }
 
 export interface LowStockReportResponse {
-  items: LowStockReportRow[];
+  data: LowStockReportRow[];
   total: number;
 }
 
@@ -46,7 +46,7 @@ export interface ItemHistoryReportRow {
 }
 
 export interface ItemHistoryReportResponse {
-  items: ItemHistoryReportRow[];
+  data: ItemHistoryReportRow[];
   total: number;
 }
 
@@ -67,7 +67,7 @@ export interface InventoryMovementReportRow {
 }
 
 export interface InventoryMovementReportResponse {
-  items: InventoryMovementReportRow[];
+  data: InventoryMovementReportRow[];
   total: number;
 }
 
@@ -93,7 +93,7 @@ export interface TransferVarianceReportSummary {
 }
 
 export interface TransferVarianceReportResponse {
-  items: TransferVarianceReportRow[];
+  data: TransferVarianceReportRow[];
   total: number;
   summary: TransferVarianceReportSummary;
 }
@@ -111,7 +111,7 @@ export interface AuditLogReportRow {
 }
 
 export interface AuditLogReportResponse {
-  items: AuditLogReportRow[];
+  data: AuditLogReportRow[];
   total: number;
 }
 
@@ -180,7 +180,7 @@ export const useItemHistoryReport = (itemId: number | null, filters: ReportFilte
   return useQuery({
     queryKey: ['reports-item-history', itemId, filters],
     queryFn: async (): Promise<ItemHistoryReportResponse> => {
-      if (!itemId) return { items: [], total: 0 };
+      if (!itemId) return { data: [], total: 0 };
       const params = new URLSearchParams();
       if (filters.branch_id) params.append('branch_id', filters.branch_id.toString());
       const sDate = formatStartDate(filters.start_date);

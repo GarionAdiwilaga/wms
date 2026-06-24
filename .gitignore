@@ -53,3 +53,7 @@ backend/venv/
 **/__pycache__/
 **/*.py[cod]
 **/*.pyc
+
+# Uploaded files
+backend/uploads/
+

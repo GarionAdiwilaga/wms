@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '../../components/ui/button';
+import { PaginationControl } from '../../components/ui/PaginationControl';
 import { useAuthStore } from '../../store/auth-store';
 import { useUsers } from '../../hooks/useUsers';
 import { useAuditLogReport, ReportFilters, AuditLogReportRow } from '../../hooks/useReports';
@@ -6,9 +9,7 @@ import { PageHeader } from '../../components/ui/PageHeader';
 import { ReportFilterBar } from '../../components/reports/ReportFilterBar';
 import { ReportExportButtons } from '../../components/reports/ReportExportButtons';
 import { ReportColumn } from '../../components/reports/ReportTable';
-import { Button } from '../../components/ui/button';
 import { Label } from '../../components/ui/label';
-import { motion } from 'framer-motion';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { Calendar, User, Eye, EyeOff, Terminal } from 'lucide-react';
 
@@ -42,7 +43,7 @@ export function AuditLogReportPage() {
   const { data: users } = useUsers();
   
   const [page, setPage] = useState(1);
-  const pageSize = 20;
+  const [pageSize, setPageSize] = useState(20);
 
   const [filters, setFilters] = useState<ReportFilters>(() => {
     const initialFilters = {
@@ -213,7 +214,7 @@ export function AuditLogReportPage() {
       );
     }
 
-    if (!data || data.items.length === 0) {
+    if (!data || data.data.length === 0) {
       return (
         <div className="bg-card border border-border rounded-xl p-8 text-center text-slate-400 shadow-md">
           <p className="text-sm font-medium">Tidak ada audit log ditemukan.</p>
@@ -225,7 +226,7 @@ export function AuditLogReportPage() {
       <div className="space-y-4">
         {/* Mobile View with collapsible JSON inline */}
         <div className="grid grid-cols-1 gap-4 md:hidden">
-          {data.items.map((r) => {
+          {data.data.map((r) => {
             const isExpanded = expandedLogIds.has(r.log_id);
             const hasValues = r.old_values || r.new_values;
 
@@ -314,7 +315,7 @@ export function AuditLogReportPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-850">
-                {data.items.map((r) => {
+                {data.data.map((r) => {
                   const isExpanded = expandedLogIds.has(r.log_id);
                   return (
                     <React.Fragment key={r.log_id}>
@@ -374,7 +375,7 @@ export function AuditLogReportPage() {
           title="Log Audit Sistem"
           description="Pantau riwayat log aktivitas audit, perubahan database, dan mutasi data oleh pengguna."
         />
-        {data && data.items.length > 0 && (
+        {data && data.data.length > 0 && (
           <ReportExportButtons
             endpoint="/reports/audit-logs"
             filename="laporan_audit_log"
@@ -464,37 +465,17 @@ export function AuditLogReportPage() {
       {renderAuditTable()}
 
       {/* Pagination */}
-      {data && totalPages > 1 && (
-        <div className="flex justify-between items-center px-2 py-4 border-t border-border">
-          <span className="text-xs text-muted-foreground">
-            Menampilkan {((page - 1) * pageSize) + 1} - {Math.min(page * pageSize, data.total)} dari {data.total} log audit
-          </span>
-          <div className="flex gap-2">
-            <motion.div whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                className="rounded-lg border-slate-800 hover:bg-slate-800 text-white min-h-[38px] px-3"
-              >
-                Sebelumnya
-              </Button>
-            </motion.div>
-            <motion.div whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                className="rounded-lg border-slate-800 hover:bg-slate-800 text-white min-h-[38px] px-3"
-              >
-                Selanjutnya
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-      )}
+          {/* Pagination Controls */}
+          {data && (
+            <PaginationControl
+              currentPage={page}
+              totalPages={totalPages}
+              totalItems={data.total}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+            />
+          )}
     </div>
   );
 }

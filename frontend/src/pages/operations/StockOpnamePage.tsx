@@ -1,17 +1,19 @@
 import { useState, ChangeEvent } from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '../../components/ui/button';
+import { PaginationControl } from '../../components/ui/PaginationControl';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth-store';
 import { useBranches } from '../../hooks/useBranches';
 import { useCategories } from '../../hooks/useCategories';
 import { useStockOpnameSessions, useCreateStockOpname } from '../../hooks/useStockOpname';
 import { PageHeader } from '../../components/ui/PageHeader';
-import { Button } from '../../components/ui/button';
 import { Label } from '../../components/ui/label';
 import { LoadingState } from '../../components/ui/LoadingState';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '../../components/ui/dialog';
 import { api } from '../../lib/api';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { ClipboardList, Plus, Calendar, ShieldCheck, Play, HelpCircle } from 'lucide-react';
 
 export function StockOpnamePage() {
@@ -24,6 +26,7 @@ export function StockOpnamePage() {
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [branchFilter, setBranchFilter] = useState<string>('');
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
 
   const activeBranchId = user?.role === 'super_admin' ? (branchFilter ? Number(branchFilter) : null) : user?.branch_id;
 
@@ -31,7 +34,7 @@ export function StockOpnamePage() {
     branch_id: activeBranchId,
     status: statusFilter || null,
     page,
-    page_size: 10,
+    page_size: pageSize,
   });
 
   const createOpname = useCreateStockOpname();
@@ -294,34 +297,16 @@ export function StockOpnamePage() {
           </AnimatePresence>
 
           {/* Pagination */}
-          {opnamesResponse.total_pages > 1 && (
-            <div className="flex justify-center items-center gap-4 pt-4">
-              <motion.div whileTap={{ scale: 0.95 }}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page <= 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  className="rounded-lg border-slate-800 hover:bg-slate-800 text-white min-h-[38px] px-3 disabled:opacity-50"
-                >
-                  Sebelumnya
-                </Button>
-              </motion.div>
-              <span className="text-sm text-slate-400 font-medium">
-                Halaman {page} dari {opnamesResponse.total_pages}
-              </span>
-              <motion.div whileTap={{ scale: 0.95 }}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= opnamesResponse.total_pages}
-                  onClick={() => setPage((p) => p + 1)}
-                  className="rounded-lg border-slate-800 hover:bg-slate-800 text-white min-h-[38px] px-3 disabled:opacity-50"
-                >
-                  Selanjutnya
-                </Button>
-              </motion.div>
-            </div>
+          {/* Pagination Controls */}
+          {opnamesResponse && (
+            <PaginationControl
+              currentPage={page}
+              totalPages={opnamesResponse.total_pages}
+              totalItems={opnamesResponse.total}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+            />
           )}
         </div>
       )}

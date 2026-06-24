@@ -165,7 +165,11 @@ export function UsersPage() {
         <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800 text-white overflow-y-auto max-h-[90vh]">
           <DialogHeader><DialogTitle className="text-white">{editingUser ? 'Ubah Pengguna' : 'Tambah Pengguna'}</DialogTitle></DialogHeader>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-            <div className="space-y-2"><Label htmlFor="username">Username</Label><Input id="username" placeholder="Masukkan username" {...form.register('username')} className="bg-slate-950 border-slate-800 text-white" />{form.formState.errors.username && <p className="text-sm text-red-500">{form.formState.errors.username.message}</p>}</div>
+            <div className="space-y-2"><Label htmlFor="username">Username</Label><Input id="username" placeholder="Masukkan username" {...form.register('username')} onChange={(e) => {
+              const val = e.target.value.toLowerCase().replace(/\s/g, '');
+              e.target.value = val;
+              form.setValue('username', val, { shouldValidate: true, shouldDirty: true });
+            }} className="bg-slate-950 border-slate-800 text-white" />{form.formState.errors.username && <p className="text-sm text-red-500">{form.formState.errors.username.message}</p>}</div>
             <div className="space-y-2"><Label htmlFor="full_name">Nama Lengkap</Label><Input id="full_name" placeholder="Masukkan nama lengkap" {...form.register('full_name')} className="bg-slate-950 border-slate-800 text-white" />{form.formState.errors.full_name && <p className="text-sm text-red-500">{form.formState.errors.full_name.message}</p>}</div>
             
             <div className="space-y-2"><Label htmlFor="password">{editingUser ? 'Kata Sandi Baru (kosongkan jika tidak diubah)' : 'Kata Sandi'}</Label><Input id="password" type="password" placeholder={editingUser ? 'Masukkan sandi baru jika ingin diubah' : 'Masukkan kata sandi'} {...form.register('password')} className="bg-slate-950 border-slate-800 text-white" />{form.formState.errors.password && <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>}</div>

@@ -180,7 +180,11 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
 
       // Step 2: Separate image upload step if a file was selected
       if (imageFile) {
-        await uploadImage.mutateAsync({ id: savedItem.item_id, file: imageFile });
+        const uploadedItem = await uploadImage.mutateAsync({ id: savedItem.item_id, file: imageFile });
+        // Refresh preview from server response with cache-buster so browser doesn't show stale image
+        if (uploadedItem.image_url) {
+          setImagePreview(`${uploadedItem.image_url}?t=${Date.now()}`);
+        }
       }
 
       onSuccess();

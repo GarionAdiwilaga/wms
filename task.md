@@ -149,6 +149,21 @@
 - `[x]` Backend: Fix RBAC to allow `warehouse_staff` to create, ship, receive, and cancel Transfers (`Mutasi Barang`).
 - `[x]` Backend: Enhance Item Search to query against Category name and Supplier name via outer joins.
 
+### 5.5 UI/UX Enhancements & Refinements
+- `[x]` Frontend: Auto-lowercase and spacing sanitizer for username inputs (Login & UsersPage).
+- `[x]` Frontend: Global `ScrollToTop` router event to reset scroll position on module navigation.
+- `[x]` Frontend: Advanced `PaginationControl` component replacing all previous list pagination mechanisms.
+- `[x]` Frontend: Integrate Pagination component across 10 distinct tables (Items, Branch Stocks, Transfers, Opnames, and all Reports) with manual page jump and scalable entry limits (10/20/50/100).
+
+### 5.6 Pre-Pilot Hardening
+- `[x]` Backend: API Consistency (change `items` to `data` in all report endpoints).
+- `[x]` Frontend: Report Data Consumption Update (consume `data` instead of `items`).
+- `[x]` Frontend: Accessibility Cleanup (id, name, htmlFor).
+- `[x]` Backend: Production Logging (structured logging, exception middleware).
+- `[x]` Frontend: Production Error Boundary.
+- `[x]` Documentation: Create BACKUP_RECOVERY.md, DEPLOYMENT.md, OPERATIONS.md.
+- `[x]` Infrastructure: Production Configuration Review (docker-compose, env).
+
 ---
 
 ## Phase 6: Dashboards, PDF & Advanced Analytics (Planning)

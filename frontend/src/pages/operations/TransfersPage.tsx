@@ -7,6 +7,7 @@ import { PageHeader } from '../../components/ui/PageHeader';
 import { Button } from '../../components/ui/button';
 import { LoadingState } from '../../components/ui/LoadingState';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { PaginationControl } from '../../components/ui/PaginationControl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Calendar, Plus, Truck, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 
@@ -18,6 +19,7 @@ export function TransfersPage() {
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [branchFilter, setBranchFilter] = useState<string>('');
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
 
   const activeBranchId = user?.role === 'super_admin' ? (branchFilter ? Number(branchFilter) : null) : user?.branch_id;
 
@@ -25,7 +27,7 @@ export function TransfersPage() {
     branch_id: activeBranchId,
     status: statusFilter || null,
     page,
-    page_size: 10,
+    page_size: pageSize,
   });
 
   const getBranchName = (id: number) => {
@@ -236,34 +238,15 @@ export function TransfersPage() {
           </AnimatePresence>
 
           {/* Pagination */}
-          {transfersResponse.total_pages > 1 && (
-            <div className="flex justify-center items-center gap-4 pt-4">
-              <motion.div whileTap={{ scale: 0.95 }}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page <= 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  className="rounded-lg border-slate-800 hover:bg-slate-800 text-white min-h-[38px] px-3 disabled:opacity-50"
-                >
-                  Sebelumnya
-                </Button>
-              </motion.div>
-              <span className="text-sm text-slate-400 font-medium">
-                Halaman {page} dari {transfersResponse.total_pages}
-              </span>
-              <motion.div whileTap={{ scale: 0.95 }}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= transfersResponse.total_pages}
-                  onClick={() => setPage((p) => p + 1)}
-                  className="rounded-lg border-slate-800 hover:bg-slate-800 text-white min-h-[38px] px-3 disabled:opacity-50"
-                >
-                  Selanjutnya
-                </Button>
-              </motion.div>
-            </div>
+          {transfersResponse && (
+            <PaginationControl
+              currentPage={page}
+              totalPages={transfersResponse.total_pages}
+              totalItems={transfersResponse.total}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+            />
           )}
         </div>
       )}

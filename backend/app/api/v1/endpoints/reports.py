@@ -123,7 +123,7 @@ def get_stock_report(
         return stream_xlsx_response("laporan_stok", headers, rows)
 
     return {
-        "items": [
+        "data": [
             {
                 "branch_name": r.branch_name,
                 "item_code": r.item_code,
@@ -184,7 +184,7 @@ def get_low_stock_report(
         return stream_xlsx_response("laporan_stok_rendah", headers, rows)
 
     return {
-        "items": [
+        "data": [
             {
                 "branch_name": r.branch_name,
                 "item_code": r.item_code,
@@ -246,7 +246,7 @@ def get_item_history_report(
         return stream_xlsx_response(f"riwayat_barang_{item_id}", headers, rows)
 
     return {
-        "items": [
+        "data": [
             {
                 "transaction_id": r.transaction_id,
                 "created_at": r.created_at,
@@ -314,7 +314,7 @@ def get_inventory_movement_report(
         return stream_xlsx_response("laporan_pergerakan_stok", headers, rows)
 
     return {
-        "items": [
+        "data": [
             {
                 "transaction_id": r.transaction_id,
                 "created_at": r.created_at,
@@ -381,7 +381,7 @@ def get_transfer_variance_report(
         return stream_xlsx_response("laporan_selisih_transfer", headers, rows)
 
     return {
-        "items": [
+        "data": [
             {
                 "transfer_number": r.transfer_number,
                 "source_branch_name": r.source_branch_name,
@@ -452,7 +452,7 @@ def get_audit_log_report(
         return stream_xlsx_response("laporan_audit_log", headers, rows)
 
     return {
-        "items": [
+        "data": [
             {
                 "log_id": r.log_id,
                 "created_at": r.created_at,

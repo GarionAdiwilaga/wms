@@ -14,7 +14,7 @@ class StockReportRow(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class StockReportResponse(BaseModel):
-    items: list[StockReportRow]
+    data: list[StockReportRow]
     total: int
 
 class LowStockReportRow(BaseModel):
@@ -30,7 +30,7 @@ class LowStockReportRow(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class LowStockReportResponse(BaseModel):
-    items: list[LowStockReportRow]
+    data: list[LowStockReportRow]
     total: int
 
 class ItemHistoryReportRow(BaseModel):
@@ -48,7 +48,7 @@ class ItemHistoryReportRow(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class ItemHistoryReportResponse(BaseModel):
-    items: list[ItemHistoryReportRow]
+    data: list[ItemHistoryReportRow]
     total: int
 
 class InventoryMovementReportRow(BaseModel):
@@ -69,7 +69,7 @@ class InventoryMovementReportRow(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class InventoryMovementReportResponse(BaseModel):
-    items: list[InventoryMovementReportRow]
+    data: list[InventoryMovementReportRow]
     total: int
 
 class TransferVarianceReportRow(BaseModel):
@@ -94,7 +94,7 @@ class TransferVarianceReportSummary(BaseModel):
     total_lost_units: int
 
 class TransferVarianceReportResponse(BaseModel):
-    items: list[TransferVarianceReportRow]
+    data: list[TransferVarianceReportRow]
     total: int
     summary: TransferVarianceReportSummary
 
@@ -112,5 +112,5 @@ class AuditLogReportRow(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class AuditLogReportResponse(BaseModel):
-    items: list[AuditLogReportRow]
+    data: list[AuditLogReportRow]
     total: int

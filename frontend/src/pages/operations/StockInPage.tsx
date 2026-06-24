@@ -246,7 +246,7 @@ export function StockInPage() {
         <div className="space-y-6">
           <form onSubmit={handleSave} className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
             <h3 className="font-semibold text-lg text-white border-b border-slate-800 pb-3">
-              Informasi Transaksi
+              Info Checkout
             </h3>
 
             {/* Branch display or select */}

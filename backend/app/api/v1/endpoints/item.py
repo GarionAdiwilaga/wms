@@ -18,8 +18,12 @@ def get_item_service(db: Session = Depends(get_db)) -> ItemService:
 
 def format_item(request: Request, item: Item) -> dict[str, Any]:
     data = ItemResponse.model_validate(item).model_dump()
+    # image_url is the relative path served via the /uploads static mount.
+    # Using a relative URL ensures it works through the Vite dev proxy
+    # (/uploads -> backend:8000/uploads) and any production reverse proxy,
+    # instead of embedding the container-internal hostname (backend:8000).
     if item.image_path:
-        data["image_url"] = str(request.base_url).rstrip("/") + item.image_path
+        data["image_url"] = item.image_path  # e.g. /uploads/items/ITEM_abc123.png
     return data
 
 @router.get("/", response_model=PaginatedItemResponse)

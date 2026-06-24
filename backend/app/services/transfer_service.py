@@ -3,6 +3,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime, timezone, timedelta
+import logging
 
 from app.services.base import ServiceBase
 from app.repositories.transfer import TransferRepository
@@ -13,6 +14,8 @@ from app.schemas.transfer import TransferCreate, TransferUpdate, TransferReceive
 from app.schemas.inventory import StockChangeLine
 from app.services.inventory_service import inventory_service, InsufficientStockError
 from app.models.user import User
+
+logger = logging.getLogger(__name__)
 
 class TransferService(ServiceBase[TransferRepository, Transfer, TransferCreate, Any]):
     def __init__(self, repository: TransferRepository, db: Session):
@@ -211,6 +214,15 @@ class TransferService(ServiceBase[TransferRepository, Transfer, TransferCreate, 
         )
         self.db.commit()
 
+        logger.info("Transfer shipped", extra={
+            "transfer_id": transfer.transfer_id,
+            "transfer_number": transfer.transfer_number,
+            "source_branch_id": transfer.source_branch_id,
+            "dest_branch_id": transfer.dest_branch_id,
+            "lines_count": len(transfer.lines),
+            "shipped_by": current_user.user_id
+        })
+
         return transfer
 
     def receive(self, id: int, obj_in: TransferReceive, current_user: User) -> Transfer:
@@ -273,6 +285,14 @@ class TransferService(ServiceBase[TransferRepository, Transfer, TransferCreate, 
         )
         self.db.commit()
 
+        logger.info("Transfer received", extra={
+            "transfer_id": transfer.transfer_id,
+            "transfer_number": transfer.transfer_number,
+            "dest_branch_id": transfer.dest_branch_id,
+            "lines_received": len(obj_in.lines),
+            "received_by": current_user.user_id
+        })
+
         return transfer
 
     def cancel(self, id: int, obj_in: TransferCancel, current_user: User) -> Transfer:
@@ -319,5 +339,13 @@ class TransferService(ServiceBase[TransferRepository, Transfer, TransferCreate, 
             new_values={"status": "cancelled", "cancelled_at": transfer.cancelled_at.isoformat() if transfer.cancelled_at else None}
         )
         self.db.commit()
+
+        logger.info("Transfer cancelled", extra={
+            "transfer_id": transfer.transfer_id,
+            "transfer_number": transfer.transfer_number,
+            "previous_status": old_status,
+            "cancellation_reason": obj_in.cancellation_reason,
+            "cancelled_by": current_user.user_id
+        })
 
         return transfer

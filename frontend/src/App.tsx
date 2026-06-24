@@ -1,7 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ScrollToTop } from './components/layout/ScrollToTop';
 import { AppShell } from './components/layout/AppShell';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { LoginPage } from './pages/auth/LoginPage';
 import { useAuthStore } from './store/auth-store';
 import { CategoriesPage } from './pages/master-data/CategoriesPage';
@@ -43,46 +45,49 @@ function App() {
   const token = useAuthStore((state) => state.token);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={!token ? <LoginPage /> : <Navigate to="/" replace />} />
-          
-          <Route element={<ProtectedRoute />}>
-            <Route element={<AppShell />}>
-              <Route path="/" element={<Navigate to="/master-data/items" replace />} />
-              <Route path="/master-data/items" element={<ItemsPage />} />
-              <Route path="/master-data/items/:id" element={<ItemDetailPage />} />
-              <Route path="/master-data/categories" element={<CategoriesPage />} />
-              <Route path="/master-data/branches" element={<BranchesPage />} />
-              <Route path="/master-data/suppliers" element={<SuppliersPage />} />
-              <Route path="/master-data/users" element={<UsersPage />} />
-              <Route path="/inventory/branch-stocks" element={<BranchStocksPage />} />
-              <Route path="/operations/stock-in" element={<StockInPage />} />
-              <Route path="/operations/outbound" element={<OutboundPage />} />
-              <Route path="/operations/transfers" element={<TransfersPage />} />
-              <Route path="/operations/transfers/new" element={<TransferCreatePage />} />
-              <Route path="/operations/transfers/:id" element={<TransferDetailPage />} />
-              <Route path="/operations/transfers/:id/receive" element={<TransferReceivePage />} />
-              <Route path="/operations/stock-opname" element={<StockOpnamePage />} />
-              <Route path="/operations/stock-opname/:id" element={<StockOpnameDetailPage />} />
-              <Route path="/operations/history" element={<HistoryPage />} />
-              
-              {/* Reports & Analytics */}
-              <Route path="/reports/stock" element={<StockReportPage />} />
-              <Route path="/reports/low-stock" element={<LowStockReportPage />} />
-              <Route path="/reports/item-history" element={<ItemHistoryReportPage />} />
-              <Route path="/reports/item-history/:itemId" element={<ItemHistoryReportPage />} />
-              <Route path="/reports/movements" element={<InventoryMovementReportPage />} />
-              <Route path="/reports/transfer-variance" element={<TransferVarianceReportPage />} />
-              <Route path="/reports/audit-logs" element={<AuditLogReportPage />} />
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <ScrollToTop />
+          <Routes>
+            <Route path="/login" element={!token ? <LoginPage /> : <Navigate to="/" replace />} />
+            
+            <Route element={<ProtectedRoute />}>
+              <Route element={<AppShell />}>
+                <Route path="/" element={<Navigate to="/master-data/items" replace />} />
+                <Route path="/master-data/items" element={<ItemsPage />} />
+                <Route path="/master-data/items/:id" element={<ItemDetailPage />} />
+                <Route path="/master-data/categories" element={<CategoriesPage />} />
+                <Route path="/master-data/branches" element={<BranchesPage />} />
+                <Route path="/master-data/suppliers" element={<SuppliersPage />} />
+                <Route path="/master-data/users" element={<UsersPage />} />
+                <Route path="/inventory/branch-stocks" element={<BranchStocksPage />} />
+                <Route path="/operations/stock-in" element={<StockInPage />} />
+                <Route path="/operations/outbound" element={<OutboundPage />} />
+                <Route path="/operations/transfers" element={<TransfersPage />} />
+                <Route path="/operations/transfers/new" element={<TransferCreatePage />} />
+                <Route path="/operations/transfers/:id" element={<TransferDetailPage />} />
+                <Route path="/operations/transfers/:id/receive" element={<TransferReceivePage />} />
+                <Route path="/operations/stock-opname" element={<StockOpnamePage />} />
+                <Route path="/operations/stock-opname/:id" element={<StockOpnameDetailPage />} />
+                <Route path="/operations/history" element={<HistoryPage />} />
+                
+                {/* Reports & Analytics */}
+                <Route path="/reports/stock" element={<StockReportPage />} />
+                <Route path="/reports/low-stock" element={<LowStockReportPage />} />
+                <Route path="/reports/item-history" element={<ItemHistoryReportPage />} />
+                <Route path="/reports/item-history/:itemId" element={<ItemHistoryReportPage />} />
+                <Route path="/reports/movements" element={<InventoryMovementReportPage />} />
+                <Route path="/reports/transfer-variance" element={<TransferVarianceReportPage />} />
+                <Route path="/reports/audit-logs" element={<AuditLogReportPage />} />
 
-              <Route path="/settings/uom" element={<UOMPage />} />
+                <Route path="/settings/uom" element={<UOMPage />} />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </QueryClientProvider>
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
