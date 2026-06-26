@@ -1,30 +1,28 @@
 # Current Status
 
 ## Phase
-- **Full Operational Simulation Audit (Pre-Production)**: ✅ COMPLETE
-- **Phase 5.6 (Pre-Pilot Hardening)**: ✅ COMPLETE
-- **Phase 6 (Dashboards & Advanced Analytics)**: Pending
+- **Phase 6 (Dashboards & Advanced Analytics)**: 🟡 IN PROGRESS
 
 ## Last Completed
-- **Full Operational Simulation Audit**:
-  - 69 checks across Phases A–I fully automated and executed.
-  - Score: **99/100** — 68 passed, 1 non-bug idempotency note.
-  - All critical workflows verified: Master Data, Stock, Outbound, Concurrency, Transfers, Opname, Reports, RBAC, Data Integrity.
-  - Script: `backend/scripts/full_operational_audit.py`
-  - Report: `final_operational_audit_report.md` in artifacts dir.
-  - No critical or medium bugs found.
-  - One minor API inconsistency: `/api/v1/reports/movements` uses `items` key instead of `data` key.
+- **Phase 6.1 — Operational Dashboard**:
+  - Backend: `GET /api/v1/dashboard/summary` — read-only aggregation (KPIs + notifications + recent activity).
+  - Notifications: low stock count, transfers awaiting receipt, overdue opname sessions (>7 days draft).
+  - Frontend: `useDashboardSummary` hook (staleTime=2min, refetchOnWindowFocus=true).
+  - Frontend: `DashboardPage` with KPI cards, notification center, recent activity feed, quick actions.
+  - Frontend: `TxTypeBadge` reusable component (7 tx types, badge + dot variants).
+  - AppShell: Dashboard nav at top, Analytics nav added to reports section.
+  - Default route changed from `/master-data/items` → `/dashboard`.
 
 ## Current Branch
-- `main` (no new branches needed — audit only)
+- `main`
 
 ## Current Focus
-- Transitioning to Phase 6: Dashboards, PDF & Advanced Analytics
+- Phase 6.3: UX Enhancements (ConfirmDialog, QuantityStepper, ImageLightbox, keyboard nav, EmptyState)
 
 ## Next Task
-- Design Dashboard Architecture (Widgets, KPIs, Charts).
-- Set up PDF generation service (e.g., ReportLab or Playwright).
-- Design Historical Stock Engine.
+- Phase 6.3 UX Enhancements (6 independent components, each self-contained).
+- After 6.3: Phase 6.2 PDF Generation.
+- After 6.2: Phase 6.4 Advanced Analytics.
 
 ## Blockers
 None

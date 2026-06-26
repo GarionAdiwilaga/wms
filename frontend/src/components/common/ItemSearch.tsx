@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, QrCode, X, Image as ImageIcon, CameraOff } from 'lucide-react';
+import { Search, QrCode, X, Image as ImageIcon, CameraOff, Zap } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { useItems, Item } from '../../hooks/useItems';
+import { useItems, Item, useFrequentItems, FrequentItemEntry } from '../../hooks/useItems';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ItemSearchProps {
   onSelect?: (item: Item) => void;
@@ -14,6 +14,14 @@ interface ItemSearchProps {
   value?: string;
   onChange?: (value: string) => void;
   showDropdown?: boolean;
+  /**
+   * Phase 6 — Frequent Items Carousel.
+   * When provided, shows a horizontal quick-select strip below the search bar
+   * with the user's most frequently handled items for this branch.
+   * When omitted (undefined), the carousel is hidden — fully backward-compatible.
+   * Pass `null` explicitly to keep the hook idle (e.g. super_admin before branch selection).
+   */
+  branchId?: number | null;
 }
 
 export function ItemSearch({ 
@@ -23,13 +31,25 @@ export function ItemSearch({
   clearOnSelect = true,
   value,
   onChange,
-  showDropdown = true
+  showDropdown = true,
+  branchId,
 }: ItemSearchProps) {
   const [query, setQuery] = useState(value || '');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+
+  // Phase 6 — Frequent Items Carousel
+  // branchId === undefined  → carousel feature disabled (backward-compat)
+  // branchId === null       → hook idle (super_admin, no branch selected)
+  // branchId === number     → hook fires, carousel rendered when query empty
+  const carouselEnabled = branchId !== undefined;
+  const { data: frequentData, isLoading: isFrequentLoading } = useFrequentItems(
+    carouselEnabled ? branchId : undefined
+  );
+  const frequentItems = frequentData?.data ?? [];
+  const showCarousel = carouselEnabled && !!branchId && query.trim().length === 0 && !isDropdownOpen;
   
   const dropdownRef = useRef<HTMLDivElement>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
@@ -282,6 +302,120 @@ export function ItemSearch({
           )}
         </div>
       )}
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Phase 6 — Frequent Items Carousel                                   */}
+      {/* Appears below the search bar when:                                  */}
+      {/*   • branchId prop is provided (feature enabled)                     */}
+      {/*   • a branch is actually selected (branchId is truthy)              */}
+      {/*   • the search query is empty (gives way to dropdown results)       */}
+      {/* ------------------------------------------------------------------ */}
+      <AnimatePresence>
+        {showCarousel && (
+          <motion.div
+            key="frequent-carousel"
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+            className="mt-2"
+          >
+            {/* Section header */}
+            <div className="flex items-center gap-1.5 px-1 mb-2">
+              <Zap className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                Sering Digunakan
+              </span>
+            </div>
+
+            {isFrequentLoading ? (
+              /* Skeleton shimmer while loading */
+              <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex-shrink-0 w-20 h-24 rounded-lg bg-slate-800 animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : frequentItems.length === 0 ? (
+              /* Empty state — only shown if user has no history yet */
+              <p className="text-xs text-slate-600 px-1 pb-1">
+                Belum ada riwayat. Gunakan fitur ini setelah melakukan transaksi pertama.
+              </p>
+            ) : (
+              /* Horizontal chip strip */
+              <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                {frequentItems.map((entry: FrequentItemEntry, idx: number) => {
+                  // Map FrequentItemEntry → Item shape so handleSelect receives
+                  // the same object type as a standard search-dropdown pick.
+                  const itemProxy: Item = {
+                    item_id: entry.item_id,
+                    item_code: entry.item_code,
+                    name: entry.name,
+                    description: null,
+                    category_id: entry.category?.category_id ?? 0,
+                    supplier_id: entry.supplier?.supplier_id ?? 0,
+                    uom_id: 0,
+                    minimum_stock: 0,
+                    image_url: entry.image_url,
+                    image_path: entry.image_url,
+                    is_active: true,
+                    created_at: '',
+                    updated_at: '',
+                    category: entry.category,
+                    supplier: entry.supplier,
+                  };
+
+                  return (
+                    <motion.button
+                      key={entry.item_id}
+                      type="button"
+                      initial={{ opacity: 0, scale: 0.92 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: idx * 0.04, duration: 0.15 }}
+                      onClick={() => handleSelect(itemProxy)}
+                      title={`${entry.name} — ${entry.item_code}`}
+                      aria-label={`Pilih ${entry.name}`}
+                      className={
+                        'flex-shrink-0 flex flex-col items-center gap-1.5 w-20 p-2 rounded-lg ' +
+                        'bg-slate-900 border border-slate-800 ' +
+                        'hover:border-amber-500/60 hover:bg-slate-800 ' +
+                        'active:scale-95 transition-all duration-150 ' +
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500'
+                      }
+                    >
+                      {/* Item thumbnail */}
+                      <div className="h-10 w-10 flex-shrink-0 rounded-md bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center">
+                        {entry.image_url ? (
+                          <img
+                            src={entry.image_url}
+                            alt={entry.name}
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <ImageIcon className="h-4 w-4 text-slate-600" />
+                        )}
+                      </div>
+
+                      {/* Item name — truncated to 2 lines */}
+                      <p className="text-[10px] text-slate-300 text-center leading-tight line-clamp-2 w-full">
+                        {entry.name}
+                      </p>
+
+                      {/* Item code badge */}
+                      <span className="text-[9px] px-1 py-0.5 rounded bg-slate-950 border border-slate-800 text-amber-500 font-mono font-semibold truncate max-w-full">
+                        {entry.item_code}
+                      </span>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* QR Code Scanner Overlay */}
       {isScanning && (

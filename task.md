@@ -166,7 +166,28 @@
 
 ---
 
-## Phase 6: Dashboards, PDF & Advanced Analytics (Planning)
+## Phase 6: Dashboards, PDF & Advanced Analytics
+
+### 6.0 Frequent Items Carousel (Phase 6 First Delivery)
+- `[x]` Backend: Add `FrequentItemEntry` and `FrequentItemsResponse` Pydantic schemas to `backend/app/schemas/item.py`
+- `[x]` Backend: Implement `GET /api/v1/items/frequent` read-only endpoint in `backend/app/api/v1/endpoints/item.py`
+  - Auth: any active user
+  - Filter: `created_by=current_user`, `branch_id`, `reference_type IN ('stock_in','outbound','transfer')`, `created_at >= NOW()-30d`
+  - Rank: `COUNT(*) DESC`, `SUM(quantity) DESC`
+  - Super Admin no branch → returns `data: []` (carousel hidden)
+  - No migration, no new tables, no backend cache
+- `[x]` Frontend: Add `FrequentItemEntry`, `FrequentItemsResponse` interfaces and `useFrequentItems` hook to `frontend/src/hooks/useItems.ts`
+  - `enabled: !!branchId`, `staleTime: 5 minutes`
+- `[x]` Frontend: Add `branchId?` optional prop + horizontal carousel UI to `ItemSearch` component
+  - Carousel renders only when `branchId` truthy AND query empty
+  - AnimatePresence fade + stagger chip entrance
+  - Skeleton shimmer while loading, empty-state copy when no history
+  - Chip tap fires `handleSelect(item)` identical to dropdown pick
+  - Backward-compatible: all existing `<ItemSearch>` usages unchanged
+- `[x]` Frontend: Wire `branchId` into `<ItemSearch>` in `StockInPage.tsx`
+- `[x]` Frontend: Wire `branchId` into `<ItemSearch>` in `OutboundPage.tsx`
+- `[x]` Frontend: Wire `branchId` into `<ItemSearch>` in `TransferCreatePage.tsx` (source branch)
+- `[x]` Frontend: Wire `branchId` into `<ItemSearch>` in `StockOpnameDetailPage.tsx` (session branch)
 
 ### 6.1 Dashboards
 - `[ ]` Define Dashboard Metrics (must consume `ReportService`)

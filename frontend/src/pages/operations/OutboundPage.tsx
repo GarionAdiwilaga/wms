@@ -169,7 +169,11 @@ export function OutboundPage() {
               <ShoppingCart className="h-5 w-5 text-amber-500" />
               Cari & Tambah Barang
             </h3>
-            <ItemSearch onSelect={handleItemSelect} clearOnSelect={true} />
+            <ItemSearch
+              onSelect={handleItemSelect}
+              clearOnSelect={true}
+              branchId={user?.role === 'super_admin' ? (branchId ?? null) : (user?.branch_id ?? null)}
+            />
             {isCheckingStock && <p className="text-xs text-amber-500 animate-pulse">Menghitung stok cabang...</p>}
           </div>
 

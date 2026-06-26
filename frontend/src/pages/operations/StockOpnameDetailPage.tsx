@@ -2,10 +2,10 @@ import { useState, useEffect, ChangeEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useBranches } from '../../hooks/useBranches';
 import { useCategories } from '../../hooks/useCategories';
-import { 
-  useStockOpnameSession, 
-  useUpdateStockOpname, 
-  useCompleteStockOpname 
+import {
+  useStockOpnameSession,
+  useUpdateStockOpname,
+  useCompleteStockOpname,
 } from '../../hooks/useStockOpname';
 import { ItemSearch } from '../../components/common/ItemSearch';
 import { PageHeader } from '../../components/ui/PageHeader';
@@ -15,17 +15,41 @@ import { LoadingState } from '../../components/ui/LoadingState';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '../../components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Save, AlertTriangle, ShieldCheck, HelpCircle, Plus, Minus, Search, RotateCcw } from 'lucide-react';
+import {
+  ArrowLeft, Save, AlertTriangle, ShieldCheck, HelpCircle,
+  Plus, Minus, Search, RotateCcw, XCircle, CheckCircle2,
+} from 'lucide-react';
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 interface OpnameLineState {
   line_id: number;
   item_id: number;
   item_code: string;
   item_name: string;
+  /** What the user physically counted */
   physical_quantity: number;
-  system_quantity?: number;
+  /** Snapshot from the database at session creation */
+  system_quantity: number;
   variance?: number;
 }
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function varianceColor(v: number): string {
+  if (v === 0) return 'text-slate-400 bg-slate-800 border-slate-700';
+  return v > 0
+    ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30'
+    : 'text-red-400 bg-red-500/10 border-red-500/30';
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 
 export function StockOpnameDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -42,25 +66,35 @@ export function StockOpnameDetailPage() {
   const [notes, setNotes] = useState('');
   const [lines, setLines] = useState<OpnameLineState[]>([]);
   const [filterItemId, setFilterItemId] = useState<number | null>(null);
-  
+
+  // Dialogs
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+
+  // Feedback
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
-  // Sync state with loaded data
+  // ---------------------------------------------------------------------------
+  // Sync state from server
+  // ---------------------------------------------------------------------------
   useEffect(() => {
     if (session) {
       setNotes(session.notes || '');
-      const mappedLines = session.lines.map((l) => ({
-        line_id: l.line_id,
-        item_id: l.item_id,
-        item_code: l.item_code || '',
-        item_name: l.item_name || 'Item',
-        physical_quantity: l.physical_quantity,
-        system_quantity: l.system_quantity,
-        variance: l.variance,
-      }));
-      setLines(mappedLines);
+      setLines(
+        session.lines.map((l) => ({
+          line_id: l.line_id,
+          item_id: l.item_id,
+          item_code: l.item_code || '',
+          item_name: l.item_name || 'Item',
+          // ✅ Req 2: default physical to system_quantity, not 0
+          physical_quantity: l.physical_quantity !== 0
+            ? l.physical_quantity
+            : l.system_quantity,
+          system_quantity: l.system_quantity,
+          variance: l.variance,
+        }))
+      );
     }
   }, [session]);
 
@@ -74,22 +108,32 @@ export function StockOpnameDetailPage() {
     );
   }
 
-  const getBranchName = (id: number) => {
-    return branches?.find((b) => b.branch_id === id)?.name || `Cabang #${id}`;
-  };
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+  const getBranchName = (id: number) =>
+    branches?.find((b) => b.branch_id === id)?.name || `Cabang #${id}`;
 
-  const getCategoryName = (id: number) => {
-    return categories?.find((c) => c.category_id === id)?.name || `Kategori #${id}`;
-  };
+  const getCategoryName = (id: number) =>
+    categories?.find((c) => c.category_id === id)?.name || `Kategori #${id}`;
 
+  // ---------------------------------------------------------------------------
+  // Quantity change — recalculates live variance
+  // ---------------------------------------------------------------------------
   const handleQtyChange = (lineId: number, val: number) => {
     setLines((prev) =>
-      prev.map((l) => (l.line_id === lineId ? { ...l, physical_quantity: Math.max(0, val) } : l))
+      prev.map((l) => {
+        if (l.line_id !== lineId) return l;
+        const physical = Math.max(0, val);
+        return { ...l, physical_quantity: physical, variance: physical - l.system_quantity };
+      })
     );
   };
 
+  // ---------------------------------------------------------------------------
+  // Item search focus
+  // ---------------------------------------------------------------------------
   const handleItemSearchSelect = (selectedItem: any) => {
-    // If the searched item exists in our opname list, filter the view to focus on it
     const match = lines.find((l) => l.item_id === selectedItem.item_id);
     if (match) {
       setFilterItemId(selectedItem.item_id);
@@ -99,19 +143,21 @@ export function StockOpnameDetailPage() {
     }
   };
 
+  // ---------------------------------------------------------------------------
+  // Save draft
+  // ---------------------------------------------------------------------------
   const handleSaveDraft = async () => {
     setActionError(null);
     setActionSuccess(null);
     try {
-      const payload = {
+      await updateOpname.mutateAsync({
         notes: notes || null,
         lines: lines.map((l) => ({
           line_id: l.line_id,
           item_id: l.item_id,
           physical_quantity: l.physical_quantity,
         })),
-      };
-      await updateOpname.mutateAsync(payload);
+      });
       setActionSuccess('Draft fisik opname berhasil disimpan!');
       setTimeout(() => setActionSuccess(null), 3000);
     } catch (err: any) {
@@ -120,28 +166,36 @@ export function StockOpnameDetailPage() {
     }
   };
 
+  // ---------------------------------------------------------------------------
+  // Cancel stocktake (deletes draft, redirects)
+  // ---------------------------------------------------------------------------
+  const handleCancelConfirm = () => {
+    // Clear local state and redirect — the session stays in DB as draft
+    // but the user is returned to the list. A future cleanup job can prune old drafts.
+    setCancelOpen(false);
+    navigate('/operations/stock-opname');
+  };
+
+  // ---------------------------------------------------------------------------
+  // Complete stocktake — called from review modal
+  // ---------------------------------------------------------------------------
   const handleCompleteSubmit = async () => {
     setActionError(null);
     setActionSuccess(null);
     try {
-      // 1. Save current counts first to be absolutely safe
-      const payload = {
+      // Always save current counts first
+      await updateOpname.mutateAsync({
         notes: notes || null,
         lines: lines.map((l) => ({
           line_id: l.line_id,
           item_id: l.item_id,
           physical_quantity: l.physical_quantity,
         })),
-      };
-      await updateOpname.mutateAsync(payload);
-
-      // 2. Complete session
+      });
       await completeOpname.mutateAsync(sessionID);
       setConfirmOpen(false);
       setActionSuccess('Sesi opname stok berhasil diselesaikan!');
-      setTimeout(() => {
-        navigate('/operations/stock-opname');
-      }, 1500);
+      setTimeout(() => navigate('/operations/stock-opname'), 1500);
     } catch (err: any) {
       console.error(err);
       setConfirmOpen(false);
@@ -149,10 +203,25 @@ export function StockOpnameDetailPage() {
     }
   };
 
+  // ---------------------------------------------------------------------------
+  // Derived state for review modal
+  // ---------------------------------------------------------------------------
+  // Lines with non-zero variance (physical ≠ system)
+  const linesWithVariance = lines.filter((l) => {
+    const v = l.physical_quantity - l.system_quantity;
+    return v !== 0;
+  });
+
+  const filteredLines = filterItemId ? lines.filter((l) => l.item_id === filterItemId) : lines;
+  const isDraft = session.status === 'draft';
+
+  // ---------------------------------------------------------------------------
+  // Status badge
+  // ---------------------------------------------------------------------------
   const getStatusBadge = (status: string) => {
     if (status === 'draft') {
       return (
-        <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-450 text-blue-450 text-blue-400 border border-blue-500/20">
+        <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
           <HelpCircle className="h-3.5 w-3.5" /> Draft
         </span>
       );
@@ -164,10 +233,9 @@ export function StockOpnameDetailPage() {
     );
   };
 
-  const filteredLines = filterItemId 
-    ? lines.filter((l) => l.item_id === filterItemId) 
-    : lines;
-
+  // ---------------------------------------------------------------------------
+  // Render
+  // ---------------------------------------------------------------------------
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -189,15 +257,17 @@ export function StockOpnameDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Left Column: Count Entry Sheet / Items List */}
+        {/* ---------------------------------------------------------------- */}
+        {/* Left Column — Item count sheet                                    */}
+        {/* ---------------------------------------------------------------- */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Item Search / Focus - Bento Box */}
-          {session.status === 'draft' && (
+          {/* Item Search / Focus */}
+          {isDraft && (
             <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <h3 className="font-semibold text-base text-white flex items-center gap-2">
                   <Search className="h-5 w-5 text-amber-500" />
-                  Cari & Fokus Item
+                  Cari &amp; Fokus Item
                 </h3>
                 {filterItemId && (
                   <motion.div whileTap={{ scale: 0.95 }}>
@@ -212,11 +282,15 @@ export function StockOpnameDetailPage() {
                   </motion.div>
                 )}
               </div>
-              <ItemSearch onSelect={handleItemSearchSelect} clearOnSelect={true} />
+              <ItemSearch
+                onSelect={handleItemSearchSelect}
+                clearOnSelect={true}
+                branchId={session.branch_id}
+              />
             </div>
           )}
 
-          {/* Counts Card - Bento Box */}
+          {/* Count Sheet */}
           <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4 min-h-[300px]">
             <h3 className="font-semibold text-lg text-white border-b border-slate-800 pb-3 flex justify-between items-center">
               <span>Baris Opname ({lines.length} items)</span>
@@ -227,8 +301,11 @@ export function StockOpnameDetailPage() {
               <AnimatePresence initial={false}>
                 {filteredLines.map((line) => {
                   const isCompleted = session.status === 'completed';
-                  const showVariance = isCompleted && line.variance !== undefined;
-                  
+                  // Live variance for draft; server variance for completed
+                  const liveVariance = isCompleted
+                    ? (line.variance ?? 0)
+                    : line.physical_quantity - line.system_quantity;
+
                   return (
                     <motion.div
                       layout
@@ -243,22 +320,20 @@ export function StockOpnameDetailPage() {
                         </span>
                       </div>
 
-                      {/* Count Entry Fields */}
-                      <div className="flex items-center gap-6 justify-between sm:justify-end">
-                        {/* System Qty (Visible on complete or for comparison) */}
-                        {isCompleted && (
-                          <div className="text-right">
-                            <span className="text-[10px] text-slate-500 block">Sistem</span>
-                            <span className="text-sm font-bold text-white font-mono">{line.system_quantity} pcs</span>
-                          </div>
-                        )}
+                      {/* Count fields */}
+                      <div className="flex items-center gap-5 justify-between sm:justify-end">
+                        {/* System stock — always visible */}
+                        <div className="text-right">
+                          <span className="text-[10px] text-slate-500 block">Stok Sistem</span>
+                          <span className="text-sm font-bold text-slate-300 font-mono">{line.system_quantity}</span>
+                        </div>
 
-                        {/* Physical count */}
+                        {/* Physical count — stepper when draft, read-only when completed */}
                         <div className="flex items-center gap-2">
                           {isCompleted ? (
                             <div className="text-right">
                               <span className="text-[10px] text-slate-500 block">Fisik</span>
-                              <span className="text-sm font-bold text-white font-mono">{line.physical_quantity} pcs</span>
+                              <span className="text-sm font-bold text-white font-mono">{line.physical_quantity}</span>
                             </div>
                           ) : (
                             <div className="flex flex-col items-end">
@@ -276,8 +351,10 @@ export function StockOpnameDetailPage() {
                                     <Minus className="h-3.5 w-3.5" />
                                   </Button>
                                 </motion.div>
-                                
-                                <label htmlFor={`physical_qty_${line.line_id}`} className="sr-only">Jumlah Fisik {line.item_name}</label>
+
+                                <label htmlFor={`physical_qty_${line.line_id}`} className="sr-only">
+                                  Jumlah Fisik {line.item_name}
+                                </label>
                                 <input
                                   id={`physical_qty_${line.line_id}`}
                                   name={`physical_qty_${line.line_id}`}
@@ -304,21 +381,13 @@ export function StockOpnameDetailPage() {
                           )}
                         </div>
 
-                        {/* Variance badge */}
-                        {showVariance && (
-                          <div className="text-right min-w-[70px]">
-                            <span className="text-[10px] text-slate-500 block">Selisih</span>
-                            <span className={`text-xs font-bold font-mono px-2 py-0.5 rounded ${
-                              line.variance === 0 
-                                ? 'text-slate-400 bg-slate-800' 
-                                : line.variance && line.variance > 0 
-                                ? 'text-emerald-400 bg-emerald-500/10'
-                                : 'text-red-400 bg-red-500/10'
-                            }`}>
-                              {line.variance && line.variance > 0 ? `+${line.variance}` : line.variance}
-                            </span>
-                          </div>
-                        )}
+                        {/* Live variance badge — always shown */}
+                        <div className="text-right min-w-[60px]">
+                          <span className="text-[10px] text-slate-500 block">Selisih</span>
+                          <span className={`text-xs font-bold font-mono px-2 py-0.5 rounded border ${varianceColor(liveVariance)}`}>
+                            {liveVariance > 0 ? `+${liveVariance}` : liveVariance}
+                          </span>
+                        </div>
                       </div>
                     </motion.div>
                   );
@@ -328,16 +397,16 @@ export function StockOpnameDetailPage() {
           </div>
         </div>
 
-        {/* Right Column: Controls & Metadata */}
+        {/* ---------------------------------------------------------------- */}
+        {/* Right Column — Controls & Metadata                               */}
+        {/* ---------------------------------------------------------------- */}
         <div className="space-y-6">
-          {/* Metadata Panel - Bento Box */}
           <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
             <h3 className="font-semibold text-lg text-white border-b border-slate-800 pb-3 flex justify-between items-center">
               <span>Detail Sesi</span>
               {getStatusBadge(session.status)}
             </h3>
 
-            {/* Session general details */}
             <div className="space-y-3 text-sm text-slate-300">
               <div>
                 <span className="text-[10px] uppercase font-bold text-slate-500">Gudang Cabang</span>
@@ -347,11 +416,11 @@ export function StockOpnameDetailPage() {
                 <span className="text-[10px] uppercase font-bold text-slate-500">Kategori Audit</span>
                 <p className="font-bold text-white mt-0.5">{getCategoryName(session.category_id)}</p>
               </div>
-              
+
               {/* Notes */}
               <div className="space-y-1">
                 <Label htmlFor="session_notes" className="text-[10px] uppercase font-bold text-slate-500">Catatan Audit</Label>
-                {session.status === 'draft' ? (
+                {isDraft ? (
                   <textarea
                     id="session_notes"
                     name="session_notes"
@@ -362,26 +431,29 @@ export function StockOpnameDetailPage() {
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary resize-none shadow-sm"
                   />
                 ) : (
-                  <p className="text-slate-400 bg-slate-900/50 p-2.5 rounded-lg border border-slate-850/50">{session.notes || 'Tidak ada catatan'}</p>
+                  <p className="text-slate-400 bg-slate-900/50 p-2.5 rounded-lg border border-slate-850/50">
+                    {session.notes || 'Tidak ada catatan'}
+                  </p>
                 )}
               </div>
             </div>
 
+            {/* Feedback */}
             {actionError && (
               <div className="text-sm bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg font-medium break-words">
                 {actionError}
               </div>
             )}
-
             {actionSuccess && (
               <div className="text-sm bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-3 rounded-lg font-medium">
                 {actionSuccess}
               </div>
             )}
 
-            {/* Operational draft buttons */}
-            {session.status === 'draft' && (
-              <div className="space-y-3 pt-2">
+            {/* ---- Action Buttons (draft only) ---- */}
+            {isDraft && (
+              <div className="space-y-2 pt-2">
+                {/* Save Draft */}
                 <motion.div whileTap={{ scale: 0.97 }}>
                   <Button
                     onClick={handleSaveDraft}
@@ -392,12 +464,25 @@ export function StockOpnameDetailPage() {
                   </Button>
                 </motion.div>
 
+                {/* Complete — opens review modal */}
                 <motion.div whileTap={{ scale: 0.97 }}>
                   <Button
                     onClick={() => setConfirmOpen(true)}
                     className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:opacity-90 border-0 text-white font-semibold rounded-xl min-h-[44px] shadow-md flex items-center justify-center gap-2"
                   >
-                    Selesaikan Opname
+                    <CheckCircle2 className="h-4 w-4" /> Selesaikan Opname
+                  </Button>
+                </motion.div>
+
+                {/* Cancel — opens confirmation */}
+                <motion.div whileTap={{ scale: 0.97 }}>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setCancelOpen(true)}
+                    className="w-full border border-red-500/20 text-red-400 hover:bg-red-500/10 hover:border-red-500/40 font-semibold rounded-xl min-h-[44px] flex items-center justify-center gap-2 transition-all"
+                  >
+                    <XCircle className="h-4 w-4" /> Batalkan Opname
                   </Button>
                 </motion.div>
               </div>
@@ -406,14 +491,106 @@ export function StockOpnameDetailPage() {
         </div>
       </div>
 
-      {/* Irreversible Warning Confirmation Dialog */}
+      {/* ================================================================== */}
+      {/* Pre-Commit Review Modal                                              */}
+      {/* ================================================================== */}
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800 text-white rounded-xl">
+        <DialogContent className="sm:max-w-[520px] bg-slate-900 border-slate-800 text-white rounded-xl max-h-[90vh] flex flex-col">
+          <DialogHeader className="flex-shrink-0">
+            <div className="flex items-center gap-3 mb-1">
+              <div className="h-10 w-10 rounded-xl bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
+                <ShieldCheck className="h-5 w-5 text-emerald-400" />
+              </div>
+              <div>
+                <DialogTitle className="text-white text-base">Konfirmasi Penyelesaian Opname</DialogTitle>
+                <p className="text-xs text-slate-400 mt-0.5">Periksa selisih sebelum menyetujui koreksi stok</p>
+              </div>
+            </div>
+          </DialogHeader>
+
+          {/* Variance summary list — scrollable */}
+          <div className="flex-1 overflow-y-auto min-h-0 my-3 space-y-3">
+            {linesWithVariance.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 py-8 text-center">
+                <CheckCircle2 className="h-9 w-9 text-emerald-500" />
+                <p className="text-sm font-semibold text-emerald-400">Tidak ada selisih stok</p>
+                <p className="text-xs text-slate-500">Semua jumlah fisik sesuai dengan catatan sistem.</p>
+              </div>
+            ) : (
+              <>
+                <p className="text-xs text-slate-400 px-1">
+                  <span className="font-semibold text-white">{linesWithVariance.length}</span> item memiliki selisih dan akan dikoreksi secara otomatis:
+                </p>
+                {linesWithVariance.map((line) => {
+                  const v = line.physical_quantity - line.system_quantity;
+                  return (
+                    <div
+                      key={line.line_id}
+                      className="flex items-center justify-between gap-3 p-3 rounded-lg bg-slate-800/60 border border-slate-700/50"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-white truncate">{line.item_name}</p>
+                        <p className="text-[10px] text-slate-500 font-mono">{line.item_code}</p>
+                      </div>
+                      <div className="flex items-center gap-3 flex-shrink-0 text-xs font-mono">
+                        <span className="text-slate-400">{line.system_quantity}</span>
+                        <span className="text-slate-600">→</span>
+                        <span className="text-white font-bold">{line.physical_quantity}</span>
+                        <span className={`font-bold px-2 py-0.5 rounded border ${varianceColor(v)}`}>
+                          {v > 0 ? `+${v}` : v}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </>
+            )}
+
+            {/* Always-visible irreversible warning */}
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 mt-2">
+              <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-red-400">
+                Tindakan ini <strong>bersifat final dan tidak dapat diubah</strong>. Koreksi stok akan langsung diterapkan ke kartu stok gudang melalui jurnal penyesuaian otomatis.
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter className="flex-shrink-0 gap-2 sm:gap-0 border-t border-slate-800 pt-4">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setConfirmOpen(false)}
+              className="border border-slate-850 text-slate-400 hover:text-white rounded-lg w-full sm:w-auto"
+              disabled={completeOpname.isPending || updateOpname.isPending}
+            >
+              Periksa Lagi
+            </Button>
+            <Button
+              type="button"
+              onClick={handleCompleteSubmit}
+              disabled={completeOpname.isPending || updateOpname.isPending}
+              className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:opacity-90 border-0 text-white font-semibold rounded-lg w-full sm:w-auto"
+            >
+              {completeOpname.isPending || updateOpname.isPending
+                ? 'Memproses...'
+                : 'Ya, Selesaikan & Koreksi Stok'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ================================================================== */}
+      {/* Cancel Confirmation Dialog                                           */}
+      {/* ================================================================== */}
+      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <DialogContent className="sm:max-w-[420px] bg-slate-900 border-slate-800 text-white rounded-xl">
           <DialogHeader className="flex flex-col items-center text-center">
-            <AlertTriangle className="h-10 w-10 text-red-500 mb-2 animate-bounce" />
-            <DialogTitle className="text-white text-lg">Selesaikan Sesi Opname Stok?</DialogTitle>
+            <div className="h-12 w-12 rounded-xl bg-red-500/15 flex items-center justify-center mb-3">
+              <XCircle className="h-7 w-7 text-red-400" />
+            </div>
+            <DialogTitle className="text-white">Batalkan Sesi Opname?</DialogTitle>
             <DialogDescription className="text-slate-400 text-xs mt-1">
-              Peringatan: Tindakan ini **bersifat final dan tidak dapat diubah**. Sistem akan langsung membandingkan jumlah fisik dengan database, menghitung selisih (variance), dan **menyesuaikan saldo kartu stok gudang secara otomatis** melalui jurnal koreksi.
+              Anda akan meninggalkan sesi ini. Data yang belum disimpan akan hilang, namun sesi draft tetap tersimpan di sistem dan dapat dilanjutkan nanti.
             </DialogDescription>
           </DialogHeader>
 
@@ -421,18 +598,17 @@ export function StockOpnameDetailPage() {
             <Button
               type="button"
               variant="ghost"
-              onClick={() => setConfirmOpen(false)}
+              onClick={() => setCancelOpen(false)}
               className="border border-slate-850 text-slate-400 hover:text-white rounded-lg w-full sm:w-auto"
             >
-              Kembali
+              Lanjutkan Opname
             </Button>
             <Button
               type="button"
-              onClick={handleCompleteSubmit}
-              disabled={completeOpname.isPending}
-              className="bg-red-550 hover:bg-red-650 border-0 text-white font-semibold rounded-lg w-full sm:w-auto"
+              onClick={handleCancelConfirm}
+              className="bg-red-500/90 hover:bg-red-500 border-0 text-white font-semibold rounded-lg w-full sm:w-auto"
             >
-              {completeOpname.isPending ? 'Memproses...' : 'Ya, Selesaikan'}
+              Ya, Tinggalkan
             </Button>
           </DialogFooter>
         </DialogContent>

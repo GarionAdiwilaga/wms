@@ -17,7 +17,8 @@ import {
   ArrowLeftRight,
   ClipboardList,
   AlertTriangle,
-  BarChart3
+  BarChart3,
+  TrendingUp
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
@@ -31,6 +32,10 @@ interface NavItem {
   icon: React.ElementType;
   roles: string[];
 }
+
+const dashboardItems: NavItem[] = [
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
+];
 
 const masterDataItems: NavItem[] = [
   { name: 'Barang', href: '/master-data/items', icon: Package, roles: ['super_admin', 'branch_head', 'warehouse_staff'] },
@@ -56,6 +61,7 @@ const reportsItems: NavItem[] = [
   { name: 'Mutasi Stok', href: '/reports/movements', icon: BarChart3, roles: ['super_admin', 'branch_head'] },
   { name: 'Selisih Mutasi', href: '/reports/transfer-variance', icon: ClipboardList, roles: ['super_admin', 'branch_head'] },
   { name: 'Log Audit', href: '/reports/audit-logs', icon: Users, roles: ['super_admin', 'branch_head'] },
+  { name: 'Analitik', href: '/analytics', icon: TrendingUp, roles: ['super_admin', 'branch_head'] },
 ];
 
 const settingsItems: NavItem[] = [
@@ -76,6 +82,28 @@ export function AppShell() {
 
   const NavLinks = ({ onClick }: { onClick?: () => void }) => (
     <nav className="space-y-6">
+      {/* Dashboard — top of nav, all roles */}
+      <div>
+        <div className="space-y-1">
+          {dashboardItems.filter(i => user && i.roles.includes(user.role)).map((item) => (
+            <NavLink
+              key={item.href}
+              to={item.href}
+              onClick={onClick}
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors min-h-[48px]",
+                  isActive ? "bg-amber-500/10 text-amber-500" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                )
+              }
+            >
+              <item.icon className="h-5 w-5" />
+              {item.name}
+            </NavLink>
+          ))}
+        </div>
+      </div>
+
       <div>
         <h3 className="mb-2 px-4 text-xs font-semibold tracking-tight text-slate-400 uppercase">
           Warehouse Operations

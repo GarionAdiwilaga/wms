@@ -126,7 +126,11 @@ export function TransferCreatePage() {
               <ArrowLeftRight className="h-5 w-5 text-amber-500" />
               Pilih Barang Kiriman
             </h3>
-            <ItemSearch onSelect={handleItemSelect} clearOnSelect={true} />
+            <ItemSearch
+              onSelect={handleItemSelect}
+              clearOnSelect={true}
+              branchId={user?.role === 'super_admin' ? (sourceBranchId ?? null) : (user?.branch_id ?? null)}
+            />
           </div>
 
           {/* Cart List Bento Box */}

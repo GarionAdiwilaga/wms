@@ -151,3 +151,17 @@
 **Decision:** Implemented a `<ScrollToTop />` wrapper directly inside the `<BrowserRouter>` in `App.tsx`.
 **Business Rule:** The browser automatically scrolls to the top of the viewport (`window.scrollTo({ top: 0, behavior: 'smooth' })`) upon any route path change.
 **Reason:** Solves the common SPA issue where deep-scrolled pages leave the user stranded at the bottom when navigating to a new module.
+
+---
+
+## 2026-06-25
+
+### Phase 6 — Frequent Items Carousel
+**Decision:** Implement a read-only `GET /api/v1/items/frequent` endpoint that aggregates the *current user's* most frequently handled items for a specific branch over the last 30 days.
+**Business Rule:**
+- Filters: `created_by = current_user`, `branch_id = active_branch`, `reference_type IN ('stock_in', 'outbound', 'transfer')`, `created_at >= NOW() - 30 days`.
+- Excludes: `initial_load`, `opname`, `manual`, `system` (administrative/adjustment transactions).
+- Rank: `COUNT(*) DESC` (primary) then `SUM(quantity) DESC` (tie-breaker).
+- Super Admin with no branch selected → carousel hidden (empty response, no global aggregation).
+- No migration. No new tables. No scheduled jobs. No backend cache. React Query `staleTime` = 5 minutes.
+**Reason:** Personalised by user rather than branch-wide popularity to reflect the operator's actual repetitive workflow. Avoids misleading Super Admin recommendations. The `carousel_type` field in the response envelope is a forward-compatibility hook allowing a future "recent items" carousel to reuse the same API shape with a distinct `carousel_type` value without an architecture change.

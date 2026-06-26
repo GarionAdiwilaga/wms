@@ -47,3 +47,36 @@ class PaginatedItemResponse(BaseModel):
     page: int
     page_size: int
     total_pages: int
+
+
+# ---------------------------------------------------------------------------
+# Phase 6 — Frequent Items Carousel (read-only analytics, no ledger changes)
+# ---------------------------------------------------------------------------
+
+class FrequentItemEntry(BaseModel):
+    """A single item in the frequent-items carousel result set."""
+    item_id: int
+    item_code: str
+    name: str
+    image_url: Optional[str] = None
+    # Ranking signals returned for transparency / future sorting overrides
+    transaction_count: int   # COUNT(*) — primary rank signal
+    total_quantity: int      # SUM(quantity) — secondary rank signal
+    category: Optional[CategoryResponse] = None
+    supplier: Optional[SupplierResponse] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FrequentItemsResponse(BaseModel):
+    """
+    Response envelope for the /items/frequent endpoint.
+
+    `carousel_type` is a forward-compatibility field that allows the frontend
+    to distinguish between different carousel variants (e.g. 'frequent' vs
+    'recent') without requiring an API architecture change when a second
+    carousel type is added in the future.
+    """
+    data: list[FrequentItemEntry]
+    branch_id: Optional[int]
+    carousel_type: str = "frequent"

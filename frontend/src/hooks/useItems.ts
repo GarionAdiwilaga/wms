@@ -166,3 +166,68 @@ export const useLookupItem = () => {
     },
   });
 };
+
+// ---------------------------------------------------------------------------
+// Phase 6 — Frequent Items Carousel (read-only analytics)
+// ---------------------------------------------------------------------------
+
+/** Shape of a single entry returned by GET /items/frequent */
+export interface FrequentItemEntry {
+  item_id: number;
+  item_code: string;
+  name: string;
+  image_url: string | null;
+  transaction_count: number;  // COUNT(*) — primary rank signal
+  total_quantity: number;     // SUM(quantity) — secondary rank signal
+  category?: {
+    category_id: number;
+    name: string;
+    code_prefix: string;
+  };
+  supplier?: {
+    supplier_id: number;
+    name: string;
+    code_prefix: string;
+  };
+}
+
+/** Response envelope for GET /items/frequent */
+export interface FrequentItemsResponse {
+  data: FrequentItemEntry[];
+  branch_id: number | null;
+  /**
+   * Forward-compatibility: identifies which carousel variant this response
+   * belongs to. Currently always "frequent". A future "recent" carousel will
+   * use a distinct carousel_type without requiring API architecture changes.
+   */
+  carousel_type: string;
+}
+
+/**
+ * Fetches the current user's most frequently handled items for the given
+ * branch over the last 30 days. Returns empty when branchId is falsy so the
+ * carousel can be hidden without extra conditional logic at the call site.
+ *
+ * @param branchId  Active branch. Pass null/undefined to disable the query.
+ * @param limit     Number of items to request (default 12).
+ */
+export const useFrequentItems = (
+  branchId: number | null | undefined,
+  limit = 12,
+) => {
+  return useQuery({
+    queryKey: ['items', 'frequent', branchId, limit],
+    queryFn: async (): Promise<FrequentItemsResponse> => {
+      const params = new URLSearchParams();
+      if (branchId) params.append('branch_id', branchId.toString());
+      params.append('limit', limit.toString());
+      const response = await api.get('/items/frequent', { params });
+      return response.data;
+    },
+    // Only fire when a branch is actually selected.
+    // When branchId is null/undefined the query stays idle and returns
+    // { data: undefined } — the carousel simply won't render.
+    enabled: !!branchId,
+    staleTime: 5 * 60 * 1000, // 5 minutes — matches approved spec
+  });
+};

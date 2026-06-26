@@ -23,6 +23,7 @@ import { TransferDetailPage } from './pages/operations/TransferDetailPage';
 import { TransferReceivePage } from './pages/operations/TransferReceivePage';
 import { StockOpnamePage } from './pages/operations/StockOpnamePage';
 import { StockOpnameDetailPage } from './pages/operations/StockOpnameDetailPage';
+import { DashboardPage } from './pages/dashboard/DashboardPage';
 
 // Reports
 import { StockReportPage } from './pages/reports/StockReportPage';
@@ -54,7 +55,8 @@ function App() {
             
             <Route element={<ProtectedRoute />}>
               <Route element={<AppShell />}>
-                <Route path="/" element={<Navigate to="/master-data/items" replace />} />
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/master-data/items" element={<ItemsPage />} />
                 <Route path="/master-data/items/:id" element={<ItemDetailPage />} />
                 <Route path="/master-data/categories" element={<CategoriesPage />} />
