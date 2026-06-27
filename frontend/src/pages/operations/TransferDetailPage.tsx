@@ -14,7 +14,8 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { Label } from '../../components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '../../components/ui/dialog';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Truck, CheckCircle2, XCircle, AlertCircle, FileText, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Truck, CheckCircle2, XCircle, AlertCircle, FileText, ArrowRight, Loader2 } from 'lucide-react';
+import { api } from '../../lib/api';
 
 export function TransferDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -23,6 +24,41 @@ export function TransferDetailPage() {
   
   const transferId = Number(id);
   const { data: transfer, isLoading, error } = useTransfer(transferId);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    setDownloadingPdf(true);
+    try {
+      const response = await api.get(`/transfers/${transferId}/pdf`, {
+        responseType: 'blob'
+      });
+      
+      let filename = `transfer_${transfer?.transfer_number || transferId}.pdf`;
+      const disposition = response.headers['content-disposition'];
+      if (disposition && disposition.indexOf('attachment') !== -1) {
+        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+        const matches = filenameRegex.exec(disposition);
+        if (matches != null && matches[1]) {
+          filename = matches[1].replace(/['"]/g, '');
+        }
+      }
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download PDF:', err);
+      alert('Gagal mengunduh PDF.');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
   const { data: branches } = useBranches();
   
   const shipTransfer = useShipTransfer();
@@ -134,21 +170,38 @@ export function TransferDetailPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center gap-3">
-        <motion.div whileTap={{ scale: 0.95 }}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <motion.div whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/operations/transfers')}
+              className="text-slate-400 hover:text-white rounded-lg h-10 w-10 border border-slate-800"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </motion.div>
+          <PageHeader
+            title={`Detail Mutasi: ${transfer.transfer_number}`}
+            description="Status logistik, data pengirim, penerima, dan item transfer."
+          />
+        </div>
+        <div className="flex-shrink-0">
           <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/operations/transfers')}
-            className="text-slate-400 hover:text-white rounded-lg h-10 w-10 border border-slate-800"
+            variant="outline"
+            disabled={downloadingPdf}
+            onClick={handleDownloadPdf}
+            className="border-slate-800 hover:bg-slate-900 text-slate-300 flex items-center gap-2 rounded-lg min-h-[40px]"
           >
-            <ArrowLeft className="h-5 w-5" />
+            {downloadingPdf ? (
+              <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+            ) : (
+              <FileText className="h-4 w-4 text-slate-400" />
+            )}
+            <span>Cetak PDF</span>
           </Button>
-        </motion.div>
-        <PageHeader
-          title={`Detail Mutasi: ${transfer.transfer_number}`}
-          description="Status logistik, data pengirim, penerima, dan item transfer."
-        />
+        </div>
       </div>
 
       {/* Main Grid: Details + Items */}

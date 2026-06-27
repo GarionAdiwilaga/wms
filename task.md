@@ -203,12 +203,12 @@
 - `[x]` Frontend: `EmptyState` component action prop support
 
 ### 6.2 PDF Generation
-- `[ ]` Backend Dependencies: Add WeasyPrint & Jinja2 to `pyproject.toml` and `Dockerfile`
-- `[ ]` Backend: Create HTML/CSS templates under `backend/templates/pdf/`
-- `[ ]` Backend: Implement `PdfService` render contract
-- `[ ]` Backend: Add PDF export endpoints (StockIn, Outbound, Transfer, Opname, Reports)
-- `[ ]` Frontend: Implement `usePdfDownload` hook (Axios blob)
-- `[ ]` Frontend: Wire PDF export buttons in History and Report pages
+- `[x]` Backend Dependencies: Add WeasyPrint & Jinja2 to `pyproject.toml` and `Dockerfile`
+- `[x]` Backend: Create HTML/CSS templates under `backend/templates/pdf/`
+- `[x]` Backend: Implement `PdfService` render contract
+- `[x]` Backend: Add PDF export endpoints (StockIn, Outbound, Transfer, Opname, Reports)
+- `[x]` Frontend: Implement `usePdfDownload` hook (Axios blob)
+- `[x]` Frontend: Wire PDF export buttons in History and Report pages
 
 ### 6.4 Advanced Analytics
 - `[ ]` Backend: `AnalyticsService` for movement velocity, trends, and distributions

@@ -153,3 +153,25 @@ def test_list_stock_in_sessions(db_client: TestClient, db_session: Session, test
     assert content["total"] >= 1
     assert len(content["data"]) >= 1
     assert content["data"][0]["branch_id"] == setup_test_branch.branch_id
+
+def test_stock_in_pdf_export(db_client: TestClient, db_session: Session, test_user: User, setup_test_item, setup_test_branch):
+    headers = get_auth_headers(test_user.user_id, "super_admin")
+    
+    # Create a session
+    data = {
+        "branch_id": setup_test_branch.branch_id,
+        "lines": [
+            {"item_id": setup_test_item.item_id, "quantity": 10}
+        ]
+    }
+    resp = db_client.post("/api/v1/stock-in/", json=data, headers=headers)
+    assert resp.status_code == 201
+    session_id = resp.json()["session_id"]
+    
+    # Get PDF
+    response = db_client.get(f"/api/v1/stock-in/{session_id}/pdf", headers=headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.content.startswith(b"%PDF-")
+    assert len(response.content) > 1000
+

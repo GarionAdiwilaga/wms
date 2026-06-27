@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Mutasi Barang #{{ session.transfer_number }} - WMS{% endblock %}
+
+{% block page_style %}
+@page {
+    size: A4 portrait;
+}
+{% endblock %}
+
+{% block doc_title %}Surat Jalan Mutasi Barang{% endblock %}
+
+{% block content %}
+<div class="info-grid">
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">No. Mutasi:</span>
+            <span class="info-val"><strong>{{ session.transfer_number }}</strong></span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Cabang Asal:</span>
+            <span class="info-val">{{ session.source_branch.name }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Cabang Tujuan:</span>
+            <span class="info-val">{{ session.dest_branch.name }}</span>
+        </div>
+    </div>
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">Status:</span>
+            <span class="info-val">
+                {% if session.status == 'received' %}
+                <span class="badge badge-green">Diterima</span>
+                {% elif session.status == 'in_transit' %}
+                <span class="badge badge-gray">Dalam Perjalanan</span>
+                {% elif session.status == 'draft' %}
+                <span class="badge badge-gray">Draft</span>
+                {% else %}
+                <span class="badge badge-red">Dibatalkan</span>
+                {% endif %}
+            </span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Tgl Kirim:</span>
+            <span class="info-val">{% if session.shipped_at %}{{ session.shipped_at.strftime('%Y-%m-%d %H:%M') }}{% else %}-{% endif %}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Tgl Terima:</span>
+            <span class="info-val">{% if session.received_at %}{{ session.received_at.strftime('%Y-%m-%d %H:%M') }}{% else %}-{% endif %}</span>
+        </div>
+    </div>
+</div>
+
+{% if session.notes or session.received_notes %}
+<div style="margin-bottom: 20px; display: table; width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; background-color: var(--accent);">
+    {% if session.notes %}
+    <div style="margin-bottom: 5px;">
+        <strong>Catatan Pengiriman:</strong> {{ session.notes }}
+    </div>
+    {% endif %}
+    {% if session.received_notes %}
+    <div>
+        <strong>Catatan Penerimaan:</strong> {{ session.received_notes }}
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 5%;">No</th>
+            <th style="width: 15%;">Kode Barang</th>
+            <th style="width: 35%;">Nama Barang</th>
+            <th style="width: 10%; text-align: right;">Kirim Qty</th>
+            <th style="width: 10%; text-align: right;">Terima Qty</th>
+            <th style="width: 10%; text-align: right;">Selisih</th>
+            <th style="width: 15%;">Catatan Selisih</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for line in session.lines %}
+        <tr>
+            <td class="text-center">{{ loop.index }}</td>
+            <td><code>{{ line.item.code }}</code></td>
+            <td>{{ line.item.name }}</td>
+            <td class="text-right">{{ line.sent_quantity }}</td>
+            <td class="text-right">{% if line.received_quantity is not none %}{{ line.received_quantity }}{% else %}-{% endif %}</td>
+            <td class="text-right">
+                {% if line.received_quantity is not none %}
+                    {% set diff = line.sent_quantity - line.received_quantity %}
+                    {% if diff > 0 %}
+                        <span style="color: var(--badge-red-text); font-weight: 600;">{{ diff }}</span>
+                    {% else %}
+                        0
+                    {% endif %}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>
+                {% if line.variance_reason %}
+                    <strong>[{{ line.variance_reason }}]</strong> {{ line.variance_notes or '' }}
+                {% else %}
+                    {{ line.variance_notes or '-' }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="signatures-section">
+    <div class="signature-block">
+        <div class="signature-title">Dikirim Oleh (Asal),</div>
+        <div class="signature-space"></div>
+        <div class="signature-line"></div>
+        <div class="signature-name">{% if session.shipper %}{{ session.shipper.username }}{% else %}{{ session.creator.username }}{% endif %}</div>
+    </div>
+    <div class="signature-block">
+        <div class="signature-title">Diterima Oleh (Tujuan),</div>
+        <div class="signature-space"></div>
+        <div class="signature-line"></div>
+        <div class="signature-name">{% if session.receiver %}{{ session.receiver.username }}{% else %}-{% endif %}</div>
+    </div>
+    <div class="signature-block">
+        <div class="signature-title">Mengetahui,</div>
+        <div class="signature-space"></div>
+        <div class="signature-line"></div>
+        <div class="signature-title">Supervisor / Logistik</div>
+    </div>
+</div>
+{% endblock %}

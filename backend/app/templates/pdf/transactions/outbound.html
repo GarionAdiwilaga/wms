@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Pengeluaran Barang #{{ session.session_id }} - WMS{% endblock %}
+
+{% block page_style %}
+@page {
+    size: A4 portrait;
+}
+{% endblock %}
+
+{% block doc_title %}Bukti Pengeluaran Barang (Outbound){% endblock %}
+
+{% block content %}
+<div class="info-grid">
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">No. Sesi:</span>
+            <span class="info-val"><strong>#{{ session.session_id }}</strong></span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Cabang:</span>
+            <span class="info-val">{{ session.branch.name }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Status:</span>
+            <span class="info-val">
+                {% if session.status == 'completed' %}
+                <span class="badge badge-green">Selesai</span>
+                {% elif session.status == 'draft' %}
+                <span class="badge badge-gray">Draft</span>
+                {% else %}
+                <span class="badge badge-red">Dibatalkan</span>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">Tgl Transaksi:</span>
+            <span class="info-val">{{ session.transaction_date.strftime('%Y-%m-%d %H:%M') }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">No. Referensi:</span>
+            <span class="info-val">{{ session.reference_no or '-' }}</span>
+        </div>
+    </div>
+</div>
+
+{% if session.notes %}
+<div style="margin-bottom: 20px; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px;">
+    <strong>Catatan:</strong><br/>
+    {{ session.notes }}
+</div>
+{% endif %}
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 5%;">No</th>
+            <th style="width: 15%;">Kode Barang</th>
+            <th style="width: 35%;">Nama Barang</th>
+            <th style="width: 15%;">Kategori</th>
+            <th style="width: 15%;">Supplier</th>
+            <th style="width: 10%; text-align: right;">Quantity</th>
+            <th style="width: 5%;">UoM</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for line in session.lines %}
+        <tr>
+            <td class="text-center">{{ loop.index }}</td>
+            <td><code>{{ line.item.code }}</code></td>
+            <td>{{ line.item.name }}</td>
+            <td>{{ line.item.category.name }}</td>
+            <td>{{ line.item.supplier.name }}</td>
+            <td class="text-right">{{ line.quantity }}</td>
+            <td class="text-center">{{ line.item.uom.name }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="signatures-section">
+    <div class="signature-block">
+        <div class="signature-title">Dibuat Oleh,</div>
+        <div class="signature-space"></div>
+        <div class="signature-line"></div>
+        <div class="signature-name">{{ session.creator.username }}</div>
+    </div>
+    <div class="signature-block">
+        <div class="signature-title">Diserahkan Oleh,</div>
+        <div class="signature-space"></div>
+        <div class="signature-line"></div>
+        <div class="signature-name">{% if session.fulfiller %}{{ session.fulfiller.username }}{% else %}{{ session.creator.username }}{% endif %}</div>
+    </div>
+    <div class="signature-block">
+        <div class="signature-title">Diterima Oleh,</div>
+        <div class="signature-space"></div>
+        <div class="signature-line"></div>
+        <div class="signature-title">Penerima Barang / Driver</div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Opname #{{ session.session_id }} - WMS{% endblock %}
+
+{% block page_style %}
+@page {
+    size: A4 portrait;
+}
+{% endblock %}
+
+{% block doc_title %}Bukti Stock Opname / Penyesuaian Stok{% endblock %}
+
+{% block content %}
+<div class="info-grid">
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">No. Sesi:</span>
+            <span class="info-val"><strong>#{{ session.session_id }}</strong></span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Cabang:</span>
+            <span class="info-val">{{ session.branch.name }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Kategori Scope:</span>
+            <span class="info-val">{% if session.category %}{{ session.category.name }}{% else %}Semua Kategori{% endif %}</span>
+        </div>
+    </div>
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">Status:</span>
+            <span class="info-val">
+                {% if session.status == 'completed' %}
+                <span class="badge badge-green">Selesai</span>
+                {% elif session.status == 'draft' %}
+                <span class="badge badge-gray">Draft</span>
+                {% else %}
+                <span class="badge badge-red">Dibatalkan</span>
+                {% endif %}
+            </span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Tanggal Mulai:</span>
+            <span class="info-val">{{ session.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Pelaksana:</span>
+            <span class="info-val">{{ session.creator.username }}</span>
+        </div>
+    </div>
+</div>
+
+{% if session.notes %}
+<div style="margin-bottom: 20px; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; background-color: var(--accent);">
+    <strong>Catatan:</strong> {{ session.notes }}
+</div>
+{% endif %}
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 5%;">No</th>
+            <th style="width: 15%;">Kode Barang</th>
+            <th style="width: 35%;">Nama Barang</th>
+            <th style="width: 15%;">Kategori</th>
+            <th style="width: 10%; text-align: right;">Stok Sistem</th>
+            <th style="width: 10%; text-align: right;">Stok Fisik</th>
+            <th style="width: 10%; text-align: right;">Selisih</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for line in session.lines %}
+        <tr>
+            <td class="text-center">{{ loop.index }}</td>
+            <td><code>{{ line.item.code }}</code></td>
+            <td>{{ line.item.name }}</td>
+            <td>{{ line.item.category.name }}</td>
+            <td class="text-right">{{ line.system_quantity }}</td>
+            <td class="text-right">{{ line.physical_quantity }}</td>
+            <td class="text-right">
+                {% if line.variance > 0 %}
+                    <span style="color: var(--badge-green-text); font-weight: 600;">+{{ line.variance }}</span>
+                {% elif line.variance < 0 %}
+                    <span style="color: var(--badge-red-text); font-weight: 600;">{{ line.variance }}</span>
+                {% else %}
+                    0
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="signatures-section">
+    <div class="signature-block">
+        <div class="signature-title">Petugas Opname,</div>
+        <div class="signature-space"></div>
+        <div class="signature-line"></div>
+        <div class="signature-name">{{ session.creator.username }}</div>
+    </div>
+    <div class="signature-block">
+        <div class="signature-title">Disetujui / Diverifikasi Oleh,</div>
+        <div class="signature-space"></div>
+        <div class="signature-line"></div>
+        <div class="signature-title">Kepala Cabang / Admin</div>
+    </div>
+</div>
+{% endblock %}

@@ -20,8 +20,10 @@ import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, Save, AlertTriangle, ShieldCheck, HelpCircle,
-  Search, RotateCcw, XCircle, CheckCircle2, Image as ImageIcon
+  Search, RotateCcw, XCircle, CheckCircle2, Image as ImageIcon,
+  FileText, Loader2
 } from 'lucide-react';
+import { api } from '../../lib/api';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -63,6 +65,41 @@ export function StockOpnameDetailPage() {
   const { data: session, isLoading, error } = useStockOpnameSession(sessionID);
   const { data: branches } = useBranches();
   const { data: categories } = useCategories();
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    setDownloadingPdf(true);
+    try {
+      const response = await api.get(`/stock-opname/${id}/pdf`, {
+        responseType: 'blob'
+      });
+      
+      let filename = `stock_opname_OPN-${Number(id).toString().padStart(6, '0')}.pdf`;
+      const disposition = response.headers['content-disposition'];
+      if (disposition && disposition.indexOf('attachment') !== -1) {
+        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+        const matches = filenameRegex.exec(disposition);
+        if (matches != null && matches[1]) {
+          filename = matches[1].replace(/['"]/g, '');
+        }
+      }
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download PDF:', err);
+      alert('Gagal mengunduh PDF.');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
 
   const updateOpname = useUpdateStockOpname(sessionID);
   const completeOpname = useCompleteStockOpname();
@@ -304,6 +341,20 @@ export function StockOpnameDetailPage() {
                   Kategori: {getCategoryName(session.category_id)}
                 </span>
                 {getStatusBadge(session.status)}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={downloadingPdf}
+                  onClick={handleDownloadPdf}
+                  className="border-slate-800 hover:bg-slate-900 text-slate-350 flex items-center gap-1.5 rounded-xl min-h-[36px] px-3 text-xs"
+                >
+                  {downloadingPdf ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                  ) : (
+                    <FileText className="h-4 w-4 text-slate-400" />
+                  )}
+                  <span>Cetak PDF</span>
+                </Button>
               </div>
             }
           />

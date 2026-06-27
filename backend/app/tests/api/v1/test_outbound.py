@@ -149,3 +149,29 @@ def test_create_outbound_branch_restriction(db_client: TestClient, db_session: S
     
     resp = db_client.post("/api/v1/outbound/", json=data, headers=headers)
     assert resp.status_code == 403
+
+def test_outbound_pdf_export(db_client: TestClient, db_session: Session, test_user: User, setup_test_item, setup_test_branch):
+    from app.models.inventory import BranchStock
+    # Set up initial stock so stock check passes
+    db_session.add(BranchStock(branch_id=setup_test_branch.branch_id, item_id=setup_test_item.item_id, quantity=100))
+    db_session.commit()
+
+    headers = get_auth_headers(test_user.user_id, "super_admin")
+    
+    data = {
+        "branch_id": setup_test_branch.branch_id,
+        "lines": [
+            {"item_id": setup_test_item.item_id, "quantity": 10}
+        ]
+    }
+    resp = db_client.post("/api/v1/outbound/", json=data, headers=headers)
+    assert resp.status_code == 201
+    session_id = resp.json()["session_id"]
+    
+    # Get PDF
+    response = db_client.get(f"/api/v1/outbound/{session_id}/pdf", headers=headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.content.startswith(b"%PDF-")
+    assert len(response.content) > 1000
+

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Laporan Pergerakan Barang - WMS{% endblock %}
+
+{% block page_style %}
+@page {
+    size: A4 landscape;
+}
+{% endblock %}
+
+{% block doc_title %}Laporan Mutasi & Pergerakan Barang{% endblock %}
+
+{% block content %}
+<div class="info-grid">
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">Cabang:</span>
+            <span class="info-val">{{ filters.branch_name }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Kategori:</span>
+            <span class="info-val">{{ filters.category_name or 'Semua Kategori' }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Supplier:</span>
+            <span class="info-val">{{ filters.supplier_name or 'Semua Supplier' }}</span>
+        </div>
+    </div>
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">Periode:</span>
+            <span class="info-val">
+                {% if filters.start_date and filters.end_date %}
+                    {{ filters.start_date }} s/d {{ filters.end_date }}
+                {% elif filters.start_date %}
+                    Mulai {{ filters.start_date }}
+                {% elif filters.end_date %}
+                    Hingga {{ filters.end_date }}
+                {% else %}
+                    Semua Periode
+                {% endif %}
+            </span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Pencarian:</span>
+            <span class="info-val">{{ filters.search or '-' }}</span>
+        </div>
+    </div>
+</div>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 4%;">No</th>
+            <th style="width: 12%;">Tanggal</th>
+            <th style="width: 10%;">Cabang</th>
+            <th style="width: 10%;">Kode</th>
+            <th style="width: 20%;">Nama Barang</th>
+            <th style="width: 8%;">Tipe</th>
+            <th style="width: 6%; text-align: right;">Qty</th>
+            <th style="width: 8%; text-align: right;">Saldo Akhir</th>
+            <th style="width: 10%;">Referensi</th>
+            <th style="width: 12%;">No. Dokumen</th>
+            <th style="width: 10%;">Operator</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+            <td class="text-center">{{ loop.index }}</td>
+            <td>{{ row.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ row.branch_name }}</td>
+            <td><code>{{ row.item_code }}</code></td>
+            <td>{{ row.item_name }}</td>
+            <td class="text-center">
+                {% if row.transaction_type in ['IN', 'TRANSFER_IN', 'ADJUSTMENT_PLUS'] %}
+                <span class="badge badge-green">{{ row.transaction_type }}</span>
+                {% else %}
+                <span class="badge badge-red">{{ row.transaction_type }}</span>
+                {% endif %}
+            </td>
+            <td class="text-right">{{ row.quantity }}</td>
+            <td class="text-right" style="font-weight: 600;">{{ row.balance_after }}</td>
+            <td>{{ row.reference_type }}</td>
+            <td>{{ row.document_no or '-' }}</td>
+            <td>{{ row.operator_name }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="11" class="text-center" style="color: var(--secondary); padding: 20px;">Tidak ada pergerakan barang dalam periode ini</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

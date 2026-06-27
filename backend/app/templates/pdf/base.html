@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}WMS Laporan{% endblock %}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --secondary: #64748b;
+            --border: #cbd5e1;
+            --accent: #f8fafc;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            --badge-green-bg: #dcfce7;
+            --badge-green-text: #166534;
+            --badge-red-bg: #fee2e2;
+            --badge-red-text: #991b1b;
+        }
+
+        body {
+            font-family: 'Outfit', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            font-size: 9pt;
+            line-height: 1.4;
+        }
+
+        /* Base Page Setup */
+        @page {
+            size: A4;
+            margin: 15mm 15mm 20mm 15mm;
+            @bottom-right {
+                content: "Halaman " counter(page) " dari " counter(pages);
+                font-family: 'Outfit', 'Inter', sans-serif;
+                font-size: 8pt;
+                color: #64748b;
+            }
+            @bottom-left {
+                content: "Gudang Piala Kaltim WMS";
+                font-family: 'Outfit', 'Inter', sans-serif;
+                font-size: 8pt;
+                color: #64748b;
+            }
+        }
+
+        /* Document Header */
+        .doc-header {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            display: table;
+            width: 100%;
+        }
+
+        .header-left {
+            display: table-cell;
+            vertical-align: middle;
+            width: 60%;
+        }
+
+        .header-right {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+            width: 40%;
+        }
+
+        .logo-placeholder {
+            font-weight: 700;
+            font-size: 16pt;
+            letter-spacing: -0.5px;
+            color: var(--primary);
+            margin: 0 0 4px 0;
+        }
+        
+        .logo-subtitle {
+            font-size: 8pt;
+            color: var(--secondary);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .doc-title {
+            font-size: 18pt;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0 0 4px 0;
+            text-transform: uppercase;
+        }
+
+        .doc-meta {
+            font-size: 8pt;
+            color: var(--text-muted);
+            margin: 2px 0;
+        }
+
+        /* Info Grid (Filters/Metadata Summary) */
+        .info-grid {
+            display: table;
+            width: 100%;
+            margin-bottom: 20px;
+            background-color: var(--accent);
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .info-col {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+        }
+
+        .info-item {
+            margin-bottom: 4px;
+            font-size: 8.5pt;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--text-muted);
+            width: 120px;
+            display: inline-block;
+        }
+
+        .info-val {
+            color: var(--text-dark);
+        }
+
+        /* Metrics Summary Cards (KPIs) */
+        .metrics-container {
+            display: table;
+            width: 100%;
+            margin-bottom: 20px;
+            border-spacing: 8px 0;
+        }
+
+        .metric-card {
+            display: table-cell;
+            background-color: var(--accent);
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .metric-val {
+            font-size: 16pt;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 2px;
+        }
+
+        .metric-label {
+            font-size: 8pt;
+            color: var(--secondary);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        /* Print-Friendly Table Layout */
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        table.data-table thead {
+            display: table-header-group; /* repeats headers across pages */
+        }
+
+        table.data-table tr {
+            page-break-inside: avoid; /* prevents rows breaking across pages */
+        }
+
+        table.data-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding: 8px 10px;
+            font-size: 8.5pt;
+            border: 1px solid var(--primary-light);
+        }
+
+        table.data-table td {
+            padding: 8px 10px;
+            border: 1px solid #e2e8f0;
+            font-size: 8.5pt;
+            vertical-align: middle;
+        }
+
+        table.data-table tr:nth-child(even) td {
+            background-color: var(--accent);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 7.5pt;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-green {
+            background-color: var(--badge-green-bg);
+            color: var(--badge-green-text);
+        }
+
+        .badge-red {
+            background-color: var(--badge-red-bg);
+            color: var(--badge-red-text);
+        }
+
+        .badge-gray {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+
+        /* Signature block for transactions */
+        .signatures-section {
+            margin-top: 40px;
+            display: table;
+            width: 100%;
+            page-break-inside: avoid;
+        }
+
+        .signature-block {
+            display: table-cell;
+            width: 33%;
+            text-align: center;
+            vertical-align: top;
+        }
+
+        .signature-space {
+            height: 60px;
+            margin-bottom: 5px;
+        }
+
+        .signature-line {
+            width: 80%;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--secondary);
+            margin-bottom: 4px;
+        }
+
+        .signature-title {
+            font-size: 8pt;
+            color: var(--text-muted);
+        }
+        
+        .signature-name {
+            font-weight: 600;
+            font-size: 8.5pt;
+        }
+
+        /* Custom spacing utilities */
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        
+        {% block page_style %}{% endblock %}
+    </style>
+</head>
+<body>
+    <!-- Document Header -->
+    <div class="doc-header">
+        <div class="header-left">
+            <div class="logo-placeholder">GPK WMS</div>
+            <div class="logo-subtitle">Gudang Piala Kaltim</div>
+        </div>
+        <div class="header-right">
+            <div class="doc-title">{% block doc_title %}Laporan{% endblock %}</div>
+            <div class="doc-meta"><strong>Dicetak:</strong> {{ generated_at }}</div>
+            <div class="doc-meta"><strong>Operator:</strong> {{ generated_by }}</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+</body>
+</html>

@@ -182,6 +182,41 @@ def cancel_opname(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Anda hanya dapat membatalkan opname untuk cabang Anda sendiri"
             )
-            
     cancelled_session = service.cancel(id=id, current_user=current_user)
     return format_opname(cancelled_session)
+
+@router.get("/{id}/pdf")
+def get_opname_pdf(
+    id: int,
+    current_user: User = Depends(get_current_active_user),
+    service: OpnameService = Depends(get_opname_service)
+) -> Any:
+    from app.services.pdf_service import PdfService
+    from fastapi import Response
+    from datetime import datetime
+
+    session = service.get(id)
+    
+    # RBAC check: non-super_admin is restricted to their own branch
+    if current_user.role != "super_admin":
+        if session.branch_id != current_user.branch_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Anda tidak memiliki akses ke data opname ini"
+            )
+
+    context = {
+        "session": session,
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generated_by": current_user.username
+    }
+
+    pdf_bytes = PdfService.render_to_pdf("transactions/stock_opname.html", context)
+    
+    filename = f"stock_opname_OPN-{session.session_id:06d}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+

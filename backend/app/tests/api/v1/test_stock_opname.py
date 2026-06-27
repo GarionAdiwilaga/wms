@@ -347,3 +347,27 @@ def test_update_opname_preserves_snapshot_and_snapshots_new_item(db_client: Test
     assert lines[1]["item_id"] == item_b.item_id
     assert lines[1]["system_quantity"] == 50
     assert lines[1]["physical_quantity"] == 50
+
+def test_opname_pdf_export(db_client: TestClient, db_session: Session, test_user: User, setup_test_item, setup_test_branch):
+    headers = get_auth_headers(test_user.user_id, "super_admin")
+    
+    # Create an opname session
+    data = {
+        "branch_id": setup_test_branch.branch_id,
+        "category_id": setup_test_item.category_id,
+        "status": "draft",
+        "lines": [
+            {"item_id": setup_test_item.item_id, "physical_quantity": 15}
+        ]
+    }
+    resp = db_client.post("/api/v1/stock-opname/", json=data, headers=headers)
+    assert resp.status_code == 201
+    session_id = resp.json()["session_id"]
+    
+    # Get PDF
+    response = db_client.get(f"/api/v1/stock-opname/{session_id}/pdf", headers=headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.content.startswith(b"%PDF-")
+    assert len(response.content) > 1000
+

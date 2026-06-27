@@ -122,3 +122,39 @@ def read_stock_in_session(
             )
             
     return format_stock_in(session)
+
+@router.get("/{id}/pdf")
+def get_stock_in_session_pdf(
+    id: int,
+    current_user: User = Depends(get_current_active_user),
+    service: StockInService = Depends(get_stock_in_service)
+) -> Any:
+    from app.services.pdf_service import PdfService
+    from fastapi import Response
+    from datetime import datetime
+
+    session = service.get(id)
+    
+    # Enforce branch restriction for non-super_admin
+    if current_user.role != "super_admin":
+        if session.branch_id != current_user.branch_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Anda hanya dapat melihat data sesi Stock In dari cabang Anda sendiri"
+            )
+
+    context = {
+        "session": session,
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generated_by": current_user.username
+    }
+
+    pdf_bytes = PdfService.render_to_pdf("transactions/stock_in.html", context)
+    
+    filename = f"stock_in_{session.reference_no or session.session_id}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+

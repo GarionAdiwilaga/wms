@@ -335,3 +335,51 @@ def test_xlsx_export_streaming(db_client: TestClient, test_data):
     sheet = wb.active
     assert sheet.max_row == 4 # Header + 3 rows
     assert sheet.cell(row=1, column=1).value == "Cabang"
+
+def test_pdf_export_reports(db_client: TestClient, test_data):
+    headers = get_auth_headers(test_data["admin"].user_id, "super_admin")
+    
+    # 1. Stock PDF
+    response = db_client.get("/api/v1/reports/stock/pdf?search=CAT-SUP", headers=headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert "Content-Disposition" in response.headers
+    assert response.headers["Content-Disposition"].startswith("attachment; filename=stock_report_")
+    assert response.content.startswith(b"%PDF-")
+    assert len(response.content) > 1000
+    
+    # 2. Low Stock PDF
+    response = db_client.get("/api/v1/reports/low-stock/pdf?search=CAT-SUP", headers=headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.content.startswith(b"%PDF-")
+    assert len(response.content) > 1000
+
+    # 3. Item History PDF
+    response = db_client.get(f"/api/v1/reports/item-history/{test_data['item1'].item_id}/pdf", headers=headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.content.startswith(b"%PDF-")
+    assert len(response.content) > 1000
+
+    # 4. Movements PDF
+    response = db_client.get("/api/v1/reports/movements/pdf", headers=headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.content.startswith(b"%PDF-")
+    assert len(response.content) > 1000
+
+    # 5. Transfer Variance PDF
+    response = db_client.get("/api/v1/reports/transfer-variance/pdf", headers=headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.content.startswith(b"%PDF-")
+    assert len(response.content) > 1000
+
+    # 6. Audit Logs PDF
+    response = db_client.get("/api/v1/reports/audit-logs/pdf", headers=headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.content.startswith(b"%PDF-")
+    assert len(response.content) > 1000
+

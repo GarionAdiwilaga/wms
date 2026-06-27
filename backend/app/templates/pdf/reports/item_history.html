@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Riwayat Barang - WMS{% endblock %}
+
+{% block page_style %}
+@page {
+    size: A4 portrait;
+}
+.item-info {
+    margin-bottom: 20px;
+    background-color: var(--accent);
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 12px;
+}
+.item-info-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.item-info-table td {
+    padding: 4px 8px;
+    font-size: 9pt;
+}
+.item-info-label {
+    font-weight: 600;
+    color: var(--text-muted);
+    width: 120px;
+}
+{% endblock %}
+
+{% block doc_title %}Riwayat Kartu Stok{% endblock %}
+
+{% block content %}
+<div class="item-info">
+    <table class="item-info-table">
+        <tr>
+            <td class="item-info-label">Kode Barang:</td>
+            <td><code>{{ item.code }}</code></td>
+            <td class="item-info-label">Kategori:</td>
+            <td>{{ item.category.name }}</td>
+        </tr>
+        <tr>
+            <td class="item-info-label">Nama Barang:</td>
+            <td><strong>{{ item.name }}</strong></td>
+            <td class="item-info-label">Supplier:</td>
+            <td>{{ item.supplier.name }}</td>
+        </tr>
+        <tr>
+            <td class="item-info-label">Satuan (UoM):</td>
+            <td>{{ item.uom.name }}</td>
+            <td class="item-info-label">Batas Min:</td>
+            <td>{{ item.minimum_stock }}</td>
+        </tr>
+        {% if filters.branch_name or filters.start_date or filters.end_date %}
+        <tr>
+            <td class="item-info-label">Filter Periode:</td>
+            <td>
+                {% if filters.start_date and filters.end_date %}
+                    {{ filters.start_date }} s/d {{ filters.end_date }}
+                {% elif filters.start_date %}
+                    Mulai {{ filters.start_date }}
+                {% elif filters.end_date %}
+                    Hingga {{ filters.end_date }}
+                {% else %}
+                    Semua Tanggal
+                {% endif %}
+            </td>
+            <td class="item-info-label">Filter Cabang:</td>
+            <td>{{ filters.branch_name or 'Semua Cabang' }}</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 5%;">No</th>
+            <th style="width: 18%;">Tanggal</th>
+            <th style="width: 15%;">Cabang</th>
+            <th style="width: 12%;">Tipe</th>
+            <th style="width: 8%; text-align: right;">Jumlah</th>
+            <th style="width: 12%;">Referensi</th>
+            <th style="width: 15%;">No. Dokumen</th>
+            <th style="width: 15%;">Operator</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+            <td class="text-center">{{ loop.index }}</td>
+            <td>{{ row.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ row.branch_name }}</td>
+            <td class="text-center">
+                {% if row.transaction_type in ['IN', 'TRANSFER_IN', 'ADJUSTMENT_PLUS'] %}
+                <span class="badge badge-green">{{ row.transaction_type }}</span>
+                {% else %}
+                <span class="badge badge-red">{{ row.transaction_type }}</span>
+                {% endif %}
+            </td>
+            <td class="text-right">{{ row.quantity }}</td>
+            <td>{{ row.reference_type }}</td>
+            <td>{{ row.document_no or '-' }}</td>
+            <td>{{ row.operator_name }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="8" class="text-center" style="color: var(--secondary); padding: 20px;">Tidak ada transaksi untuk barang ini</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -268,6 +268,45 @@ def test_transfer_branch_restrictions(db_client: TestClient, db_session: Session
             {"item_id": setup_test_item.item_id, "sent_quantity": 25}
         ]
     }
-    
     resp = db_client.post("/api/v1/transfers/", json=data, headers=headers)
     assert resp.status_code == 403
+
+def test_transfer_pdf_export(db_client: TestClient, db_session: Session, test_user: User, setup_test_item, setup_test_branch):
+    # Set up initial stock on source branch
+    inventory_service.execute_stock_changes(
+        db=db_session,
+        branch_id=setup_test_branch.branch_id,
+        transaction_type="IN",
+        reference_type="initial_load",
+        reference_id=None,
+        document_no=None,
+        lines=[StockChangeLine(item_id=setup_test_item.item_id, quantity=100)],
+        notes=None,
+        created_by=test_user.user_id
+    )
+
+    dest_branch = Branch(code="DST_BR_7", name="Destination Branch 7", location="Dest Loc", is_active=True)
+    db_session.add(dest_branch)
+    db_session.flush()
+
+    headers = get_auth_headers(test_user.user_id, "super_admin")
+    
+    # Create transfer
+    data = {
+        "source_branch_id": setup_test_branch.branch_id,
+        "dest_branch_id": dest_branch.branch_id,
+        "lines": [
+            {"item_id": setup_test_item.item_id, "sent_quantity": 50}
+        ]
+    }
+    create_resp = db_client.post("/api/v1/transfers/", json=data, headers=headers)
+    assert create_resp.status_code == 201
+    transfer_id = create_resp.json()["transfer_id"]
+    
+    # Get PDF
+    response = db_client.get(f"/api/v1/transfers/{transfer_id}/pdf", headers=headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.content.startswith(b"%PDF-")
+    assert len(response.content) > 1000
+

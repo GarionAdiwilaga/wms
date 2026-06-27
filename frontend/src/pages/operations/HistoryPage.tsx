@@ -9,6 +9,7 @@ import { Button } from '../../components/ui/button';
 import { LoadingState } from '../../components/ui/LoadingState';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { motion, AnimatePresence } from 'framer-motion';
+import { api } from '../../lib/api';
 import { 
   Archive, 
   ShoppingCart, 
@@ -16,12 +17,49 @@ import {
   ChevronUp, 
   Calendar, 
   FileText, 
-  Hash
+  Hash,
+  Loader2
 } from 'lucide-react';
 
 export function HistoryPage() {
   const user = useAuthStore((state) => state.user);
   const { data: branches } = useBranches();
+  const [downloadingPdf, setDownloadingPdf] = useState<Record<string, boolean>>({});
+
+  const handleDownloadPdf = async (type: 'stock-in' | 'outbound', id: number) => {
+    const key = `${type}-${id}`;
+    setDownloadingPdf(prev => ({ ...prev, [key]: true }));
+    try {
+      const response = await api.get(`/${type}/${id}/pdf`, {
+        responseType: 'blob'
+      });
+      
+      let filename = `${type}_session_${id}.pdf`;
+      const disposition = response.headers['content-disposition'];
+      if (disposition && disposition.indexOf('attachment') !== -1) {
+        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+        const matches = filenameRegex.exec(disposition);
+        if (matches != null && matches[1]) {
+          filename = matches[1].replace(/['"]/g, '');
+        }
+      }
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download PDF:', err);
+      alert('Gagal mengunduh PDF.');
+    } finally {
+      setDownloadingPdf(prev => ({ ...prev, [key]: false }));
+    }
+  };
   
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'stock-in';
@@ -156,13 +194,31 @@ export function HistoryPage() {
                   >
                     <div className="p-4 sm:p-5 space-y-4">
                       {/* Meta info row */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-400 border-b border-slate-850 pb-3">
-                        <div>
-                          <p><span className="font-semibold text-slate-300">No. Invoice Supplier:</span> {session.supplier_invoice_no || '-'}</p>
-                          <p className="mt-1"><span className="font-semibold text-slate-300">Catatan:</span> {session.notes || '-'}</p>
+                      <div className="flex justify-between items-start gap-4 border-b border-slate-850 pb-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-400 flex-1">
+                          <div>
+                            <p><span className="font-semibold text-slate-300">No. Invoice Supplier:</span> {session.supplier_invoice_no || '-'}</p>
+                            <p className="mt-1"><span className="font-semibold text-slate-300">Catatan:</span> {session.notes || '-'}</p>
+                          </div>
+                          <div>
+                            <p><span className="font-semibold text-slate-300">Dibuat Oleh:</span> User #{session.created_by}</p>
+                          </div>
                         </div>
                         <div>
-                          <p><span className="font-semibold text-slate-300">Dibuat Oleh:</span> User #{session.created_by}</p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={downloadingPdf[`stock-in-${session.session_id}`]}
+                            onClick={() => handleDownloadPdf('stock-in', session.session_id)}
+                            className="border-slate-800 hover:bg-slate-900 text-xs flex items-center gap-1.5 min-h-[32px]"
+                          >
+                            {downloadingPdf[`stock-in-${session.session_id}`] ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <FileText className="h-3.5 w-3.5 text-slate-400" />
+                            )}
+                            <span>Cetak PDF</span>
+                          </Button>
                         </div>
                       </div>
 
@@ -300,12 +356,30 @@ export function HistoryPage() {
                   >
                     <div className="p-4 sm:p-5 space-y-4">
                       {/* Meta info row */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-400 border-b border-slate-850 pb-3">
-                        <div>
-                          <p className="mt-1"><span className="font-semibold text-slate-300">Catatan:</span> {session.notes || '-'}</p>
+                      <div className="flex justify-between items-start gap-4 border-b border-slate-850 pb-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-400 flex-1">
+                          <div>
+                            <p className="mt-1"><span className="font-semibold text-slate-300">Catatan:</span> {session.notes || '-'}</p>
+                          </div>
+                          <div>
+                            <p><span className="font-semibold text-slate-300">Checkout Oleh:</span> User #{session.created_by}</p>
+                          </div>
                         </div>
                         <div>
-                          <p><span className="font-semibold text-slate-300">Checkout Oleh:</span> User #{session.created_by}</p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={downloadingPdf[`outbound-${session.session_id}`]}
+                            onClick={() => handleDownloadPdf('outbound', session.session_id)}
+                            className="border-slate-800 hover:bg-slate-900 text-xs flex items-center gap-1.5 min-h-[32px]"
+                          >
+                            {downloadingPdf[`outbound-${session.session_id}`] ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <FileText className="h-3.5 w-3.5 text-slate-400" />
+                            )}
+                            <span>Cetak PDF</span>
+                          </Button>
                         </div>
                       </div>
 

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Laporan Selisih Mutasi - WMS{% endblock %}
+
+{% block page_style %}
+@page {
+    size: A4 landscape;
+}
+{% endblock %}
+
+{% block doc_title %}Laporan Selisih Mutasi Barang{% endblock %}
+
+{% block content %}
+<div class="info-grid">
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">Cabang Asal:</span>
+            <span class="info-val">{{ filters.source_branch_name or 'Semua Cabang' }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Cabang Tujuan:</span>
+            <span class="info-val">{{ filters.dest_branch_name or 'Semua Cabang' }}</span>
+        </div>
+    </div>
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">Periode:</span>
+            <span class="info-val">
+                {% if filters.start_date and filters.end_date %}
+                    {{ filters.start_date }} s/d {{ filters.end_date }}
+                {% elif filters.start_date %}
+                    Mulai {{ filters.start_date }}
+                {% elif filters.end_date %}
+                    Hingga {{ filters.end_date }}
+                {% else %}
+                    Semua Periode
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Metrics summary cards -->
+<div class="metrics-container">
+    <div class="metric-card">
+        <div class="metric-val">{{ summary.total_transfers }}</div>
+        <div class="metric-label">Total Mutasi</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-val" style="color: var(--badge-red-text);">{{ summary.transfers_with_variance }}</div>
+        <div class="metric-label">Mutasi Berselisih</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-val" style="color: var(--badge-red-text);">{{ summary.total_lost_units }}</div>
+        <div class="metric-label">Total Unit Hilang</div>
+    </div>
+</div>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 4%;">No</th>
+            <th style="width: 12%;">No. Mutasi</th>
+            <th style="width: 12%;">Asal</th>
+            <th style="width: 12%;">Tujuan</th>
+            <th style="width: 12%;">Tgl Terima</th>
+            <th style="width: 10%;">Kode</th>
+            <th style="width: 15%;">Nama Barang</th>
+            <th style="width: 6%; text-align: right;">Kirim</th>
+            <th style="width: 6%; text-align: right;">Terima</th>
+            <th style="width: 6%; text-align: right;">Selisih</th>
+            <th style="width: 12%;">Alasan</th>
+            <th style="width: 10%;">Penerima</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+            <td class="text-center">{{ loop.index }}</td>
+            <td><code>{{ row.transfer_number }}</code></td>
+            <td>{{ row.source_branch_name }}</td>
+            <td>{{ row.dest_branch_name }}</td>
+            <td>{{ row.received_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td><code>{{ row.item_code }}</code></td>
+            <td>{{ row.item_name }}</td>
+            <td class="text-right">{{ row.sent_quantity }}</td>
+            <td class="text-right">{{ row.received_quantity }}</td>
+            <td class="text-right" style="color: var(--badge-red-text); font-weight: 600;">{{ row.variance }}</td>
+            <td>{{ row.variance_reason or '-' }}</td>
+            <td>{{ row.receiver_name }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="12" class="text-center" style="color: var(--secondary); padding: 20px;">Tidak ada data selisih mutasi dalam periode ini</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

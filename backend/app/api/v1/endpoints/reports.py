@@ -2,7 +2,7 @@ import csv
 import io
 from typing import Optional, Any, Iterator
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, Response
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from openpyxl import Workbook
@@ -468,3 +468,357 @@ def get_audit_log_report(
         ],
         "total": total
     }
+
+@router.get("/stock/pdf")
+def get_stock_report_pdf(
+    branch_id: Optional[int] = Query(None),
+    category_id: Optional[int] = Query(None),
+    supplier_id: Optional[int] = Query(None),
+    search: Optional[str] = Query(None),
+    current_user: User = Depends(require_role(["super_admin", "branch_head"])),
+    db: Session = Depends(get_db)
+) -> Response:
+    from app.models.branch import Branch
+    from app.models.category import Category
+    from app.models.supplier import Supplier
+    from app.services.pdf_service import PdfService
+    from fastapi import Response
+
+    if current_user.role != "super_admin":
+        if branch_id is not None and branch_id != current_user.branch_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Anda hanya dapat melihat data laporan dari cabang Anda sendiri"
+            )
+        branch_id = current_user.branch_id
+
+    # Fetch all records without pagination limits
+    results, _ = ReportService.get_stock_report(
+        db=db,
+        branch_id=branch_id,
+        category_id=category_id,
+        supplier_id=supplier_id,
+        search=search,
+        is_export=True
+    )
+
+    # Resolve filter names
+    branch_name = db.query(Branch.name).filter(Branch.branch_id == branch_id).scalar() if branch_id else "Semua Cabang"
+    category_name = db.query(Category.name).filter(Category.category_id == category_id).scalar() if category_id else "Semua Kategori"
+    supplier_name = db.query(Supplier.name).filter(Supplier.supplier_id == supplier_id).scalar() if supplier_id else "Semua Supplier"
+
+    context = {
+        "data": results,
+        "filters": {
+            "branch_name": branch_name,
+            "category_name": category_name,
+            "supplier_name": supplier_name,
+            "search": search
+        },
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generated_by": current_user.username
+    }
+
+    pdf_bytes = PdfService.render_to_pdf("reports/stock.html", context)
+    
+    filename = f"stock_report_{datetime.now().strftime('%Y-%m-%d_%H%M')}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@router.get("/low-stock/pdf")
+def get_low_stock_report_pdf(
+    branch_id: Optional[int] = Query(None),
+    category_id: Optional[int] = Query(None),
+    supplier_id: Optional[int] = Query(None),
+    search: Optional[str] = Query(None),
+    current_user: User = Depends(require_role(["super_admin", "branch_head"])),
+    db: Session = Depends(get_db)
+) -> Response:
+    from app.models.branch import Branch
+    from app.models.category import Category
+    from app.models.supplier import Supplier
+    from app.services.pdf_service import PdfService
+    from fastapi import Response
+
+    if current_user.role != "super_admin":
+        if branch_id is not None and branch_id != current_user.branch_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Anda hanya dapat melihat data laporan dari cabang Anda sendiri"
+            )
+        branch_id = current_user.branch_id
+
+    results, _ = ReportService.get_low_stock_report(
+        db=db,
+        branch_id=branch_id,
+        category_id=category_id,
+        supplier_id=supplier_id,
+        search=search,
+        is_export=True
+    )
+
+    branch_name = db.query(Branch.name).filter(Branch.branch_id == branch_id).scalar() if branch_id else "Semua Cabang"
+    category_name = db.query(Category.name).filter(Category.category_id == category_id).scalar() if category_id else "Semua Kategori"
+    supplier_name = db.query(Supplier.name).filter(Supplier.supplier_id == supplier_id).scalar() if supplier_id else "Semua Supplier"
+
+    context = {
+        "data": results,
+        "filters": {
+            "branch_name": branch_name,
+            "category_name": category_name,
+            "supplier_name": supplier_name,
+            "search": search
+        },
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generated_by": current_user.username
+    }
+
+    pdf_bytes = PdfService.render_to_pdf("reports/low_stock.html", context)
+    
+    filename = f"low_stock_report_{datetime.now().strftime('%Y-%m-%d_%H%M')}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@router.get("/item-history/{item_id}/pdf")
+def get_item_history_report_pdf(
+    item_id: int,
+    branch_id: Optional[int] = Query(None),
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None),
+    current_user: User = Depends(require_role(["super_admin", "branch_head"])),
+    db: Session = Depends(get_db)
+) -> Response:
+    from app.models.branch import Branch
+    from app.models.item import Item
+    from app.services.pdf_service import PdfService
+    from fastapi import Response
+
+    if current_user.role != "super_admin":
+        if branch_id is not None and branch_id != current_user.branch_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Anda hanya dapat melihat data laporan dari cabang Anda sendiri"
+            )
+        branch_id = current_user.branch_id
+
+    # Verify item exists
+    item = db.query(Item).filter(Item.item_id == item_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Barang tidak ditemukan")
+
+    results, _ = ReportService.get_item_history_report(
+        db=db,
+        item_id=item_id,
+        branch_id=branch_id,
+        start_date=start_date,
+        end_date=end_date,
+        is_export=True
+    )
+
+    branch_name = db.query(Branch.name).filter(Branch.branch_id == branch_id).scalar() if branch_id else "Semua Cabang"
+
+    context = {
+        "item": item,
+        "data": results,
+        "filters": {
+            "branch_name": branch_name,
+            "start_date": start_date.strftime("%Y-%m-%d") if start_date else None,
+            "end_date": end_date.strftime("%Y-%m-%d") if end_date else None
+        },
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generated_by": current_user.username
+    }
+
+    pdf_bytes = PdfService.render_to_pdf("reports/item_history.html", context)
+    
+    filename = f"item_history_report_{item_id}_{datetime.now().strftime('%Y-%m-%d_%H%M')}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@router.get("/movements/pdf")
+def get_inventory_movement_report_pdf(
+    branch_id: Optional[int] = Query(None),
+    category_id: Optional[int] = Query(None),
+    supplier_id: Optional[int] = Query(None),
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None),
+    search: Optional[str] = Query(None),
+    current_user: User = Depends(require_role(["super_admin", "branch_head"])),
+    db: Session = Depends(get_db)
+) -> Response:
+    from app.models.branch import Branch
+    from app.models.category import Category
+    from app.models.supplier import Supplier
+    from app.services.pdf_service import PdfService
+    from fastapi import Response
+
+    if current_user.role != "super_admin":
+        if branch_id is not None and branch_id != current_user.branch_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Anda hanya dapat melihat data laporan dari cabang Anda sendiri"
+            )
+        branch_id = current_user.branch_id
+
+    results, _ = ReportService.get_inventory_movement_report(
+        db=db,
+        branch_id=branch_id,
+        category_id=category_id,
+        supplier_id=supplier_id,
+        start_date=start_date,
+        end_date=end_date,
+        search=search,
+        is_export=True
+    )
+
+    branch_name = db.query(Branch.name).filter(Branch.branch_id == branch_id).scalar() if branch_id else "Semua Cabang"
+    category_name = db.query(Category.name).filter(Category.category_id == category_id).scalar() if category_id else "Semua Kategori"
+    supplier_name = db.query(Supplier.name).filter(Supplier.supplier_id == supplier_id).scalar() if supplier_id else "Semua Supplier"
+
+    context = {
+        "data": results,
+        "filters": {
+            "branch_name": branch_name,
+            "category_name": category_name,
+            "supplier_name": supplier_name,
+            "start_date": start_date.strftime("%Y-%m-%d") if start_date else None,
+            "end_date": end_date.strftime("%Y-%m-%d") if end_date else None,
+            "search": search
+        },
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generated_by": current_user.username
+    }
+
+    pdf_bytes = PdfService.render_to_pdf("reports/movement.html", context)
+    
+    filename = f"movement_report_{datetime.now().strftime('%Y-%m-%d_%H%M')}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@router.get("/transfer-variance/pdf")
+def get_transfer_variance_report_pdf(
+    branch_id: Optional[int] = Query(None),
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None),
+    search: Optional[str] = Query(None),
+    current_user: User = Depends(require_role(["super_admin", "branch_head"])),
+    db: Session = Depends(get_db)
+) -> Response:
+    from app.models.branch import Branch
+    from app.services.pdf_service import PdfService
+    from fastapi import Response
+
+    if current_user.role != "super_admin":
+        if branch_id is not None and branch_id != current_user.branch_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Anda hanya dapat melihat data laporan dari cabang Anda sendiri"
+            )
+        branch_id = current_user.branch_id
+
+    results, _, summary = ReportService.get_transfer_variance_report(
+        db=db,
+        branch_id=branch_id,
+        start_date=start_date,
+        end_date=end_date,
+        search=search,
+        is_export=True
+    )
+
+    branch_name = db.query(Branch.name).filter(Branch.branch_id == branch_id).scalar() if branch_id else "Semua Cabang"
+
+    context = {
+        "data": results,
+        "summary": summary,
+        "filters": {
+            "source_branch_name": branch_name if branch_id else "Semua Cabang",
+            "dest_branch_name": branch_name if branch_id else "Semua Cabang",
+            "start_date": start_date.strftime("%Y-%m-%d") if start_date else None,
+            "end_date": end_date.strftime("%Y-%m-%d") if end_date else None
+        },
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generated_by": current_user.username
+    }
+
+    pdf_bytes = PdfService.render_to_pdf("reports/transfer_variance.html", context)
+    
+    filename = f"transfer_variance_report_{datetime.now().strftime('%Y-%m-%d_%H%M')}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@router.get("/audit-logs/pdf")
+def get_audit_log_report_pdf(
+    branch_id: Optional[int] = Query(None),
+    user_id: Optional[int] = Query(None),
+    action: Optional[str] = Query(None),
+    entity_type: Optional[str] = Query(None),
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None),
+    current_user: User = Depends(require_role(["super_admin", "branch_head"])),
+    db: Session = Depends(get_db)
+) -> Response:
+    from app.models.branch import Branch
+    from app.models.user import User as UserModel
+    from app.services.pdf_service import PdfService
+    from fastapi import Response
+
+    if current_user.role != "super_admin":
+        if branch_id is not None and branch_id != current_user.branch_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Anda hanya dapat melihat data audit log dari cabang Anda sendiri"
+            )
+        branch_id = current_user.branch_id
+
+    results, _ = ReportService.get_audit_log_report(
+        db=db,
+        branch_id=branch_id,
+        user_id=user_id,
+        action=action,
+        entity_type=entity_type,
+        start_date=start_date,
+        end_date=end_date,
+        is_export=True
+    )
+
+    branch_name = db.query(Branch.name).filter(Branch.branch_id == branch_id).scalar() if branch_id else "Semua Cabang"
+    user_name = db.query(UserModel.username).filter(UserModel.user_id == user_id).scalar() if user_id else "Semua Operator"
+
+    context = {
+        "data": results,
+        "filters": {
+            "branch_name": branch_name,
+            "user_name": user_name,
+            "action": action,
+            "entity_type": entity_type,
+            "start_date": start_date.strftime("%Y-%m-%d") if start_date else None,
+            "end_date": end_date.strftime("%Y-%m-%d") if end_date else None
+        },
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generated_by": current_user.username
+    }
+
+    pdf_bytes = PdfService.render_to_pdf("reports/audit_log.html", context)
+    
+    filename = f"audit_log_report_{datetime.now().strftime('%Y-%m-%d_%H%M')}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+

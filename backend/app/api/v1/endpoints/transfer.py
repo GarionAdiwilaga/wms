@@ -214,6 +214,41 @@ def cancel_transfer(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Anda hanya dapat membatalkan transfer yang melibatkan cabang Anda sendiri"
             )
-            
     cancelled_transfer = service.cancel(id=id, obj_in=cancel_in, current_user=current_user)
     return format_transfer(cancelled_transfer)
+
+@router.get("/{id}/pdf")
+def get_transfer_pdf(
+    id: int,
+    current_user: User = Depends(get_current_active_user),
+    service: TransferService = Depends(get_transfer_service)
+) -> Any:
+    from app.services.pdf_service import PdfService
+    from fastapi import Response
+    from datetime import datetime
+
+    transfer = service.get(id)
+    
+    # RBAC check: non-super_admin must belong to source or destination branch
+    if current_user.role != "super_admin":
+        if transfer.source_branch_id != current_user.branch_id and transfer.dest_branch_id != current_user.branch_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Anda tidak memiliki akses ke data transfer ini"
+            )
+
+    context = {
+        "session": transfer,
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generated_by": current_user.username
+    }
+
+    pdf_bytes = PdfService.render_to_pdf("transactions/transfer.html", context)
+    
+    filename = f"transfer_{transfer.transfer_number}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+

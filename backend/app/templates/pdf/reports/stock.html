@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Laporan Stok - WMS{% endblock %}
+
+{% block page_style %}
+@page {
+    size: A4 landscape;
+}
+{% endblock %}
+
+{% block doc_title %}Laporan Stok{% endblock %}
+
+{% block content %}
+<div class="info-grid">
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">Cabang:</span>
+            <span class="info-val">{{ filters.branch_name }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Kategori:</span>
+            <span class="info-val">{{ filters.category_name }}</span>
+        </div>
+    </div>
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">Supplier:</span>
+            <span class="info-val">{{ filters.supplier_name }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Pencarian:</span>
+            <span class="info-val">{{ filters.search or '-' }}</span>
+        </div>
+    </div>
+</div>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 5%;">No</th>
+            <th style="width: 15%;">Cabang</th>
+            <th style="width: 12%;">Kode Barang</th>
+            <th style="width: 25%;">Nama Barang</th>
+            <th style="width: 15%;">Kategori</th>
+            <th style="width: 15%;">Supplier</th>
+            <th style="width: 8%; text-align: right;">Stok</th>
+            <th style="width: 8%; text-align: right;">Min. Stok</th>
+            <th style="width: 12%;">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+            <td class="text-center">{{ loop.index }}</td>
+            <td>{{ row.branch_name }}</td>
+            <td><code>{{ row.item_code }}</code></td>
+            <td>{{ row.item_name }}</td>
+            <td>{{ row.category_name }}</td>
+            <td>{{ row.supplier_name }}</td>
+            <td class="text-right">{{ row.quantity }}</td>
+            <td class="text-right">{{ row.minimum_stock }}</td>
+            <td class="text-center">
+                {% if row.quantity <= row.minimum_stock %}
+                <span class="badge badge-red">Restock</span>
+                {% else %}
+                <span class="badge badge-green">Aman</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="9" class="text-center" style="color: var(--secondary); padding: 20px;">Tidak ada data yang ditemukan</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Laporan Audit Log - WMS{% endblock %}
+
+{% block page_style %}
+@page {
+    size: A4 landscape;
+}
+{% endblock %}
+
+{% block doc_title %}Laporan Log Audit Sistem{% endblock %}
+
+{% block content %}
+<div class="info-grid">
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">Aksi:</span>
+            <span class="info-val">{{ filters.action or 'Semua Aksi' }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Tipe Entitas:</span>
+            <span class="info-val">{{ filters.entity_type or 'Semua Entitas' }}</span>
+        </div>
+    </div>
+    <div class="info-col">
+        <div class="info-item">
+            <span class="info-label">Periode:</span>
+            <span class="info-val">
+                {% if filters.start_date and filters.end_date %}
+                    {{ filters.start_date }} s/d {{ filters.end_date }}
+                {% elif filters.start_date %}
+                    Mulai {{ filters.start_date }}
+                {% elif filters.end_date %}
+                    Hingga {{ filters.end_date }}
+                {% else %}
+                    Semua Periode
+                {% endif %}
+            </span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Operator:</span>
+            <span class="info-val">{{ filters.user_name or 'Semua Operator' }}</span>
+        </div>
+    </div>
+</div>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 4%;">No</th>
+            <th style="width: 14%;">Tanggal & Waktu</th>
+            <th style="width: 12%;">Operator</th>
+            <th style="width: 10%;">Aksi</th>
+            <th style="width: 12%;">Tipe Entitas</th>
+            <th style="width: 8%;">ID Entitas</th>
+            <th style="width: 32%;">Detail Perubahan (JSON)</th>
+            <th style="width: 8%;">IP Address</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+            <td class="text-center">{{ loop.index }}</td>
+            <td>{{ row.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>{{ row.operator_name }}</td>
+            <td class="text-center">
+                <span class="badge badge-gray">{{ row.action }}</span>
+            </td>
+            <td><code>{{ row.entity_type }}</code></td>
+            <td class="text-center">{{ row.entity_id }}</td>
+            <td>
+                <div style="font-size: 7.5pt; font-family: monospace; word-break: break-all;">
+                    {% if row.old_values %}
+                    <div style="color: var(--badge-red-text); margin-bottom: 2px;"><strong>Lama:</strong> {{ row.old_values }}</div>
+                    {% endif %}
+                    {% if row.new_values %}
+                    <div style="color: var(--badge-green-text);"><strong>Baru:</strong> {{ row.new_values }}</div>
+                    {% endif %}
+                    {% if not row.old_values and not row.new_values %}
+                    <span style="color: var(--secondary);">-</span>
+                    {% endif %}
+                </div>
+            </td>
+            <td>{{ row.ip_address or '-' }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="8" class="text-center" style="color: var(--secondary); padding: 20px;">Tidak ada log audit ditemukan</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
