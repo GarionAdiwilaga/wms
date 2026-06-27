@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Search, QrCode, X, Image as ImageIcon, CameraOff, Zap } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useItems, Item, useFrequentItems, FrequentItemEntry } from '../../hooks/useItems';
+import { useKeyboardShortcut } from '../../hooks/useKeyboardShortcut';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -39,6 +40,7 @@ export function ItemSearch({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
   // Phase 6 — Frequent Items Carousel
   // branchId === undefined  → carousel feature disabled (backward-compat)
@@ -125,6 +127,41 @@ export function ItemSearch({
     }
     setIsDropdownOpen(false);
   };
+
+  // Reset selected index when dropdown closes or results change
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [isDropdownOpen, searchResults]);
+
+  useKeyboardShortcut({
+    key: 'ArrowDown',
+    onKeyPressed: (e) => {
+      if (isDropdownOpen && searchResults?.data) {
+        e.preventDefault();
+        setSelectedIndex(prev => Math.min(prev + 1, searchResults.data.length - 1));
+      }
+    }
+  });
+
+  useKeyboardShortcut({
+    key: 'ArrowUp',
+    onKeyPressed: (e) => {
+      if (isDropdownOpen) {
+        e.preventDefault();
+        setSelectedIndex(prev => Math.max(prev - 1, -1));
+      }
+    }
+  });
+
+  useKeyboardShortcut({
+    key: 'Enter',
+    onKeyPressed: (e) => {
+      if (isDropdownOpen && selectedIndex >= 0 && searchResults?.data) {
+        e.preventDefault();
+        handleSelect(searchResults.data[selectedIndex]);
+      }
+    }
+  });
 
   const handleInputChange = (val: string) => {
     setQuery(val);
@@ -264,12 +301,14 @@ export function ItemSearch({
             <div className="p-4 text-center text-sm text-slate-400">Barang tidak ditemukan.</div>
           ) : (
             <ul className="py-1">
-              {searchResults?.data.map((item) => (
+              {searchResults?.data.map((item, index) => (
                 <li key={item.item_id}>
                   <button
                     type="button"
                     onClick={() => handleSelect(item)}
-                    className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors"
+                    className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors ${
+                      selectedIndex === index ? 'bg-slate-800' : 'hover:bg-slate-800'
+                    }`}
                   >
                     {/* Thumbnail Preview */}
                     <div className="h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-slate-950 overflow-hidden border border-slate-800 flex">

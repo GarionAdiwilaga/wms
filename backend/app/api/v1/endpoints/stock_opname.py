@@ -33,7 +33,8 @@ def format_opname(session: StockOpnameSession) -> dict[str, Any]:
             "variance": line.variance,
             "created_at": line.created_at,
             "item_code": line.item.item_code if line.item else None,
-            "item_name": line.item.name if line.item else None
+            "item_name": line.item.name if line.item else None,
+            "image_url": line.item.image_path if line.item else None
         }
         lines_data.append(line_dict)
         
@@ -165,3 +166,22 @@ def complete_opname(
             
     completed_session = service.complete(id=id, current_user=current_user)
     return format_opname(completed_session)
+
+@router.post("/{id}/cancel", response_model=StockOpnameResponse)
+def cancel_opname(
+    id: int,
+    current_user: User = Depends(get_current_active_user),
+    service: OpnameService = Depends(get_opname_service)
+) -> Any:
+    session = service.get(id)
+    
+    # RBAC check
+    if current_user.role != "super_admin":
+        if session.branch_id != current_user.branch_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Anda hanya dapat membatalkan opname untuk cabang Anda sendiri"
+            )
+            
+    cancelled_session = service.cancel(id=id, current_user=current_user)
+    return format_opname(cancelled_session)

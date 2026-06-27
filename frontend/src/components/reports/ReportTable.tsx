@@ -1,5 +1,6 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
+import { EmptyState } from '../ui/EmptyState';
 
 export interface ReportColumn<T> {
   header: string;
@@ -14,6 +15,7 @@ interface ReportTableProps<T> {
   keyExtractor: (row: T) => string | number;
   isLoading?: boolean;
   emptyMessage?: string;
+  emptyAction?: { label: string; onClick: () => void };
 }
 
 export function ReportTable<T>({
@@ -21,7 +23,8 @@ export function ReportTable<T>({
   columns,
   keyExtractor,
   isLoading = false,
-  emptyMessage = 'Tidak ada data laporan ditemukan.'
+  emptyMessage = 'Tidak ada data laporan ditemukan.',
+  emptyAction
 }: ReportTableProps<T>) {
   if (isLoading) {
     return (
@@ -34,9 +37,11 @@ export function ReportTable<T>({
 
   if (!data || data.length === 0) {
     return (
-      <div className="bg-card border border-border rounded-xl p-8 text-center text-slate-400 shadow-md">
-        <p className="text-sm font-medium">{emptyMessage}</p>
-      </div>
+      <EmptyState 
+        title="Tidak ada data" 
+        description={emptyMessage}
+        action={emptyAction}
+      />
     );
   }
 

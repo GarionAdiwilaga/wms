@@ -8,6 +8,10 @@ import { ItemSearch } from '../../components/common/ItemSearch';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Button } from '../../components/ui/button';
 import { Label } from '../../components/ui/label';
+import { QuantityStepper } from '../../components/common/QuantityStepper';
+import { ConfirmDialog } from '../../components/common/ConfirmDialog';
+import { CartSummaryDialog } from '../../components/common/CartSummaryDialog';
+import { ImageLightbox } from '../../components/common/ImageLightbox';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, Plus, Minus, ArrowLeft, ArrowLeftRight, Image as ImageIcon } from 'lucide-react';
 
@@ -34,6 +38,8 @@ export function TransferCreatePage() {
 
   const [formError, setFormError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
 
   // Auto-set source branch for Branch Head / Staff on mount
   useEffect(() => {
@@ -72,6 +78,14 @@ export function TransferCreatePage() {
       return;
     }
 
+    setIsSummaryOpen(true);
+  };
+
+  const processSaveDraft = async () => {
+    setFormError(null);
+    setSuccessMsg(null);
+    const activeSourceId = user?.role === 'super_admin' ? sourceBranchId : user?.branch_id;
+
     try {
       const payload = {
         source_branch_id: activeSourceId,
@@ -84,13 +98,14 @@ export function TransferCreatePage() {
       };
 
       await createTransfer.mutateAsync(payload);
+      setIsSummaryOpen(false);
       setSuccessMsg('Draft mutasi barang berhasil disimpan!');
       clearCart();
       setTimeout(() => {
         navigate('/operations/transfers');
       }, 1500);
     } catch (err: any) {
-      console.error(err);
+      setIsSummaryOpen(false);
       setFormError(err.response?.data?.detail || 'Gagal menyimpan draft mutasi');
     }
   };
@@ -143,7 +158,7 @@ export function TransferCreatePage() {
                 <motion.div whileTap={{ scale: 0.95 }}>
                   <button
                     type="button"
-                    onClick={clearCart}
+                    onClick={() => setIsConfirmOpen(true)}
                     className="text-xs text-red-400 hover:text-red-300 font-medium"
                   >
                     Kosongkan
@@ -151,6 +166,19 @@ export function TransferCreatePage() {
                 </motion.div>
               )}
             </div>
+
+            <ConfirmDialog
+              open={isConfirmOpen}
+              onOpenChange={setIsConfirmOpen}
+              title="Kosongkan Keranjang"
+              description="Apakah Anda yakin ingin menghapus semua barang dari keranjang mutasi ini?"
+              variant="destructive"
+              confirmLabel="Kosongkan"
+              onConfirm={() => {
+                clearCart();
+                setIsConfirmOpen(false);
+              }}
+            />
 
             {items.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center text-slate-500">
@@ -175,7 +203,9 @@ export function TransferCreatePage() {
                       <div className="flex items-center gap-3">
                         <div className="h-12 w-12 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden flex-shrink-0">
                           {item.image_url ? (
-                            <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+                            <ImageLightbox src={item.image_url} alt={item.name} triggerClassName="h-full w-full flex items-center justify-center">
+                              <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+                            </ImageLightbox>
                           ) : (
                             <ImageIcon className="h-5 w-5 text-slate-600" />
                           )}
@@ -195,42 +225,13 @@ export function TransferCreatePage() {
 
                       {/* Quantity Actions & Delete */}
                       <div className="flex items-center justify-between sm:justify-end gap-6">
-                        <div className="flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-lg p-1">
-                          <motion.div whileTap={{ scale: 0.85 }}>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => updateQuantity(item.item_id, item.sent_quantity - 1)}
-                              className="h-8 w-8 text-slate-400 hover:text-white rounded-md"
-                              disabled={item.sent_quantity <= 1}
-                            >
-                              <Minus className="h-4 w-4" />
-                            </Button>
-                          </motion.div>
-                          
-                          <label htmlFor={`sent-qty-${item.item_id}`} className="sr-only">Jumlah Kiriman {item.name}</label>
-                          <input
-                            id={`sent-qty-${item.item_id}`}
-                            name={`sent_qty_${item.item_id}`}
-                            type="number"
-                            value={item.sent_quantity}
-                            onChange={(e) => updateQuantity(item.item_id, parseInt(e.target.value) || 1)}
-                            className="bg-transparent text-white w-12 text-center text-sm font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                          />
-
-                          <motion.div whileTap={{ scale: 0.85 }}>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => updateQuantity(item.item_id, item.sent_quantity + 1)}
-                              className="h-8 w-8 text-slate-400 hover:text-white rounded-md"
-                            >
-                              <Plus className="h-4 w-4" />
-                            </Button>
-                          </motion.div>
-                        </div>
+                        <QuantityStepper
+                          value={item.sent_quantity}
+                          onChange={(newQty) => updateQuantity(item.item_id, newQty)}
+                          min={1}
+                          id={`sent-qty-${item.item_id}`}
+                          name={`Kiriman ${item.name}`}
+                        />
 
                         <motion.div whileTap={{ scale: 0.9 }}>
                           <Button
@@ -346,6 +347,16 @@ export function TransferCreatePage() {
           </form>
         </div>
       </div>
+
+      <CartSummaryDialog
+        open={isSummaryOpen}
+        onOpenChange={setIsSummaryOpen}
+        title="Konfirmasi Draft Mutasi"
+        description="Periksa kembali daftar barang yang akan dimutasi sebelum menyimpan draft."
+        items={items.map(i => ({ ...i, quantity: i.sent_quantity }))}
+        onConfirm={processSaveDraft}
+        isLoading={createTransfer.isPending}
+      />
     </div>
   );
 }

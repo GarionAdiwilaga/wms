@@ -1,6 +1,6 @@
 # Handoff Context
 
-**Date:** 2026-06-26
+**Date:** 2026-06-27
 
 **Role:** Full Stack Developer
 
@@ -15,7 +15,22 @@
   - `frontend/src/components/layout/AppShell.tsx` → Dashboard at top of nav, Analitik in reports section
   - `frontend/src/App.tsx` → `/dashboard` route added, default redirect updated
 
-- Phase 6.0 — Frequent Items Carousel (COMPLETE, from previous session)
+- Phase 6.3 — UX Enhancements (COMPLETE):
+  - `EmptyState` component action prop support
+  - `ConfirmDialog` component (Radix Dialog wrapper) used in operations pages
+  - `QuantityStepper` component used in operations pages (with press-and-hold interval scaling)
+  - `ImageLightbox` component (Framer Motion AnimatePresence) used in item catalogue and transactional carts
+  - `useKeyboardShortcut` React Hook for `ItemSearch` results navigation
+  - `CartSummaryDialog` added for pre-submit action confirmation in Stock In, Outbound, Transfer
+  - Stock Opname Correctness & Category-Scoped Workflow (COMPLETE):
+    - Enforced strict category-scoped opname workflow in both backend and frontend.
+    - Prevented starting an opname session for categories that contain no active items (both backend & frontend validation).
+    - Initial `physical_quantity` defaults to the snapshotted `system_quantity` at creation.
+    - Users can still edit and save an explicit count of `0` in drafts.
+    - Opname completions generate `ADJUSTMENT_PLUS` / `ADJUSTMENT_MINUS` ledger transactions.
+    - Detail page renders a prominent category badge at the top right of the header.
+    - Search-scroll-focus behavior scrolls to and flashes golden highlights on items in the list.
+    - Wrong category warning dynamically displays the item's target category name.
 
 **Architecture decisions (all locked in DECISIONS.md):**
 - Roadmap approved with 8 adjustments: Jinja2 templates, Axios blob PDF, staleTime+windowFocus refresh, notification center, PdfService render-only, Recharts, 180d dead stock, order 6.1→6.3→6.2→6.4
@@ -24,18 +39,17 @@
 - Notifications: low_stock_count, transfers_awaiting_receipt, overdue_opname_sessions (>7 days draft)
 
 **Current:**
-- Phase 6.1 is COMPLETE. Nothing frozen was touched.
+- Phase 6.3 is COMPLETE.
 
 **Next:**
-- Phase 6.3: UX Enhancements — 6 independent components:
-  1. `ConfirmDialog.tsx` — standardize destructive action dialogs
-  2. `QuantityStepper.tsx` — +/- stepper with long-press for cart rows
-  3. `ImageLightbox.tsx` — fullscreen image overlay
-  4. `useKeyboardShortcut.ts` + ItemSearch keyboard nav
-  5. `EmptyState.tsx` — add optional action prop
-  6. Wire ConfirmDialog + QuantityStepper into StockIn, Outbound, Transfer, Opname pages
+- Phase 6.2: PDF Generation
+  - Backend: `PdfService`, Jinja2 templates.
+  - Integration with existing report endpoints.
+  - Frontend: blob download utilities.
 
 **Notes for Next Agent:**
+- Phase 6.3 is fully complete.
+- For Phase 6.2 PDF generation, check `DECISIONS.md` for the chosen tech stack (Jinja2 + Axios blob).
 - Verify the backend: `docker compose exec backend python -c "from app.api.v1.endpoints.dashboard import router; print('OK')"`
 - New endpoint: `GET /api/v1/dashboard/summary?branch_id=1` (Bearer token required)
 - Frontend dev: `npm run dev` in frontend/

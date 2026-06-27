@@ -189,13 +189,28 @@
 - `[x]` Frontend: Wire `branchId` into `<ItemSearch>` in `TransferCreatePage.tsx` (source branch)
 - `[x]` Frontend: Wire `branchId` into `<ItemSearch>` in `StockOpnameDetailPage.tsx` (session branch)
 
-### 6.1 Dashboards
-- `[ ]` Define Dashboard Metrics (must consume `ReportService`)
-- `[ ]` Backend: Implement `/api/v1/dashboards` endpoint
-- `[ ]` Frontend: Build Dashboard UI (Summary Cards, Charts)
+### 6.1 Operational Dashboard (Completed)
+- `[x]` Backend: `DashboardSummaryResponse` schema and `GET /api/v1/dashboard/summary` endpoint
+- `[x]` Frontend: `useDashboardSummary` hook and `DashboardPage.tsx`
+- `[x]` Frontend: `TxTypeBadge` component
+- `[x]` App routing & navigation updates (`AppShell`, `App.tsx`)
 
-### 6.2 Advanced Reporting
-- `[ ]` Backend: Implement Scheduled Snapshot Engine (`daily_stock_snapshots`)
-- `[ ]` Backend: Implement Dead Stock Analysis Report (>90 days no movement)
-- `[ ]` Backend: Implement PDF Generation Service (WeasyPrint/ReportLab)
-- `[ ]` Frontend: Integrate PDF Export buttons and new report pages
+### 6.3 UX Enhancements (Current Focus)
+- `[x]` Frontend: `QuantityStepper` component (StockIn, Outbound, TransferCreate)
+- `[x]` Frontend: `ConfirmDialog` component (Radix Dialog wrapper)
+- `[x]` Frontend: `ImageLightbox` component (Framer Motion AnimatePresence)
+- `[x]` Frontend: Keyboard Shortcuts for `ItemSearch` (`useKeyboardShortcut`)
+- `[x]` Frontend: `EmptyState` component action prop support
+
+### 6.2 PDF Generation
+- `[ ]` Backend Dependencies: Add WeasyPrint & Jinja2 to `pyproject.toml` and `Dockerfile`
+- `[ ]` Backend: Create HTML/CSS templates under `backend/templates/pdf/`
+- `[ ]` Backend: Implement `PdfService` render contract
+- `[ ]` Backend: Add PDF export endpoints (StockIn, Outbound, Transfer, Opname, Reports)
+- `[ ]` Frontend: Implement `usePdfDownload` hook (Axios blob)
+- `[ ]` Frontend: Wire PDF export buttons in History and Report pages
+
+### 6.4 Advanced Analytics
+- `[ ]` Backend: `AnalyticsService` for movement velocity, trends, and distributions
+- `[ ]` Backend: `/api/v1/analytics/*` endpoints
+- `[ ]` Frontend: `useAnalytics` hooks and `AnalyticsPage.tsx` (Recharts integration)

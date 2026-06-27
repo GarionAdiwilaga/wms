@@ -10,6 +10,10 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { api } from '../../lib/api';
+import { QuantityStepper } from '../../components/common/QuantityStepper';
+import { ConfirmDialog } from '../../components/common/ConfirmDialog';
+import { CartSummaryDialog } from '../../components/common/CartSummaryDialog';
+import { ImageLightbox } from '../../components/common/ImageLightbox';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, Plus, Minus, ArrowLeft, ShoppingCart, Image as ImageIcon } from 'lucide-react';
 
@@ -38,6 +42,8 @@ export function OutboundPage() {
   const [searchError, setSearchError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isCheckingStock, setIsCheckingStock] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
 
   // Set default branch for branch staff on mount
   useEffect(() => {
@@ -102,6 +108,14 @@ export function OutboundPage() {
       return;
     }
 
+    setIsSummaryOpen(true);
+  };
+
+  const processCheckout = async () => {
+    setFormError(null);
+    setSuccessMsg(null);
+    const activeBranchId = user?.role === 'super_admin' ? branchId : user?.branch_id;
+
     try {
       const payload = {
         branch_id: activeBranchId,
@@ -114,6 +128,7 @@ export function OutboundPage() {
       };
 
       await createOutbound.mutateAsync(payload);
+      setIsSummaryOpen(false);
       setSuccessMsg('Barang keluar berhasil dicheckout!');
       clearCart();
       setTimeout(() => {
@@ -121,7 +136,7 @@ export function OutboundPage() {
       }, 1500);
     } catch (err: any) {
       console.error(err);
-      // Explicitly catch and render backend 400 insufficient stock error details
+      setIsSummaryOpen(false);
       const detailError = err.response?.data?.detail || 'Gagal melakukan checkout barang keluar';
       setFormError(typeof detailError === 'string' ? detailError : JSON.stringify(detailError));
     }
@@ -187,7 +202,7 @@ export function OutboundPage() {
                 <motion.div whileTap={{ scale: 0.95 }}>
                   <button
                     type="button"
-                    onClick={clearCart}
+                    onClick={() => setIsConfirmOpen(true)}
                     className="text-xs text-red-400 hover:text-red-300 font-medium"
                   >
                     Kosongkan
@@ -195,6 +210,19 @@ export function OutboundPage() {
                 </motion.div>
               )}
             </div>
+
+            <ConfirmDialog
+              open={isConfirmOpen}
+              onOpenChange={setIsConfirmOpen}
+              title="Kosongkan Keranjang"
+              description="Apakah Anda yakin ingin menghapus semua barang dari keranjang outbound ini?"
+              variant="destructive"
+              confirmLabel="Kosongkan"
+              onConfirm={() => {
+                clearCart();
+                setIsConfirmOpen(false);
+              }}
+            />
 
             {items.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center text-slate-500">
@@ -226,7 +254,9 @@ export function OutboundPage() {
                         <div className="flex items-center gap-3">
                           <div className="h-12 w-12 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden flex-shrink-0">
                             {item.image_url ? (
-                              <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+                              <ImageLightbox src={item.image_url} alt={item.name} triggerClassName="h-full w-full flex items-center justify-center">
+                                <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+                              </ImageLightbox>
                             ) : (
                               <ImageIcon className="h-5 w-5 text-slate-600" />
                             )}
@@ -251,42 +281,13 @@ export function OutboundPage() {
 
                         {/* Quantity Actions & Delete */}
                         <div className="flex items-center justify-between sm:justify-end gap-6">
-                          <div className="flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-lg p-1">
-                            <motion.div whileTap={{ scale: 0.85 }}>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => updateQuantity(item.item_id, item.quantity - 1)}
-                                className="h-8 w-8 text-slate-400 hover:text-white rounded-md"
-                                disabled={item.quantity <= 1}
-                              >
-                                <Minus className="h-4 w-4" />
-                              </Button>
-                            </motion.div>
-                            
-                            <label htmlFor={`qty-${item.item_id}`} className="sr-only">Jumlah {item.name}</label>
-                            <input
-                              id={`qty-${item.item_id}`}
-                              name={`qty-${item.item_id}`}
-                              type="number"
-                              value={item.quantity}
-                              onChange={(e) => updateQuantity(item.item_id, parseInt(e.target.value) || 1)}
-                              className="bg-transparent text-white w-12 text-center text-sm font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            />
-
-                            <motion.div whileTap={{ scale: 0.85 }}>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => updateQuantity(item.item_id, item.quantity + 1)}
-                                className="h-8 w-8 text-slate-400 hover:text-white rounded-md"
-                              >
-                                <Plus className="h-4 w-4" />
-                              </Button>
-                            </motion.div>
-                          </div>
+                          <QuantityStepper
+                            value={item.quantity}
+                            onChange={(newQty) => updateQuantity(item.item_id, newQty)}
+                            min={1}
+                            id={`qty-${item.item_id}`}
+                            name={item.name}
+                          />
 
                           <motion.div whileTap={{ scale: 0.9 }}>
                             <Button
@@ -402,6 +403,16 @@ export function OutboundPage() {
           </form>
         </div>
       </div>
+
+      <CartSummaryDialog
+        open={isSummaryOpen}
+        onOpenChange={setIsSummaryOpen}
+        title="Konfirmasi Checkout Outbound"
+        description="Periksa kembali daftar komponen yang akan dikeluarkan."
+        items={items}
+        onConfirm={processCheckout}
+        isLoading={createOutbound.isPending}
+      />
     </div>
   );
 }

@@ -8,10 +8,10 @@ class StockOpnameLineCreate(BaseModel):
 
 class StockOpnameCreate(BaseModel):
     branch_id: int
-    category_id: int
-    status: str = Field(default="draft", description="Status must be draft or completed")
+    category_id: Optional[int] = None
+    status: str = Field(default="draft", description="Status must be draft or completed or cancelled")
     notes: Optional[str] = None
-    lines: list[StockOpnameLineCreate] = Field(min_length=1, description="At least one item line is required")
+    lines: list[StockOpnameLineCreate] = Field(default_factory=list, description="List of items for opname")
 
 class StockOpnameLineUpdate(BaseModel):
     line_id: Optional[int] = None
@@ -36,13 +36,14 @@ class StockOpnameLineResponse(BaseModel):
     # UI helper properties
     item_code: Optional[str] = None
     item_name: Optional[str] = None
+    image_url: Optional[str] = None
 
 class StockOpnameResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     session_id: int
     branch_id: int
-    category_id: int
+    category_id: Optional[int]
     status: str
     notes: Optional[str]
     created_by: int

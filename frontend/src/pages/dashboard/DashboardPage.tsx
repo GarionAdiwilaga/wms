@@ -27,6 +27,7 @@ import { useDashboardSummary, RecentTransaction } from '../../hooks/useDashboard
 import { useBranches } from '../../hooks/useBranches';
 import { TxTypeBadge } from '../../components/common/TxTypeBadge';
 import { Button } from '../../components/ui/button';
+import { EmptyState } from '../../components/ui/EmptyState';
 
 
 // ---------------------------------------------------------------------------
@@ -381,10 +382,15 @@ export function DashboardPage() {
               ))}
             </div>
           ) : !summary?.recent_transactions.length ? (
-            <div className="py-10 flex flex-col items-center gap-2 text-center">
-              <Clock className="h-8 w-8 text-slate-700" />
-              <p className="text-sm text-slate-500">Belum ada aktivitas hari ini</p>
-              <p className="text-[11px] text-slate-600">Transaksi pertama akan muncul di sini</p>
+            <div className="py-6">
+              <EmptyState 
+                title="Belum ada aktivitas hari ini" 
+                description="Transaksi pertama akan muncul di sini"
+                action={{
+                  label: "Mulai Stok Masuk",
+                  onClick: () => navigate('/operations/stock-in')
+                }}
+              />
             </div>
           ) : (
             <div>

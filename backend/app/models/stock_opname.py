@@ -15,7 +15,7 @@ class StockOpnameSession(Base, TimestampMixin):
 
     session_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     branch_id: Mapped[int] = mapped_column(ForeignKey("branches.branch_id", ondelete="RESTRICT"), index=True, nullable=False)
-    category_id: Mapped[int] = mapped_column(ForeignKey("categories.category_id", ondelete="RESTRICT"), index=True, nullable=False)
+    category_id: Mapped[int | None] = mapped_column(ForeignKey("categories.category_id", ondelete="RESTRICT"), index=True, nullable=True)
     status: Mapped[str] = mapped_column(String, default="draft", index=True, nullable=False)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_by: Mapped[int] = mapped_column(ForeignKey("users.user_id", ondelete="RESTRICT"), nullable=False)
@@ -29,7 +29,7 @@ class StockOpnameSession(Base, TimestampMixin):
     )
 
     __table_args__ = (
-        CheckConstraint("status IN ('draft', 'completed')", name="chk_opname_status"),
+        CheckConstraint("status IN ('draft', 'completed', 'cancelled')", name="chk_opname_status"),
     )
 
 class StockOpnameLine(Base):

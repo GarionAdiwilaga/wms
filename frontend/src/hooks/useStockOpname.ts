@@ -8,8 +8,8 @@ export interface StockOpnameLineCreate {
 
 export interface StockOpnameCreate {
   branch_id: number;
-  category_id: number;
-  status?: 'draft' | 'completed';
+  category_id?: number | null;
+  status?: 'draft' | 'completed' | 'cancelled';
   notes?: string | null;
   lines: StockOpnameLineCreate[];
 }
@@ -35,13 +35,14 @@ export interface StockOpnameLine {
   created_at: string;
   item_code?: string;
   item_name?: string;
+  image_url?: string | null;
 }
 
 export interface StockOpnameSession {
   session_id: number;
   branch_id: number;
-  category_id: number;
-  status: 'draft' | 'completed';
+  category_id: number | null;
+  status: 'draft' | 'completed' | 'cancelled';
   notes: string | null;
   created_by: number;
   created_at: string;
@@ -130,7 +131,22 @@ export const useCompleteStockOpname = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['stock-opname'] });
       queryClient.invalidateQueries({ queryKey: ['stock-opname', data.session_id] });
+      queryClient.invalidateQueries({ queryKey: ['stock-opname', data.session_id] });
       queryClient.invalidateQueries({ queryKey: ['branch-stocks'] });
+    },
+  });
+};
+
+export const useCancelStockOpname = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number): Promise<StockOpnameSession> => {
+      const response = await api.post(`/stock-opname/${id}/cancel`);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['stock-opname'] });
+      queryClient.invalidateQueries({ queryKey: ['stock-opname', data.session_id] });
     },
   });
 };

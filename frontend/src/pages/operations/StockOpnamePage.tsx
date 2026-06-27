@@ -14,7 +14,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '../../components/ui/dialog';
 import { api } from '../../lib/api';
 import { AnimatePresence } from 'framer-motion';
-import { ClipboardList, Plus, Calendar, ShieldCheck, Play, HelpCircle } from 'lucide-react';
+import { ClipboardList, Plus, Calendar, ShieldCheck, Play, HelpCircle, XCircle } from 'lucide-react';
 
 export function StockOpnamePage() {
   const navigate = useNavigate();
@@ -71,34 +71,40 @@ export function StockOpnamePage() {
     }
 
     if (!opnameCategoryId) {
-      setModalError('Kategori item wajib dipilih');
+      setModalError('Kategori barang wajib dipilih');
       return;
     }
 
     setIsInitializing(true);
     try {
-      // 1. Fetch all items in the selected category
-      const itemsResp = await api.get('/items/', {
-        params: { category_id: opnameCategoryId, page_size: 100 }
-      });
-      const categoryItems = itemsResp.data?.data || [];
+      let linesPayload: any[] = [];
+      
+      if (opnameCategoryId) {
+        // 1. Fetch all items in the selected category
+        const itemsResp = await api.get('/items/', {
+          params: { category_id: opnameCategoryId, page_size: 100 }
+        });
+        const categoryItems = itemsResp.data?.data || [];
 
-      if (categoryItems.length === 0) {
-        setModalError('Kategori yang dipilih tidak memiliki item aktif. Tambahkan item ke kategori ini terlebih dahulu.');
-        setIsInitializing(false);
-        return;
-      }
+        if (categoryItems.length === 0) {
+          setModalError('Kategori yang dipilih tidak memiliki item aktif. Tambahkan item ke kategori ini terlebih dahulu.');
+          setIsInitializing(false);
+          return;
+        }
 
-      // 2. Prepare lines with default physical count = 0
-      const payload = {
-        branch_id: activeSourceId,
-        category_id: opnameCategoryId,
-        status: 'draft' as const,
-        notes: opnameNotes || null,
-        lines: categoryItems.map((item: any) => ({
+        linesPayload = categoryItems.map((item: any) => ({
           item_id: item.item_id,
           physical_quantity: 0,
-        })),
+        }));
+      }
+
+      // 2. Prepare payload
+      const payload = {
+        branch_id: activeSourceId,
+        category_id: opnameCategoryId || null,
+        status: 'draft' as const,
+        notes: opnameNotes || null,
+        lines: linesPayload,
       };
 
       // 3. Post to create stock opname session
@@ -135,6 +141,8 @@ export function StockOpnamePage() {
             <ShieldCheck className="h-3 w-3" /> Selesai
           </span>
         );
+      case 'cancelled':
+        return <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20"><XCircle className="w-3.5 h-3.5" /> Dibatalkan</span>;
       default:
         return (
           <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-450">
@@ -214,6 +222,7 @@ export function StockOpnamePage() {
             <option value="">Semua Status</option>
             <option value="draft">Draft</option>
             <option value="completed">Selesai</option>
+            <option value="cancelled">Dibatalkan</option>
           </select>
         </div>
 
@@ -266,7 +275,7 @@ export function StockOpnamePage() {
                   </div>
 
                   <div className="text-sm font-semibold text-slate-300">
-                    Kategori: <span className="text-amber-500">{getCategoryName(opname.category_id)}</span>
+                    Kategori: <span className="text-amber-500">{opname.category_id ? getCategoryName(opname.category_id) : 'Per Item (Semua Kategori)'}</span>
                     <span className="text-slate-500 font-medium"> | {getBranchName(opname.branch_id)}</span>
                   </div>
 
@@ -364,9 +373,8 @@ export function StockOpnamePage() {
                 value={opnameCategoryId || ''}
                 onChange={(e) => setOpnameCategoryId(Number(e.target.value) || null)}
                 className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
-                required
               >
-                <option value="">Pilih Kategori...</option>
+                <option value="">Pilih Kategori Barang...</option>
                 {categories?.filter(c => c.is_active).map((c) => (
                   <option key={c.category_id} value={c.category_id}>
                     {c.name}

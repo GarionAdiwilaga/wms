@@ -6,18 +6,21 @@ import {
   useStockOpnameSession,
   useUpdateStockOpname,
   useCompleteStockOpname,
+  useCancelStockOpname,
 } from '../../hooks/useStockOpname';
 import { ItemSearch } from '../../components/common/ItemSearch';
+import { ImageLightbox } from '../../components/common/ImageLightbox';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Button } from '../../components/ui/button';
 import { Label } from '../../components/ui/label';
 import { LoadingState } from '../../components/ui/LoadingState';
+import { QuantityStepper } from '../../components/common/QuantityStepper';
 import { EmptyState } from '../../components/ui/EmptyState';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '../../components/ui/dialog';
+import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, Save, AlertTriangle, ShieldCheck, HelpCircle,
-  Plus, Minus, Search, RotateCcw, XCircle, CheckCircle2,
+  Search, RotateCcw, XCircle, CheckCircle2, Image as ImageIcon
 } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -29,6 +32,7 @@ interface OpnameLineState {
   item_id: number;
   item_code: string;
   item_name: string;
+  image_url?: string | null;
   /** What the user physically counted */
   physical_quantity: number;
   /** Snapshot from the database at session creation */
@@ -62,14 +66,17 @@ export function StockOpnameDetailPage() {
 
   const updateOpname = useUpdateStockOpname(sessionID);
   const completeOpname = useCompleteStockOpname();
+  const cancelOpname = useCancelStockOpname();
 
   const [notes, setNotes] = useState('');
   const [lines, setLines] = useState<OpnameLineState[]>([]);
   const [filterItemId, setFilterItemId] = useState<number | null>(null);
+  const [highlightedItemId, setHighlightedItemId] = useState<number | null>(null);
 
   // Dialogs
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [emptyCancelOpen, setEmptyCancelOpen] = useState(false);
 
   // Feedback
   const [actionError, setActionError] = useState<string | null>(null);
@@ -87,10 +94,8 @@ export function StockOpnameDetailPage() {
           item_id: l.item_id,
           item_code: l.item_code || '',
           item_name: l.item_name || 'Item',
-          // ✅ Req 2: default physical to system_quantity, not 0
-          physical_quantity: l.physical_quantity !== 0
-            ? l.physical_quantity
-            : l.system_quantity,
+          image_url: l.image_url,
+          physical_quantity: l.physical_quantity,
           system_quantity: l.system_quantity,
           variance: l.variance,
         }))
@@ -114,8 +119,8 @@ export function StockOpnameDetailPage() {
   const getBranchName = (id: number) =>
     branches?.find((b) => b.branch_id === id)?.name || `Cabang #${id}`;
 
-  const getCategoryName = (id: number) =>
-    categories?.find((c) => c.category_id === id)?.name || `Kategori #${id}`;
+  const getCategoryName = (id: number | null) =>
+    id ? (categories?.find((c) => c.category_id === id)?.name || `Kategori #${id}`) : 'Semua Kategori';
 
   // ---------------------------------------------------------------------------
   // Quantity change — recalculates live variance
@@ -134,12 +139,46 @@ export function StockOpnameDetailPage() {
   // Item search focus
   // ---------------------------------------------------------------------------
   const handleItemSearchSelect = (selectedItem: any) => {
+    // Check if the item belongs to the session category
+    if (session && session.category_id !== null && selectedItem.category_id !== session.category_id) {
+      const targetCategoryName = categories?.find((c) => c.category_id === selectedItem.category_id)?.name || `ID #${selectedItem.category_id}`;
+      setActionError(`Item '${selectedItem.name}' berada di kategori '${targetCategoryName}'. Anda harus melakukan opname untuk kategori tersebut untuk membuat penyesuaian pada item tersebut.`);
+      setFilterItemId(null);
+      return;
+    }
+
     const match = lines.find((l) => l.item_id === selectedItem.item_id);
     if (match) {
-      setFilterItemId(selectedItem.item_id);
+      setFilterItemId(null); // Clear filter to display the entire list
       setActionError(null);
+      setHighlightedItemId(selectedItem.item_id);
+      
+      // Scroll to the selected item smoothly
+      setTimeout(() => {
+        const el = document.getElementById(`opname-line-item-${selectedItem.item_id}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+
+      // Fade out highlight after 3 seconds
+      setTimeout(() => {
+        setHighlightedItemId(null);
+      }, 3000);
     } else {
-      setActionError(`Item '${selectedItem.name}' tidak terdaftar dalam kategori opname ini.`);
+      // Fallback: Add it as a new line if same category but somehow not pre-populated
+      setLines(prev => [...prev, {
+        line_id: -selectedItem.item_id, // temporary id
+        item_id: selectedItem.item_id,
+        item_code: selectedItem.item_code || '',
+        item_name: selectedItem.name || 'Item',
+        image_url: selectedItem.image_url,
+        physical_quantity: 0,
+        system_quantity: 0,
+        variance: 0,
+      }]);
+      setFilterItemId(null);
+      setActionError(null);
     }
   };
 
@@ -169,11 +208,16 @@ export function StockOpnameDetailPage() {
   // ---------------------------------------------------------------------------
   // Cancel stocktake (deletes draft, redirects)
   // ---------------------------------------------------------------------------
-  const handleCancelConfirm = () => {
-    // Clear local state and redirect — the session stays in DB as draft
-    // but the user is returned to the list. A future cleanup job can prune old drafts.
-    setCancelOpen(false);
-    navigate('/operations/stock-opname');
+  const handleCancelConfirm = async () => {
+    try {
+      await cancelOpname.mutateAsync(sessionID);
+      setCancelOpen(false);
+      setEmptyCancelOpen(false);
+      navigate('/operations/stock-opname');
+    } catch (err: any) {
+      console.error(err);
+      setActionError(err.response?.data?.detail || 'Gagal membatalkan opname');
+    }
   };
 
   // ---------------------------------------------------------------------------
@@ -239,8 +283,8 @@ export function StockOpnameDetailPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center gap-3">
-        <motion.div whileTap={{ scale: 0.95 }}>
+      <div className="flex items-start gap-3">
+        <motion.div whileTap={{ scale: 0.95 }} className="mt-1">
           <Button
             variant="ghost"
             size="icon"
@@ -250,10 +294,20 @@ export function StockOpnameDetailPage() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </motion.div>
-        <PageHeader
-          title={`Sesi Opname #${session.session_id}`}
-          description="Pencatatan jumlah fisik stock gudang dan audit stock opname."
-        />
+        <div className="flex-1">
+          <PageHeader
+            title={`Sesi Opname #${session.session_id}`}
+            description="Pencatatan jumlah fisik stock gudang dan audit stock opname."
+            action={
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-[0_0_12px_rgba(245,158,11,0.05)]">
+                  Kategori: {getCategoryName(session.category_id)}
+                </span>
+                {getStatusBadge(session.status)}
+              </div>
+            }
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -301,7 +355,7 @@ export function StockOpnameDetailPage() {
               <AnimatePresence initial={false}>
                 {filteredLines.map((line) => {
                   const isCompleted = session.status === 'completed';
-                  // Live variance for draft; server variance for completed
+                  const isHighlighted = line.item_id === highlightedItemId;
                   const liveVariance = isCompleted
                     ? (line.variance ?? 0)
                     : line.physical_quantity - line.system_quantity;
@@ -310,14 +364,30 @@ export function StockOpnameDetailPage() {
                     <motion.div
                       layout
                       key={line.line_id}
-                      className="border border-border bg-slate-900/40 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      id={`opname-line-item-${line.item_id}`}
+                      className={`border rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-500 ${
+                        isHighlighted 
+                          ? 'border-amber-500/80 bg-amber-950/20 shadow-[0_0_15px_rgba(245,158,11,0.2)] ring-1 ring-amber-500/30 scale-[1.02]' 
+                          : 'border-border bg-slate-900/40'
+                      }`}
                     >
                       {/* Item Info */}
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-white truncate">{line.item_name}</p>
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-850 border border-slate-750 text-amber-500 inline-block mt-1">
-                          {line.item_code}
-                        </span>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-slate-950 overflow-hidden border border-slate-800 flex">
+                          {line.image_url ? (
+                            <ImageLightbox src={line.image_url} alt={line.item_name} triggerClassName="h-full w-full">
+                              <img src={line.image_url} alt={line.item_name} className="h-full w-full object-cover" />
+                            </ImageLightbox>
+                          ) : (
+                            <ImageIcon className="h-5 w-5 text-slate-600" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-white truncate">{line.item_name}</p>
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-850 border border-slate-750 text-amber-500 inline-block mt-1">
+                            {line.item_code}
+                          </span>
+                        </div>
                       </div>
 
                       {/* Count fields */}
@@ -325,7 +395,11 @@ export function StockOpnameDetailPage() {
                         {/* System stock — always visible */}
                         <div className="text-right">
                           <span className="text-[10px] text-slate-500 block">Stok Sistem</span>
-                          <span className="text-sm font-bold text-slate-300 font-mono">{line.system_quantity}</span>
+                          {line.line_id < 0 ? (
+                            <div className="h-5 w-10 bg-slate-800/80 animate-pulse rounded ml-auto mt-1" />
+                          ) : (
+                            <span className="text-sm font-bold text-slate-300 font-mono">{line.system_quantity}</span>
+                          )}
                         </div>
 
                         {/* Physical count — stepper when draft, read-only when completed */}
@@ -338,45 +412,13 @@ export function StockOpnameDetailPage() {
                           ) : (
                             <div className="flex flex-col items-end">
                               <span className="text-[10px] text-slate-500 block mb-0.5">Jumlah Fisik</span>
-                              <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-850 rounded-lg p-1">
-                                <motion.div whileTap={{ scale: 0.85 }}>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleQtyChange(line.line_id, line.physical_quantity - 1)}
-                                    className="h-7 w-7 text-slate-400 hover:text-white rounded-md"
-                                    disabled={line.physical_quantity <= 0}
-                                  >
-                                    <Minus className="h-3.5 w-3.5" />
-                                  </Button>
-                                </motion.div>
-
-                                <label htmlFor={`physical_qty_${line.line_id}`} className="sr-only">
-                                  Jumlah Fisik {line.item_name}
-                                </label>
-                                <input
-                                  id={`physical_qty_${line.line_id}`}
-                                  name={`physical_qty_${line.line_id}`}
-                                  type="number"
-                                  value={line.physical_quantity}
-                                  onChange={(e) => handleQtyChange(line.line_id, parseInt(e.target.value) || 0)}
-                                  className="bg-transparent text-white w-12 text-center text-sm font-bold font-mono focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                  min={0}
-                                />
-
-                                <motion.div whileTap={{ scale: 0.85 }}>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleQtyChange(line.line_id, line.physical_quantity + 1)}
-                                    className="h-7 w-7 text-slate-400 hover:text-white rounded-md"
-                                  >
-                                    <Plus className="h-3.5 w-3.5" />
-                                  </Button>
-                                </motion.div>
-                              </div>
+                              <QuantityStepper
+                                value={line.physical_quantity}
+                                onChange={(newQty) => handleQtyChange(line.line_id, newQty)}
+                                min={0}
+                                id={`physical_qty_${line.line_id}`}
+                                name={`Fisik ${line.item_name}`}
+                              />
                             </div>
                           )}
                         </div>
@@ -384,9 +426,13 @@ export function StockOpnameDetailPage() {
                         {/* Live variance badge — always shown */}
                         <div className="text-right min-w-[60px]">
                           <span className="text-[10px] text-slate-500 block">Selisih</span>
-                          <span className={`text-xs font-bold font-mono px-2 py-0.5 rounded border ${varianceColor(liveVariance)}`}>
-                            {liveVariance > 0 ? `+${liveVariance}` : liveVariance}
-                          </span>
+                          {line.line_id < 0 ? (
+                            <div className="h-5 w-12 bg-slate-800/80 animate-pulse rounded ml-auto mt-1" />
+                          ) : (
+                            <span className={`text-xs font-bold font-mono px-2 py-0.5 rounded border ${varianceColor(liveVariance)}`}>
+                              {liveVariance > 0 ? `+${liveVariance}` : liveVariance}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </motion.div>
@@ -467,7 +513,13 @@ export function StockOpnameDetailPage() {
                 {/* Complete — opens review modal */}
                 <motion.div whileTap={{ scale: 0.97 }}>
                   <Button
-                    onClick={() => setConfirmOpen(true)}
+                    onClick={() => {
+                      if (lines.length === 0) {
+                        setEmptyCancelOpen(true);
+                      } else {
+                        setConfirmOpen(true);
+                      }
+                    }}
                     className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:opacity-90 border-0 text-white font-semibold rounded-xl min-h-[44px] shadow-md flex items-center justify-center gap-2"
                   >
                     <CheckCircle2 className="h-4 w-4" /> Selesaikan Opname
@@ -494,20 +546,17 @@ export function StockOpnameDetailPage() {
       {/* ================================================================== */}
       {/* Pre-Commit Review Modal                                              */}
       {/* ================================================================== */}
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent className="sm:max-w-[520px] bg-slate-900 border-slate-800 text-white rounded-xl max-h-[90vh] flex flex-col">
-          <DialogHeader className="flex-shrink-0">
-            <div className="flex items-center gap-3 mb-1">
-              <div className="h-10 w-10 rounded-xl bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
-                <ShieldCheck className="h-5 w-5 text-emerald-400" />
-              </div>
-              <div>
-                <DialogTitle className="text-white text-base">Konfirmasi Penyelesaian Opname</DialogTitle>
-                <p className="text-xs text-slate-400 mt-0.5">Periksa selisih sebelum menyetujui koreksi stok</p>
-              </div>
-            </div>
-          </DialogHeader>
-
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Konfirmasi Penyelesaian Opname"
+        description="Periksa selisih sebelum menyetujui koreksi stok"
+        confirmLabel="Ya, Selesaikan & Koreksi Stok"
+        cancelLabel="Periksa Lagi"
+        isLoading={completeOpname.isPending || updateOpname.isPending}
+        className="sm:max-w-[520px] max-h-[90vh] flex flex-col"
+        onConfirm={handleCompleteSubmit}
+      >
           {/* Variance summary list — scrollable */}
           <div className="flex-1 overflow-y-auto min-h-0 my-3 space-y-3">
             {linesWithVariance.length === 0 ? (
@@ -554,65 +603,34 @@ export function StockOpnameDetailPage() {
               </p>
             </div>
           </div>
-
-          <DialogFooter className="flex-shrink-0 gap-2 sm:gap-0 border-t border-slate-800 pt-4">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setConfirmOpen(false)}
-              className="border border-slate-850 text-slate-400 hover:text-white rounded-lg w-full sm:w-auto"
-              disabled={completeOpname.isPending || updateOpname.isPending}
-            >
-              Periksa Lagi
-            </Button>
-            <Button
-              type="button"
-              onClick={handleCompleteSubmit}
-              disabled={completeOpname.isPending || updateOpname.isPending}
-              className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:opacity-90 border-0 text-white font-semibold rounded-lg w-full sm:w-auto"
-            >
-              {completeOpname.isPending || updateOpname.isPending
-                ? 'Memproses...'
-                : 'Ya, Selesaikan & Koreksi Stok'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      </ConfirmDialog>
 
       {/* ================================================================== */}
       {/* Cancel Confirmation Dialog                                           */}
       {/* ================================================================== */}
-      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
-        <DialogContent className="sm:max-w-[420px] bg-slate-900 border-slate-800 text-white rounded-xl">
-          <DialogHeader className="flex flex-col items-center text-center">
-            <div className="h-12 w-12 rounded-xl bg-red-500/15 flex items-center justify-center mb-3">
-              <XCircle className="h-7 w-7 text-red-400" />
-            </div>
-            <DialogTitle className="text-white">Batalkan Sesi Opname?</DialogTitle>
-            <DialogDescription className="text-slate-400 text-xs mt-1">
-              Anda akan meninggalkan sesi ini. Data yang belum disimpan akan hilang, namun sesi draft tetap tersimpan di sistem dan dapat dilanjutkan nanti.
-            </DialogDescription>
-          </DialogHeader>
+      <ConfirmDialog
+        open={cancelOpen}
+        onOpenChange={setCancelOpen}
+        title="Batalkan Sesi Opname?"
+        description="Apakah Anda yakin ingin membatalkan sesi ini? Sesi akan ditutup secara permanen dan tidak ada stok yang diubah."
+        variant="destructive"
+        confirmLabel="Ya, Batalkan Sesi"
+        cancelLabel="Lanjutkan Opname"
+        isLoading={cancelOpname.isPending}
+        onConfirm={handleCancelConfirm}
+      />
 
-          <DialogFooter className="gap-2 sm:gap-0 mt-4">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setCancelOpen(false)}
-              className="border border-slate-850 text-slate-400 hover:text-white rounded-lg w-full sm:w-auto"
-            >
-              Lanjutkan Opname
-            </Button>
-            <Button
-              type="button"
-              onClick={handleCancelConfirm}
-              className="bg-red-500/90 hover:bg-red-500 border-0 text-white font-semibold rounded-lg w-full sm:w-auto"
-            >
-              Ya, Tinggalkan
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={emptyCancelOpen}
+        onOpenChange={setEmptyCancelOpen}
+        title="Tidak dapat menyelesaikan opname kosong"
+        description="Silakan tambahkan minimal satu barang."
+        variant="destructive"
+        confirmLabel="Batalkan Opname"
+        cancelLabel="Tutup"
+        isLoading={cancelOpname.isPending}
+        onConfirm={handleCancelConfirm}
+      />
     </div>
   );
 }

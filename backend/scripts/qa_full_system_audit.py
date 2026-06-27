@@ -393,7 +393,7 @@ def run_audit():
                 tx = db.query(InventoryTransaction).filter(
                     InventoryTransaction.branch_id == 1,
                     InventoryTransaction.item_id == item_id,
-                    InventoryTransaction.transaction_type == "OUT",
+                    InventoryTransaction.transaction_type == "ADJUSTMENT_MINUS",
                     InventoryTransaction.reference_type == "opname"
                 ).first()
                 if line["system_quantity"] == 50 and line["physical_quantity"] == 40 and line["variance"] == -10 and s1 == 40 and tx is not None:

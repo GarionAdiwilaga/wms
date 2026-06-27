@@ -7,6 +7,7 @@ import { PageHeader } from '../../components/ui/PageHeader';
 import { Button } from '../../components/ui/button';
 import { LoadingState } from '../../components/ui/LoadingState';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { ImageLightbox } from '../../components/common/ImageLightbox';
 import { motion } from 'framer-motion';
 import { 
   ArrowLeft, 
@@ -94,7 +95,9 @@ export function ItemDetailPage() {
             <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center border-b border-slate-800 pb-5">
               <div className="h-24 w-24 rounded-xl overflow-hidden bg-background border border-slate-850 flex items-center justify-center flex-shrink-0 shadow-inner">
                 {item.image_url ? (
-                  <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+                  <ImageLightbox src={item.image_url} alt={item.name} triggerClassName="h-full w-full">
+                    <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+                  </ImageLightbox>
                 ) : (
                   <ImageIcon className="h-10 w-10 text-slate-650" />
                 )}

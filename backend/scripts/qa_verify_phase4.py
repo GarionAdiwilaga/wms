@@ -270,16 +270,16 @@ def run_verification():
         # Verify stock cache updated to 45
         assert inventory_service.get_branch_stock(db, 1, item_id) == 45
 
-        # Verify positive variance generates IN transaction with reference_type 'opname'
+        # Verify positive variance generates ADJUSTMENT_PLUS transaction with reference_type 'opname'
         tx_opname = db.query(InventoryTransaction).filter(
             InventoryTransaction.branch_id == 1,
             InventoryTransaction.item_id == item_id,
-            InventoryTransaction.transaction_type == "IN",
+            InventoryTransaction.transaction_type == "ADJUSTMENT_PLUS",
             InventoryTransaction.reference_type == "opname"
         ).first()
-        assert tx_opname is not None, "Opname IN transaction not found"
+        assert tx_opname is not None, "Opname ADJUSTMENT_PLUS transaction not found"
         assert tx_opname.quantity == 15
-        print("Success: Completed Stock Opname with positive variance. Snapshot stored, stock updated, IN transaction generated.")
+        print("Success: Completed Stock Opname with positive variance. Snapshot stored, stock updated, ADJUSTMENT_PLUS transaction generated.")
 
         # ==========================================
         # 6. STOCK OPNAME (negative variance)
@@ -301,16 +301,16 @@ def run_verification():
         
         assert inventory_service.get_branch_stock(db, 1, item_id) == 20
 
-        # Verify negative variance generates OUT transaction with reference_type 'opname'
+        # Verify negative variance generates ADJUSTMENT_MINUS transaction with reference_type 'opname'
         tx_opname = db.query(InventoryTransaction).filter(
             InventoryTransaction.branch_id == 1,
             InventoryTransaction.item_id == item_id,
-            InventoryTransaction.transaction_type == "OUT",
+            InventoryTransaction.transaction_type == "ADJUSTMENT_MINUS",
             InventoryTransaction.reference_type == "opname"
         ).first()
-        assert tx_opname is not None, "Opname OUT transaction not found"
+        assert tx_opname is not None, "Opname ADJUSTMENT_MINUS transaction not found"
         assert tx_opname.quantity == 10
-        print("Success: Completed Stock Opname with negative variance. Snapshot stored, stock updated, OUT transaction generated.")
+        print("Success: Completed Stock Opname with negative variance. Snapshot stored, stock updated, ADJUSTMENT_MINUS transaction generated.")
 
         # ==========================================
         # 7. STOCK OPNAME (zero variance)

@@ -132,6 +132,20 @@ export function LowStockReportPage() {
         keyExtractor={(r) => `${r.branch_name}-${r.item_code}`}
         isLoading={isLoading}
         emptyMessage="Selamat! Tidak ada barang dengan stok di bawah level minimal."
+        emptyAction={
+          (filters.search || filters.category_id || filters.supplier_id || (user?.role === 'super_admin' && filters.branch_id))
+            ? { 
+                label: 'Reset Filter', 
+                onClick: () => handleFilterChange({ 
+                  ...filters, 
+                  search: '', 
+                  category_id: null, 
+                  supplier_id: null, 
+                  branch_id: user?.role === 'super_admin' ? null : user?.branch_id 
+                })
+              }
+            : undefined
+        }
       />
 
       {/* Pagination */}

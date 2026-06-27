@@ -170,6 +170,10 @@ export function TransfersPage() {
         <EmptyState
           title="Tidak ada transaksi mutasi"
           description="Silakan buat mutasi barang jika ingin mengirim stok ke cabang lain."
+          action={{
+            label: 'Buat Transfer',
+            onClick: () => navigate('/operations/transfers/new'),
+          }}
         />
       ) : (
         <div className="space-y-4">

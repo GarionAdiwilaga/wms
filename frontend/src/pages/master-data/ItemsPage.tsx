@@ -13,6 +13,7 @@ import { ResponsiveDataTable, Column } from '../../components/ui/ResponsiveDataT
 import { PaginationControl } from '../../components/ui/PaginationControl';
 import { LoadingState } from '../../components/ui/LoadingState';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { ImageLightbox } from '../../components/common/ImageLightbox';
 import { ItemFormDialog } from './components/ItemFormDialog';
 import { QRViewDialog } from './components/QRViewDialog';
 import { Html5Qrcode } from 'html5-qrcode';
@@ -141,7 +142,9 @@ export function ItemsPage() {
       cell: (item) => (
         <div className="h-10 w-10 rounded-lg overflow-hidden bg-background border border-border flex items-center justify-center shadow-sm">
           {item.image_url ? (
-            <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+            <ImageLightbox src={item.image_url} alt={item.name} triggerClassName="h-full w-full">
+              <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+            </ImageLightbox>
           ) : (
             <ImageIcon className="h-5 w-5 text-muted-foreground" />
           )}
@@ -322,7 +325,9 @@ export function ItemsPage() {
                 {/* Thumbnail */}
                 <div className="h-16 w-16 rounded-lg overflow-hidden bg-background border border-border flex items-center justify-center flex-shrink-0 shadow-sm">
                   {item.image_url ? (
-                    <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+                    <ImageLightbox src={item.image_url} alt={item.name} triggerClassName="h-full w-full">
+                      <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+                    </ImageLightbox>
                   ) : (
                     <ImageIcon className="h-6 w-6 text-muted-foreground" />
                   )}
