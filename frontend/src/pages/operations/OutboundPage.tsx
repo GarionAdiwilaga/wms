@@ -15,7 +15,7 @@ import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import { CartSummaryDialog } from '../../components/common/CartSummaryDialog';
 import { ImageLightbox } from '../../components/common/ImageLightbox';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Plus, Minus, ArrowLeft, ShoppingCart, Image as ImageIcon } from 'lucide-react';
+import { Trash2, ArrowLeft, ShoppingCart, Image as ImageIcon } from 'lucide-react';
 
 export function OutboundPage() {
   const navigate = useNavigate();
@@ -118,7 +118,7 @@ export function OutboundPage() {
 
     try {
       const payload = {
-        branch_id: activeBranchId,
+        branch_id: Number(activeBranchId),
         reference_no: referenceNo,
         notes: notes || null,
         lines: items.map((i) => ({

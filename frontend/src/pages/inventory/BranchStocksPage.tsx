@@ -264,8 +264,8 @@ export function BranchStocksPage() {
                   {/* Thumbnail Image */}
                   <div className="h-16 w-16 rounded-lg overflow-hidden bg-background border border-border flex items-center justify-center flex-shrink-0">
                     {image ? (
-                      <ImageLightbox src={image} alt={stock.item_name} triggerClassName="h-full w-full">
-                        <img src={image} alt={stock.item_name} className="h-full w-full object-cover" />
+                      <ImageLightbox src={image} alt={stock.item_name || ''} triggerClassName="h-full w-full">
+                        <img src={image} alt={stock.item_name || ''} className="h-full w-full object-cover" />
                       </ImageLightbox>
                     ) : (
                       <ImageIcon className="h-6 w-6 text-muted-foreground" />
@@ -343,8 +343,8 @@ export function BranchStocksPage() {
                       <td className="py-3.5 px-4">
                         <div className="h-10 w-10 rounded-lg overflow-hidden bg-background border border-border flex items-center justify-center shadow-sm">
                           {image ? (
-                            <ImageLightbox src={image} alt={stock.item_name} triggerClassName="h-full w-full">
-                              <img src={image} alt={stock.item_name} className="h-full w-full object-cover" />
+                            <ImageLightbox src={image} alt={stock.item_name || ''} triggerClassName="h-full w-full">
+                              <img src={image} alt={stock.item_name || ''} className="h-full w-full object-cover" />
                             </ImageLightbox>
                           ) : (
                             <ImageIcon className="h-5 w-5 text-muted-foreground" />

@@ -32,6 +32,7 @@ import { ItemHistoryReportPage } from './pages/reports/ItemHistoryReportPage';
 import { InventoryMovementReportPage } from './pages/reports/InventoryMovementReportPage';
 import { TransferVarianceReportPage } from './pages/reports/TransferVarianceReportPage';
 import { AuditLogReportPage } from './pages/reports/AuditLogReportPage';
+import { AnalyticsPage } from './pages/reports/AnalyticsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -82,6 +83,7 @@ function App() {
                 <Route path="/reports/movements" element={<InventoryMovementReportPage />} />
                 <Route path="/reports/transfer-variance" element={<TransferVarianceReportPage />} />
                 <Route path="/reports/audit-logs" element={<AuditLogReportPage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
 
                 <Route path="/settings/uom" element={<UOMPage />} />
               </Route>

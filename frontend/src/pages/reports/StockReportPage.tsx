@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { PaginationControl } from '../../components/ui/PaginationControl';
 import { useAuthStore } from '../../store/auth-store';
 import { useStockReport, ReportFilters } from '../../hooks/useReports';
@@ -24,6 +25,11 @@ const loadPersistedFilters = (reportType: string, defaultFilters: ReportFilters)
 
 export function StockReportPage() {
   const user = useAuthStore((state) => state.user);
+  const [searchParams] = useSearchParams();
+  
+  const urlBranchId = searchParams.get('branch_id') ? Number(searchParams.get('branch_id')) : null;
+  const urlCategoryId = searchParams.get('category_id') ? Number(searchParams.get('category_id')) : null;
+  const urlSupplierId = searchParams.get('supplier_id') ? Number(searchParams.get('supplier_id')) : null;
   
   // Guard for role permission (Super Admin or Branch Head only)
   const canAccess = user?.role === 'super_admin' || user?.role === 'branch_head';
@@ -41,13 +47,16 @@ export function StockReportPage() {
 
   const [filters, setFilters] = useState<ReportFilters>(() => {
     const initialFilters = {
-      branch_id: user?.role === 'super_admin' ? null : user?.branch_id,
-      category_id: null,
-      supplier_id: null,
+      branch_id: urlBranchId !== null ? urlBranchId : (user?.role === 'super_admin' ? null : user?.branch_id),
+      category_id: urlCategoryId,
+      supplier_id: urlSupplierId,
       search: '',
       page: 1,
       page_size: pageSize
     };
+    if (urlBranchId !== null || urlCategoryId !== null || urlSupplierId !== null) {
+      return initialFilters;
+    }
     return loadPersistedFilters('stock', initialFilters);
   });
 

@@ -10,6 +10,7 @@ export interface PaginationControlProps {
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
   pageSizeOptions?: number[];
+  shouldScrollToTop?: boolean;
 }
 
 export function PaginationControl({
@@ -20,6 +21,7 @@ export function PaginationControl({
   onPageChange,
   onPageSizeChange,
   pageSizeOptions = [10, 20, 50, 100],
+  shouldScrollToTop = true,
 }: PaginationControlProps) {
   const [jumpPage, setJumpPage] = useState(currentPage.toString());
 
@@ -31,7 +33,9 @@ export function PaginationControl({
   const handlePageChange = (p: number) => {
     if (p >= 1 && p <= totalPages) {
       onPageChange(p);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (shouldScrollToTop) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   };
 

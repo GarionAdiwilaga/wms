@@ -27,8 +27,8 @@ export function QuantityStepper({
     valueRef.current = value;
   }, [value]);
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const intervalSpeed = useRef<number>(300);
 
   const stopPress = useCallback(() => {

@@ -1,10 +1,19 @@
 # Handoff Context
 
-**Date:** 2026-06-27
+**Date:** 2026-07-01
 
 **Role:** Full Stack Developer
 
 **Completed:**
+- **Phase 6.4 — Advanced Analytics (COMPLETE)**:
+  - Backend: Created `AnalyticsService` calculating daily activity trends, outbound movement velocity, category/branch stock distributions, operator activity leaderboards, and a paginated movement classification list.
+  - Backend: Decoupled query logic by extracting the Stock Report SQLAlchemy builder into a shared query helper module.
+  - Backend: Implemented timezone-aware (`Asia/Jakarta`) date grouping, trend padding, and request root timestamp envelopes.
+  - Backend: Constrained `days` query parameter strictly between 7 and 365.
+  - Frontend: Created `useAnalytics` hook containing React Query queries for all analytics endpoints.
+  - Frontend: Implemented `AnalyticsPage` layout with interactive Recharts components (Area, Bar, Donut, Pie, Lists, and Classification Tables).
+  - Frontend: Supported drill-down clicks (navigating from velocity bars to Item details and distribution slices to filtered Stock Report).
+  - Testing: Added 7 integration tests covering constraints, RBAC locks, reconciliation, and opname exclusions.
 - **Phase 6.2 — PDF Generation (COMPLETE)**:
   - Installed `weasyprint>=61.2` and `jinja2>=3.1.4` in `pyproject.toml` and updated `backend/Dockerfile` to install shared Pango/Cairo system packages.
   - Implemented `PdfService` as a pure rendering wrapper (`app/services/pdf_service.py`) converting templates to PDF bytes.
@@ -12,7 +21,6 @@
   - Set up dedicated PDF export endpoints for Stock In, Outbound, Transfer, Stock Opname, and the 6 reports.
   - Integrated PDF download action buttons on the 6 report pages and the 4 session detail screens in the frontend.
   - Added robust integration tests verifying valid `%PDF-` signature headers and non-empty responses.
-
 - **Phase 6.1 — Operational Dashboard (COMPLETE)**
 - **Phase 6.3 — UX Enhancements (COMPLETE)**
 
@@ -23,19 +31,19 @@
 - Page orientations set explicitly per template (reports use Landscape; transactions and history use Portrait).
 - Clean archival filenames are served by endpoints using `Content-Disposition`.
 - Repeated `thead` headers and page-break rules applied to print tables.
+- Analytics tech stack: Recharts + React Query + SQLAlchemy query helpers.
+- Timezone handling: Standardized Asia/Jakarta timezone cast on PostgreSQL date grouping.
 
 **Current:**
-- Phase 6.2 is COMPLETE.
-- Pytest suite runs cleanly with **66 passing tests** and **0 warnings**.
+- Phase 6 is completely COMPLETE.
+- Pytest suite runs cleanly with **73 passing tests** and **0 warnings**.
+- Frontend compiles and builds cleanly without any errors.
 
 **Next:**
-- Phase 6.4: Advanced Analytics
-  - Backend: `AnalyticsService` for movement velocity, trends, and distributions.
-  - Backend: `/api/v1/analytics/*` endpoints.
-  - Frontend: `useAnalytics` hooks and `AnalyticsPage.tsx` using Recharts.
+- Await user approval and instructions for next phase/features.
 
 **Notes for Next Agent:**
 - The backend contains dev-dependencies inside the container. To execute the tests, always run:
   `docker compose exec -e DATABASE_URL=postgresql://postgres:postgres@db:5432/gudang_piala_kaltim_test backend pytest -v`
-- The `ReportExportButtons` component is a shared wrapper. It now exposes CSV, XLSX, and PDF exports universally.
-- Front-end developers can start the dev server via `npm run dev` in `frontend/`.
+- The frontend dev server is running on Vite proxy. Recharts handles responsive resizing out-of-the-box via `ResponsiveContainer`.
+

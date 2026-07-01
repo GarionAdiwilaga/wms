@@ -1,9 +1,18 @@
 # Current Status
 
 ## Phase
-- **Phase 6 (Dashboards, PDF & Advanced Analytics)**: 🟡 IN PROGRESS
+- **Phase 6 (Dashboards, PDF & Advanced Analytics)**: ✅ COMPLETED
 
 ## Last Completed
+- **Phase 6.4 — Advanced Analytics**:
+  - Backend: Created `AnalyticsService` calculating daily activity trends, outbound movement velocity, category/branch stock distributions, operator activity leaderboards, and a paginated movement classification list.
+  - Backend: Decoupled query logic by extracting the Stock Report SQLAlchemy builder into a shared query helper module.
+  - Backend: Implemented timezone-aware (`Asia/Jakarta`) date grouping, trend padding, and request root timestamp envelopes.
+  - Backend: Constrained `days` query parameter strictly between 7 and 365.
+  - Frontend: Created `useAnalytics` hook containing React Query queries for all analytics endpoints.
+  - Frontend: Implemented `AnalyticsPage` layout with interactive Recharts components (Area, Bar, Donut, Pie, Lists, and Classification Tables).
+  - Frontend: Supported drill-down clicks (navigating from velocity bars to Item details and distribution slices to filtered Stock Report).
+  - Testing: Added 7 integration tests covering constraints, RBAC locks, reconciliation, and opname exclusions.
 - **Phase 6.2 — PDF Generation**:
   - Backend: Installed rendering dependencies (WeasyPrint, Jinja2) and updated Dockerfile for Cairo/Pango system libraries.
   - Backend: Created `PdfService` pure template-rendering engine.
@@ -33,10 +42,10 @@
 - `main`
 
 ## Current Focus
-- Phase 6.4: Advanced Analytics
+- Phase 6 wrap-up and verification.
 
 ## Next Task
-- Phase 6.4: Advanced Analytics (AnalyticsService, analytics router endpoints, and Recharts frontend implementation).
+- Await further instructions / next phase definitions.
 
 ## Blockers
 None

@@ -11,6 +11,8 @@ from app.models.user import User
 from app.models.transfer import Transfer, TransferLine
 from app.models.audit_log import AuditLog
 
+from app.services.report_queries import build_stock_report_query
+
 class ReportService:
     @staticmethod
     def get_stock_report(
@@ -23,42 +25,12 @@ class ReportService:
         offset: int = 0,
         is_export: bool = False
     ) -> Tuple[List[Any], int]:
-        query = select(
-            Branch.name.label("branch_name"),
-            Item.item_code,
-            Item.name.label("item_name"),
-            Category.name.label("category_name"),
-            Supplier.name.label("supplier_name"),
-            BranchStock.quantity,
-            Item.minimum_stock
-        ).join(
-            Branch, BranchStock.branch_id == Branch.branch_id
-        ).join(
-            Item, BranchStock.item_id == Item.item_id
-        ).join(
-            Category, Item.category_id == Category.category_id
-        ).join(
-            Supplier, Item.supplier_id == Supplier.supplier_id
-        )
-
-        if branch_id is not None:
-            query = query.where(BranchStock.branch_id == branch_id)
-        if category_id is not None:
-            query = query.where(Item.category_id == category_id)
-        if supplier_id is not None:
-            query = query.where(Item.supplier_id == supplier_id)
-        if search:
-            search_term = f"%{search}%"
-            query = query.where(
-                or_(
-                    Item.item_code.ilike(search_term),
-                    Item.name.ilike(search_term),
-                    Supplier.name.ilike(search_term),
-                    Category.name.ilike(search_term)
-                )
-            )
-
-        query = query.order_by(Branch.name, Item.item_code)
+        query = build_stock_report_query(
+            branch_id=branch_id,
+            category_id=category_id,
+            supplier_id=supplier_id,
+            search=search
+        ).order_by(Branch.name, Item.item_code)
 
         # Count total
         count_query = select(func.count()).select_from(query.subquery())

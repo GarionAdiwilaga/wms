@@ -14,7 +14,7 @@ import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import { CartSummaryDialog } from '../../components/common/CartSummaryDialog';
 import { ImageLightbox } from '../../components/common/ImageLightbox';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Plus, Minus, ArrowLeft, Archive, Image as ImageIcon, Calendar } from 'lucide-react';
+import { Trash2, ArrowLeft, Archive, Image as ImageIcon, Calendar } from 'lucide-react';
 
 export function StockInPage() {
   const navigate = useNavigate();
@@ -80,7 +80,7 @@ export function StockInPage() {
     const activeBranchId = user?.role === 'super_admin' ? branchId : user?.branch_id;
     try {
       const payload = {
-        branch_id: activeBranchId,
+        branch_id: Number(activeBranchId),
         reference_no: referenceNo || null,
         supplier_invoice_no: supplierInvoiceNo || null,
         transaction_date: transactionDate ? new Date(transactionDate).toISOString() : null,

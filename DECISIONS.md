@@ -165,3 +165,17 @@
 - Super Admin with no branch selected → carousel hidden (empty response, no global aggregation).
 - No migration. No new tables. No scheduled jobs. No backend cache. React Query `staleTime` = 5 minutes.
 **Reason:** Personalised by user rather than branch-wide popularity to reflect the operator's actual repetitive workflow. Avoids misleading Super Admin recommendations. The `carousel_type` field in the response envelope is a forward-compatibility hook allowing a future "recent items" carousel to reuse the same API shape with a distinct `carousel_type` value without an architecture change.
+
+## 2026-07-01
+
+### Phase 6.4 — Advanced Analytics Architecture
+**Decision:** 
+- Decoupled `AnalyticsService` from `ReportService` by extracting the Stock Report SQLAlchemy query builder into a shared helper module `report_queries.py`.
+- Standardized date grouping, trend padding, and root response generation timestamps using the `Asia/Jakarta` timezone on the backend.
+- Constrained the timeframe query parameter `days` between 7 and 365 (default 30).
+- Excluded stock opname and initial load adjustments from velocity calculations, and excluded stock opname adjustments from operator activity rankings.
+- Maintained a data-driven movement classification on the backend (`days_since_last_movement`), letting the frontend assign keaktifan categories (Active, Slow Moving, Dead Stock).
+- Enabled chart-click drill-downs on the frontend (velocity bars navigate to Item details, distribution pie slices filter the Stock Report page).
+**Business Rule:** Analytics should be additive, performance-optimized via parameter constraints, and completely decoupled from reporting layout formatting.
+**Reason:** Ensures a clean separation of concerns, robust database performance under heavy logs, and consistent date/time displays for warehouse managers.
+

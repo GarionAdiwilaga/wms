@@ -13,7 +13,7 @@ import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import { CartSummaryDialog } from '../../components/common/CartSummaryDialog';
 import { ImageLightbox } from '../../components/common/ImageLightbox';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Plus, Minus, ArrowLeft, ArrowLeftRight, Image as ImageIcon } from 'lucide-react';
+import { Trash2, ArrowLeft, ArrowLeftRight, Image as ImageIcon } from 'lucide-react';
 
 export function TransferCreatePage() {
   const navigate = useNavigate();
@@ -85,11 +85,19 @@ export function TransferCreatePage() {
     setFormError(null);
     setSuccessMsg(null);
     const activeSourceId = user?.role === 'super_admin' ? sourceBranchId : user?.branch_id;
+    if (!activeSourceId) {
+      setFormError('Gudang asal harus dipilih');
+      return;
+    }
+    if (!destBranchId) {
+      setFormError('Gudang tujuan harus dipilih');
+      return;
+    }
 
     try {
       const payload = {
-        source_branch_id: activeSourceId,
-        dest_branch_id: destBranchId,
+        source_branch_id: Number(activeSourceId),
+        dest_branch_id: Number(destBranchId),
         notes: notes || null,
         lines: items.map((i) => ({
           item_id: i.item_id,
