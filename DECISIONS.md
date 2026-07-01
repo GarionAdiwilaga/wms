@@ -179,3 +179,11 @@
 **Business Rule:** Analytics should be additive, performance-optimized via parameter constraints, and completely decoupled from reporting layout formatting.
 **Reason:** Ensures a clean separation of concerns, robust database performance under heavy logs, and consistent date/time displays for warehouse managers.
 
+### Phase 6.3 — UX Enhancements & Bug Fixes
+**Decision:** Standardized the terminology `cancelled` (with double 'L') globally across the Database, API schemas, Service logic, and Frontend components.
+**Business Rule:** Terminology must be exactly matching to prevent any accidental mismatch or orphaned data query issues.
+**Reason:** Consistency across the system reduces technical debt.
+
+**Decision:** The "Per Item (Semua Kategori)" mode in Stock Opname now allows dynamic addition of previously unlisted items directly from the search bar, rather than throwing a validation error.
+**Business Rule:** In "Per Item" mode (`category_id = null`), the initial opname line list is empty, and items are added on-the-fly during the counting process.
+**Reason:** It matches real-world ad-hoc stock opname scenarios where a user walks up to an item and counts it without pre-defining a category list.

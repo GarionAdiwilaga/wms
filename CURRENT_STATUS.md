@@ -36,7 +36,9 @@
   - `ImageLightbox` component (Framer Motion AnimatePresence) used in item catalogue and transactional carts.
   - `useKeyboardShortcut` React Hook for `ItemSearch` results navigation.
   - `CartSummaryDialog` added for pre-submit action confirmation in Stock In, Outbound, Transfer.
-  - Opname UX: "Per Item" mode, Empty Submit Cancellation prompt, and "Batalkan Opname" feature (with new `/cancel` endpoint).
+  - Opname UX: "Per Item" mode, Empty Submit Validation prompt, and "Batalkan Opname" feature (with new `/cancel` endpoint).
+  - Bug Fixes: Standardized `cancelled` terminology across DB, API, and Frontend.
+  - Bug Fixes: Fixed Opname "Per Item" addition missing error and `Item` image_path 500 error.
 
 ## Current Branch
 - `main`

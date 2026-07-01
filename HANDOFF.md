@@ -21,8 +21,8 @@
   - Set up dedicated PDF export endpoints for Stock In, Outbound, Transfer, Stock Opname, and the 6 reports.
   - Integrated PDF download action buttons on the 6 report pages and the 4 session detail screens in the frontend.
   - Added robust integration tests verifying valid `%PDF-` signature headers and non-empty responses.
-- **Phase 6.1 — Operational Dashboard (COMPLETE)**
 - **Phase 6.3 — UX Enhancements (COMPLETE)**
+  - Including standardization of `cancelled` terminology and fixing Opname "Per Item" addition and `Item.image_path` 500 error.
 
 **Architecture decisions (all locked in DECISIONS.md):**
 - PDF tech stack: Jinja2 + WeasyPrint + Axios blob downloads.
