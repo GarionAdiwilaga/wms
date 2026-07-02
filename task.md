@@ -211,6 +211,6 @@
 - `[x]` Frontend: Wire PDF export buttons in History and Report pages
 
 ### 6.4 Advanced Analytics
-- `[ ]` Backend: `AnalyticsService` for movement velocity, trends, and distributions
-- `[ ]` Backend: `/api/v1/analytics/*` endpoints
-- `[ ]` Frontend: `useAnalytics` hooks and `AnalyticsPage.tsx` (Recharts integration)
+- `[x]` Backend: `AnalyticsService` for movement velocity, trends, and distributions
+- `[x]` Backend: `/api/v1/analytics/*` endpoints
+- `[x]` Frontend: `useAnalytics` hooks and `AnalyticsPage.tsx` (Recharts integration)
