@@ -1,60 +1,49 @@
-# Operations Playbook
+# Operations Guide
 
-This playbook contains daily maintenance, monitoring, and troubleshooting steps for the WMS.
+## 1. Log Management
+Docker containers generate logs continuously. In our `docker-compose.prod.yml`, we have configured Docker's json-file driver to rotate logs automatically (e.g., max-size: 10m, max-file: 3). This prevents uncontrolled log growth on the host system.
 
-## 1. Monitoring & Logs
-Since we are focusing on pilot readiness without centralized logging stacks (like ELK), monitoring relies on `docker compose logs` and structured JSON logs.
-
-### View Real-time Logs
-To tail the logs of all services:
+**To view real-time logs for the backend:**
 ```bash
-docker compose logs -f
+docker compose -f docker-compose.prod.yml logs -f backend
 ```
 
-To tail the logs of the backend only:
+**To view Nginx (frontend) access and error logs:**
 ```bash
-docker compose logs -f backend
+docker compose -f docker-compose.prod.yml logs -f frontend
 ```
 
-### Search for Errors
-Use grep to filter structured JSON logs for errors or exceptions:
+## 2. Restarting Services
+When you need to restart the application (e.g., after a system reboot or to apply a new configuration):
+
 ```bash
-docker compose logs backend | grep '"level": "ERROR"'
+docker compose -f docker-compose.prod.yml restart
 ```
 
-## 2. Daily Maintenance Checklist
-- **Database Backup**: Verify the automated cron job has successfully generated a `pg_dump` file.
-- **Disk Usage**: Check disk space on the server to ensure database and image uploads are not filling up the disk.
-  ```bash
-  df -h
-  ```
-- **Container Health**: Check that all containers are running and healthy.
-  ```bash
-  docker compose ps
-  ```
+To stop all services completely:
+```bash
+docker compose -f docker-compose.prod.yml down
+```
+*(This stops the containers, but data in the database volume remains safe).*
 
-## 3. Common Troubleshooting
+## 3. Cloudflare Tunnel Operations
+Since the application runs securely behind a Cloudflare Tunnel, the `cloudflared` service is responsible for ingress.
 
-### "Database Connection Refused"
-- **Cause**: Database container crashed or is restarting.
-- **Action**: Check DB logs `docker compose logs db`. Ensure there is enough disk space and memory on the host. Restart the container if necessary `docker compose restart db`.
+**To check the status of the tunnel:**
+```bash
+sudo systemctl status cloudflared
+```
 
-### "500 Internal Server Error" on API
-- **Cause**: Unhandled backend exception.
-- **Action**: The exception is now caught by `ExceptionMiddleware` and logged with full stack trace.
-  ```bash
-  docker compose logs backend | grep 'Unhandled Exception'
-  ```
-  Review the `exc_info` field in the JSON log output for the stack trace.
+**To restart the tunnel service:**
+```bash
+sudo systemctl restart cloudflared
+```
 
-### React Error Boundary "Terjadi Kesalahan" UI
-- **Cause**: A frontend component threw an error during rendering.
-- **Action**: Check the user's browser console for the specific error, or ask the user for a screenshot. The error message is printed on the screen for them. Validate the API response shape in the network tab.
+## 4. Resetting Data for Go-Live
+When transitioning from UAT (User Acceptance Testing) to real Production operations, you must clear out dummy transaction data while keeping the Master Data (Items, Branches, Users).
 
-## 4. Updates & Rollbacks
-To update the application to a new version:
-1. `git pull origin main`
-2. `docker compose up -d --build`
-3. `docker compose exec backend alembic upgrade head` (if schema changed)
-
-If a rollback is required, checkout the previous Git tag and rebuild.
+Run the preparation script:
+```bash
+docker compose exec backend python scripts/prepare_go_live.py
+```
+This script includes safety prompts to prevent accidental execution.

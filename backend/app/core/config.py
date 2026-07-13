@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 480
     ACCESS_TOKEN_EXPIRE_MINUTES_REMEMBER_ME: int = 43200
+    ENVIRONMENT: str = "development"
 
     model_config = SettingsConfigDict(
         env_file=".env",
