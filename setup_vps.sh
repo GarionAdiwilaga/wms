@@ -46,15 +46,27 @@ if [ ! -f .env ]; then
     DB_PASSWORD=$(openssl rand -hex 16)
     SECRET_KEY=$(openssl rand -hex 32)
     
-    # Prompt for admin password
+    # Prompt for admin password with confirmation loop
     echo "----------------------------------------------------"
     echo "Setup Production Admin Credentials:"
-    read -sp "Enter INITIAL_ADMIN_PASSWORD for production: " admin_password
-    echo ""
-    if [ -z "$admin_password" ]; then
-        admin_password="Admin123_ChangeMe"
-        echo "[!] No password entered. Using default: $admin_password"
-    fi
+    while true; do
+        read -sp "Enter INITIAL_ADMIN_PASSWORD (will not show as you type): " admin_password
+        echo ""
+        read -sp "Confirm INITIAL_ADMIN_PASSWORD: " admin_password_confirm
+        echo ""
+        
+        if [ -z "$admin_password" ]; then
+            admin_password="Admin123_ChangeMe"
+            echo "[!] No password entered. Using default: $admin_password"
+            break
+        elif [ "$admin_password" = "$admin_password_confirm" ]; then
+            echo "[✓] Password confirmed and set successfully."
+            break
+        else
+            echo "[!] Passwords do not match. Please try again."
+            echo ""
+        fi
+    done
     echo "----------------------------------------------------"
     
     # Write to .env using sed
