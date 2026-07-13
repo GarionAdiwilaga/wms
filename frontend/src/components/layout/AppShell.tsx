@@ -25,6 +25,7 @@ import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import { useState } from 'react';
 import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { APP_VERSION } from '../../lib/version';
 
 interface NavItem {
   name: string;
@@ -227,7 +228,7 @@ export function AppShell() {
             Logout
           </Button>
           <div className="mt-4 text-center text-[10px] text-slate-500 font-medium tracking-wider uppercase">
-            v1.0.0-rc1
+            {APP_VERSION}
           </div>
         </div>
       </aside>
@@ -269,7 +270,7 @@ export function AppShell() {
                   Logout
                 </Button>
                 <div className="mt-4 text-center text-[10px] text-slate-500 font-medium tracking-wider uppercase">
-                  v1.0.0-rc1
+                  {APP_VERSION}
                 </div>
               </div>
             </SheetContent>

@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 480
     ACCESS_TOKEN_EXPIRE_MINUTES_REMEMBER_ME: int = 43200
     ENVIRONMENT: str = "development"
+    APP_VERSION: str = "v1.0.0-rc1"
 
     model_config = SettingsConfigDict(
         env_file=".env",

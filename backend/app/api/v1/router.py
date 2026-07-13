@@ -21,6 +21,23 @@ api_router.include_router(dashboard.router, prefix="/dashboard", tags=["dashboar
 api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
 
 
+from sqlalchemy import text
+from app.core.config import settings
+from app.core.dependencies import get_db
+from sqlalchemy.orm import Session
+from fastapi import Depends
+
 @api_router.get("/health")
-def health_check():
-    return {"status": "ok"}
+def health_check(db: Session = Depends(get_db)):
+    db_status = "disconnected"
+    try:
+        db.execute(text("SELECT 1"))
+        db_status = "connected"
+    except Exception:
+        db_status = "error"
+        
+    return {
+        "status": "ok",
+        "version": settings.APP_VERSION,
+        "database": db_status
+    }
