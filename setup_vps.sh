@@ -98,6 +98,9 @@ done
 echo "[*] Running Database Migrations (Alembic)..."
 docker compose -f docker-compose.prod.yml exec backend alembic upgrade head
 
+echo "[*] Seeding initial database data (Admin, Branches, UOMs)..."
+docker compose -f docker-compose.prod.yml exec backend python scripts/seed_runner.py
+
 echo "===================================================="
 echo " ✅ VPS Deployment Setup Completed Successfully!"
 echo "===================================================="
