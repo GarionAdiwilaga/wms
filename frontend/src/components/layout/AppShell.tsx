@@ -226,6 +226,9 @@ export function AppShell() {
             <LogOut className="mr-3 h-5 w-5" />
             Logout
           </Button>
+          <div className="mt-4 text-center text-[10px] text-slate-500 font-medium tracking-wider uppercase">
+            v1.0.0-rc1
+          </div>
         </div>
       </aside>
 
@@ -265,6 +268,9 @@ export function AppShell() {
                   <LogOut className="mr-3 h-5 w-5" />
                   Logout
                 </Button>
+                <div className="mt-4 text-center text-[10px] text-slate-500 font-medium tracking-wider uppercase">
+                  v1.0.0-rc1
+                </div>
               </div>
             </SheetContent>
           </Sheet>

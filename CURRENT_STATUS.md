@@ -1,53 +1,29 @@
 # Current Status
 
 ## Phase
-- **Phase 6 (Dashboards, PDF & Advanced Analytics)**: ✅ COMPLETED
+- **Phase 7 (Production Readiness)**: ✅ COMPLETED
+- **Phase 8 (Pilot Deployment & Training)**: Ready to begin
 
 ## Last Completed
-- **Phase 6.4 — Advanced Analytics**:
-  - Backend: Created `AnalyticsService` calculating daily activity trends, outbound movement velocity, category/branch stock distributions, operator activity leaderboards, and a paginated movement classification list.
-  - Backend: Decoupled query logic by extracting the Stock Report SQLAlchemy builder into a shared query helper module.
-  - Backend: Implemented timezone-aware (`Asia/Jakarta`) date grouping, trend padding, and request root timestamp envelopes.
-  - Backend: Constrained `days` query parameter strictly between 7 and 365.
-  - Frontend: Created `useAnalytics` hook containing React Query queries for all analytics endpoints.
-  - Frontend: Implemented `AnalyticsPage` layout with interactive Recharts components (Area, Bar, Donut, Pie, Lists, and Classification Tables).
-  - Frontend: Supported drill-down clicks (navigating from velocity bars to Item details and distribution slices to filtered Stock Report).
-  - Testing: Added 7 integration tests covering constraints, RBAC locks, reconciliation, and opname exclusions.
-- **Phase 6.2 — PDF Generation**:
-  - Backend: Installed rendering dependencies (WeasyPrint, Jinja2) and updated Dockerfile for Cairo/Pango system libraries.
-  - Backend: Created `PdfService` pure template-rendering engine.
-  - Backend: Designed 10 print-friendly HTML/CSS templates under `backend/app/templates/pdf/` supporting custom margins, page counters, and orientations.
-  - Backend: Created dedicated PDF download endpoints for the 6 reports and 4 transactional views.
-  - Frontend: Enhanced `ReportExportButtons` component to support PDF downloads on all reports.
-  - Frontend: Added PDF export handlers and action buttons on Stock In, Outbound, Transfer, and Stock Opname detail pages.
-  - Testing: Added integration tests verifying binary headers (`%PDF-`), non-empty payloads, and WeasyPrint rendering.
-- **Phase 6.1 — Operational Dashboard**:
-  - Backend: `GET /api/v1/dashboard/summary` — read-only aggregation (KPIs + notifications + recent activity).
-  - Notifications: low stock count, transfers awaiting receipt, overdue opname sessions (>7 days draft).
-  - Frontend: `useDashboardSummary` hook (staleTime=2min, refetchOnWindowFocus=true).
-  - Frontend: `DashboardPage` with KPI cards, notification center, recent activity feed, quick actions.
-  - Frontend: `TxTypeBadge` reusable component (7 tx types, badge + dot variants).
-  - AppShell: Dashboard nav at top, Analytics nav added to reports section.
-  - Default route changed from `/master-data/items` → `/dashboard`.
-- **Phase 6.3 — UX Enhancements**:
-  - `EmptyState` component action prop support.
-  - `ConfirmDialog` component (Radix Dialog wrapper) used in operations pages.
-  - `QuantityStepper` component used in operations pages (with press-and-hold interval scaling).
-  - `ImageLightbox` component (Framer Motion AnimatePresence) used in item catalogue and transactional carts.
-  - `useKeyboardShortcut` React Hook for `ItemSearch` results navigation.
-  - `CartSummaryDialog` added for pre-submit action confirmation in Stock In, Outbound, Transfer.
-  - Opname UX: Empty Submit Validation prompt, and "Batalkan Opname" feature (with new `/cancel` endpoint).
-  - Bug Fixes: Standardized `cancelled` terminology across DB, API, and Frontend.
-  - Bug Fixes: Fixed `Item` image_path 500 error.
+- **Phase 7 — Production Readiness**:
+  - Backend: Added `prepare_go_live.py` to safely purge transaction tables and reset Postgres sequences prior to Go-Live, with interactive safety confirmations.
+  - Backend: Added `verify_backup.sh` shell script to automatically rehearse a backup/restore cycle using a temporary database to ensure disaster recovery works.
+  - Backend: Restricted Swagger (`/docs`, `/redoc`, `/openapi.json`) behind HTTPBasic authentication connected to the `super_admin` role in production.
+  - Frontend/Infrastructure: Created `nginx.conf` and updated `Dockerfile.prod` to support SPA routing alongside API/Upload proxying natively without external Caddy dependence.
+  - Infrastructure: Updated `docker-compose.prod.yml` to set restart policies and log-rotation (max-size 10m).
+  - Infrastructure: Deployed and tested production architecture simulating Cloudflare Tunnel ingress (proxying via localhost:80).
+  - Documentation: Updated `DEPLOYMENT.md`, `BACKUP_RECOVERY.md`, and `OPERATIONS.md`.
+  - Release: Applied Git tag `v1.0.0-rc1` to freeze the codebase.
 
 ## Current Branch
 - `main`
 
 ## Current Focus
-- Phase 6 wrap-up and verification.
+- Awaiting user to execute Pilot deployment (deploying to the Ubuntu VPS and configuring Cloudflare Tunnel).
 
 ## Next Task
-- Await further instructions / next phase definitions.
+- Provide system walkthroughs or user training.
+- Address any post-deployment/pilot phase user feedback.
 
 ## Blockers
-None
+- None. System is feature-complete and infrastructure-ready.
