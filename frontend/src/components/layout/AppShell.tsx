@@ -221,7 +221,7 @@ export function AppShell() {
         <div className="border-t border-slate-800 p-4">
           <div className="mb-4 px-2">
             <p className="text-sm font-medium text-white">{user?.full_name}</p>
-            <p className="text-xs text-slate-400 capitalize">{user?.role.replace('_', ' ')}</p>
+            <p className="text-xs text-slate-400 capitalize">{user?.role?.replace('_', ' ') || ''}</p>
           </div>
           <Button variant="ghost" className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-400/10 min-h-[48px]" onClick={handleLogout}>
             <LogOut className="mr-3 h-5 w-5" />
@@ -260,7 +260,7 @@ export function AppShell() {
               <div className="border-t border-slate-800 p-4">
                  <div className="mb-4 px-2">
                   <p className="text-sm font-medium text-white">{user?.full_name}</p>
-                  <p className="text-xs text-slate-400 capitalize">{user?.role.replace('_', ' ')}</p>
+                  <p className="text-xs text-slate-400 capitalize">{user?.role?.replace('_', ' ') || ''}</p>
                 </div>
                 <Button variant="ghost" className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-400/10 min-h-[48px]" onClick={() => {
                   setOpen(false);
