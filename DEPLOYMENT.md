@@ -14,15 +14,40 @@ Gudang Piala Kaltim WMS menggunakan arsitektur berikut untuk lingkungan *Product
 Alur Trafik:
 `User (HTTPS)` -> `Cloudflare Edge` -> `Cloudflare Tunnel (cloudflared)` -> `Ubuntu VPS (localhost:80)` -> `Nginx (gpk_frontend_prod)` -> `FastAPI (gpk_backend_prod)`
 
-## 1. Initial Server Setup
-1. SSH into your Ubuntu 24.04 server.
-2. Clone the repository to a suitable directory (e.g. `/opt/wms`).
-3. Ensure Docker and Docker Compose are installed.
-4. **Important**: You do NOT need to configure UFW to allow port 80/443 to the public internet since Cloudflare Tunnel handles ingress. Only SSH (22) needs to be exposed if you connect directly.
+## 1. Automated VPS Setup (Recommended)
 
-## 2. Environment Configuration
-Create a `.env` file in the root directory (where `docker-compose.prod.yml` resides) based on the production secrets:
+1. SSH into your Ubuntu VPS.
+2. Clone the repository:
+   ```bash
+   git clone https://github.com/GarionAdiwilaga/wms.git /opt/wms
+   cd /opt/wms
+   ```
+3. Run the automated setup script:
+   ```bash
+   ./setup_vps.sh
+   ```
+   This script will automatically:
+   * Install Docker and Docker Compose (if not already installed).
+   * Generate a secure `.env` file with random postgres password and JWT secret key.
+   * Prompt you to set your initial administrator password (`INITIAL_ADMIN_PASSWORD`).
+   * Build and start the production container stack.
+   * Rehearse and execute database migrations.
 
+---
+
+## 2. Manual Server Setup (Alternative)
+
+If you prefer to set up the system step-by-step manually:
+
+### 2.1 Clone the Codebase
+Clone the repository to a suitable directory (e.g. `/opt/wms`):
+```bash
+git clone https://github.com/GarionAdiwilaga/wms.git /opt/wms
+cd /opt/wms
+```
+
+### 2.2 Configure Environment
+Create a `.env` file in the root directory (where `docker-compose.prod.yml` resides) based on production credentials:
 ```env
 # Database
 POSTGRES_USER=postgres
@@ -35,9 +60,8 @@ INITIAL_ADMIN_PASSWORD=strong_admin_password
 ENVIRONMENT=production
 ```
 
-## 3. Docker Compose Execution
+### 2.3 Build and Launch Stack
 Run the following command to build the production images and start the services in detached mode:
-
 ```bash
 docker compose -f docker-compose.prod.yml up -d --build
 ```

@@ -184,4 +184,16 @@
 **Business Rule:** Terminology must be exactly matching to prevent any accidental mismatch or orphaned data query issues.
 **Reason:** Consistency across the system reduces technical debt.
 
+## 2026-07-13
+
+### Production Image Storage Persistence
+**Decision:** Mounted a persistent named volume `uploads_data_prod` to `/app/uploads` in `docker-compose.prod.yml` backend service.
+**Business Rule:** Product images uploaded by users in production must persist across container rebuilds, updates, and restarts.
+**Reason:** Prevents user-uploaded product images from being deleted from the container's ephemeral filesystem during stack redeployments.
+
+### Automated Setup Script (setup_vps.sh)
+**Decision:** Introduced `setup_vps.sh` at the root of the project to manage environment setup on a fresh VPS.
+**Business Rule:** Deployment setup must be automated and self-contained to minimize manual config errors.
+**Reason:** Automatically provisions Docker/Compose dependencies, auto-generates secure production secret values, guides admin credential generation, and runs database migrations in sequence.
+
 

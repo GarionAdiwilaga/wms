@@ -13,6 +13,8 @@
   - Infrastructure: Updated `docker-compose.prod.yml` to set restart policies and log-rotation (max-size 10m).
   - Infrastructure: Deployed and tested production architecture simulating Cloudflare Tunnel ingress (proxying via localhost:80).
   - Documentation: Updated `DEPLOYMENT.md`, `BACKUP_RECOVERY.md`, and `OPERATIONS.md`.
+  - Infrastructure: Updated `docker-compose.prod.yml` to support a persistent named volume for user uploads.
+  - Infrastructure: Added `setup_vps.sh` script to automate host dependencies, environment generation, and migration runner.
   - Release: Applied Git tag `v1.0.0-rc1` to freeze the codebase.
 
 ## Current Branch

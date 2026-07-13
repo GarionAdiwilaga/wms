@@ -11,6 +11,8 @@
   - Security: Kept `/docs` available in production but protected it using `HTTPBasic` auth requiring the `super_admin` account.
   - Scripts: Created `prepare_go_live.py` (TRUNCATE transactions RESTART IDENTITY CASCADE) and `verify_backup.sh` (PG dump and restore validation).
   - Documentation: Rewrote `DEPLOYMENT.md`, `BACKUP_RECOVERY.md`, and `OPERATIONS.md`.
+  - Infrastructure: Created `setup_vps.sh` for automated production environment deployment.
+  - Infrastructure: Added persistent Named Volume for image uploads in production docker-compose config.
   - Versioning: Created Git tag `v1.0.0-rc1`.
 
 **Architecture decisions (all locked in DECISIONS.md):**
