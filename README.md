@@ -1,46 +1,66 @@
-# Gudang Piala Kaltim WMS
+# 🏆 Gudang Piala Kaltim WMS
 
-Custom Warehouse Management System (WMS) for Gudang Piala Kaltim.
+A custom-built, enterprise-grade **Warehouse Management System (WMS)** specifically designed to manage inventory for trophy, plaque, medal, and merchandise manufacturing at Gudang Piala Kaltim.
 
-## Project Overview
-This system replaces spreadsheet-based inventory tracking with a centralized web application. It tracks warehouse components used to build trophies, plaques, medals, and merchandise.
-
-## Technology Stack
-- **Backend:** FastAPI, SQLAlchemy, Alembic, PostgreSQL
-- **Frontend:** React (Vite SPA), TypeScript, Shadcn UI, Tailwind CSS
-- **Deployment:** Docker Compose
-
-## Development Progress
-
-### Phase 1: Foundation, Master Data & Audit (Complete)
-- [x] Initialized infrastructure, backend APIs, and frontend SPA.
-- [x] Implemented Master Data CRUD (Branches, Users, Categories, Suppliers, UOM).
-- [x] Built Audit Logging service and basic RBAC.
-
-### Phase 2: Catalog & Inventory Core (Complete)
-- [x] Built Item Catalog with Image Uploads and Barcode scanning support.
-- [x] Built `InventoryService` Ledger Engine with deterministic row-level locking.
-- [x] Enforced immutable `inventory_transactions` and continuous cache strategy.
-
-### Phase 3: Primary Warehouse Operations (Complete)
-- [x] Implemented Initial Stock Loads.
-- [x] Implemented Stock In and Outbound cart APIs.
-- [x] Built resilient frontend POS-style workflows using Zustand persistent carts and spring physics.
-- [x] Handled concurrency and `InsufficientStockError` rollbacks.
-
-### Phase 4: Multi-Branch & Reconciliation (Complete)
-- [x] Implemented strict Transfer state machines (`draft`, `in_transit`, `received`, `cancelled`).
-- [x] Implemented irrevocable Transfer Receives with Variance reason tracking for transit losses.
-- [x] Implemented Stock Opname snapshots with automatic ledger adjustment calculation.
-- [x] Enforced strict UI accessibility (A11y) rules.
-
-### Phase 5: Reports & Analytics (Complete)
-- [x] Implement backend `ReportService` aggregations.
-- [x] Operational Reports (Stock, Low Stock, Item History, Movements).
-- [x] Management Reports (Transfer Variance, Audit Logs).
-- [x] CSV / XLSX Export capability.
-- [x] Shared Frontend Report Framework (`ReportFilterBar`, `ReportTable`).
+This system replaces legacy spreadsheet-based inventory tracking with a highly resilient, centralized web application. It enforces strict auditability, multi-branch tracking, and accurate stock reconciliation.
 
 ---
-*For detailed architecture, see `ARCHITECTURE.md`.*
-*For business requirements, see `PROJECT.md`.*
+
+## ✨ Key Features
+
+- **Immutable Ledger Architecture:** All stock movements are recorded as immutable transactions. Total stock is dynamically calculated, preventing desynchronization or phantom inventory.
+- **Multi-Branch Operations:** Seamlessly track stock across different physical warehouses. Execute inter-branch transfers with strict state machines (Draft ➔ In Transit ➔ Received), including variance tracking for lost or damaged goods.
+- **Robust Stock Reconciliation (Opname):** Comprehensive stock opname (physical count) workflows supporting partial or full-warehouse audits with automatic ledger adjustment.
+- **Advanced Analytics & Dashboards:** Real-time KPI monitoring, outbound movement velocity, interactive charts (Recharts), and low-stock alerts.
+- **Hardware Integrations:** Designed for rapid POS-style interactions with barcode scanner support, keyboard shortcuts, and "press-and-hold" quantity steppers.
+- **Enterprise Reporting:** Pixel-perfect PDF generation (via WeasyPrint/Jinja2) for all transactions and analytical reports, alongside raw CSV/XLSX exports.
+- **Granular Security:** Role-based access control (Super Admin, Branch Head, Warehouse Staff) protecting sensitive operations and analytical data.
+
+## 🛠 Technology Stack
+
+The application is a decoupled monolith utilizing modern web technologies:
+
+- **Backend:** Python 3.12, FastAPI, SQLAlchemy (ORM), Alembic (Migrations), PostgreSQL 16.
+- **Frontend:** React 19 (Vite), TypeScript, Zustand (State), React Query, Shadcn UI, Tailwind CSS, Framer Motion.
+- **Infrastructure:** Docker & Docker Compose, Nginx (Reverse Proxy & SPA routing).
+- **Deployment Strategy:** Intended for private VPS deployment behind a **Cloudflare Zero Trust Tunnel** for secure, port-less public ingress.
+
+## 📚 Documentation
+
+The repository is thoroughly documented. For detailed operational instructions, architectural decisions, and development setups, please refer to the following resources:
+
+* **[User Manuals](docs/user/README.md)**: Guides for warehouse staff on how to use the web application.
+* **[Server Administration](docs/server/README.md)**: Complete guide on deploying the VPS, configuring Cloudflare Tunnels, managing Docker, and restoring backups.
+* **[Architecture Document](ARCHITECTURE.md)**: Deep dive into the ledger mathematics, backend service layers, and frontend patterns.
+* **[Deployment & Operations](DEPLOYMENT.md)**: Quick-reference for maintaining the production environment.
+
+## 🚀 Quick Start (Development)
+
+To spin up the development environment locally:
+
+```bash
+# Clone the repository
+git clone git@github.com:GarionAdiwilaga/wms.git
+cd wms
+
+# Start the PostgreSQL Database and Backend API
+docker compose up -d db backend
+
+# In a separate terminal, install dependencies and start the Frontend
+cd frontend
+npm install
+npm run dev
+```
+
+> The API will be available at `http://localhost:8000` and the UI at `http://localhost:5173`. Default super admin credentials are `admin` / `admin123`.
+
+## 🛡 Production Deployment
+
+Production uses a highly optimized, fully containerized stack (`docker-compose.prod.yml`). The frontend is compiled into static assets and served by Nginx, which also acts as a reverse proxy for the API.
+
+To deploy on a fresh Ubuntu 24.04 VPS:
+```bash
+chmod +x setup_vps.sh
+sudo ./setup_vps.sh
+```
+*For complete production networking and security details, see the [Server Setup Guide](docs/server/README.md).*
