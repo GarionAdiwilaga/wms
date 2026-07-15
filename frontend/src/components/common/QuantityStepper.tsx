@@ -100,8 +100,14 @@ export function QuantityStepper({
           onMouseDown={() => startPress(false)}
           onMouseUp={stopPress}
           onMouseLeave={stopPress}
-          onTouchStart={() => startPress(false)}
-          onTouchEnd={stopPress}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            startPress(false);
+          }}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            stopPress();
+          }}
           className="h-8 w-8 text-slate-400 hover:text-white rounded-md"
           disabled={disabled || value <= min}
         >
@@ -130,8 +136,14 @@ export function QuantityStepper({
           onMouseDown={() => startPress(true)}
           onMouseUp={stopPress}
           onMouseLeave={stopPress}
-          onTouchStart={() => startPress(true)}
-          onTouchEnd={stopPress}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            startPress(true);
+          }}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            stopPress();
+          }}
           className="h-8 w-8 text-slate-400 hover:text-white rounded-md"
           disabled={disabled || (max !== undefined && value >= max)}
         >

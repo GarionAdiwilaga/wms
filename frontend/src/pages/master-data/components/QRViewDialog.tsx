@@ -1,5 +1,5 @@
 import { QRCodeSVG } from 'qrcode.react';
-import { Printer } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { Item } from '../../../hooks/useItems';
 import { Button } from '../../../components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
@@ -14,8 +14,96 @@ interface QRViewDialogProps {
 export function QRViewDialog({ open, onOpenChange, item }: QRViewDialogProps) {
   if (!item) return null;
 
-  const handlePrint = () => {
-    window.print();
+  const handleDownloadImage = () => {
+    const svgEl = document.querySelector('#printable-qr-label svg');
+    if (!svgEl) {
+      console.error('QR SVG element not found in DOM');
+      return;
+    }
+
+    // Convert SVG to data URL
+    const svgString = new XMLSerializer().serializeToString(svgEl);
+    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    const URL = window.URL || window.webkitURL || window;
+    const blobURL = URL.createObjectURL(svgBlob);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 500;
+    canvas.height = 500;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const img = new Image();
+    img.onload = () => {
+      // 1. Fill background with white
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, 500, 500);
+
+      // 2. Draw border
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 6;
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(20, 20, 460, 460, 16);
+        ctx.stroke();
+      } else {
+        ctx.strokeRect(20, 20, 460, 460);
+      }
+
+      // 3. Draw QR Image (centered, 240x240 size)
+      ctx.drawImage(img, 130, 45, 240, 240);
+
+      // 4. Draw Item Code (centered)
+      ctx.fillStyle = '#D97706'; // amber-600
+      ctx.font = 'bold 26px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(item.item_code, 250, 325);
+
+      // 5. Draw Item Name (wrap to max 2 lines)
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 20px sans-serif';
+      const maxTextWidth = 420;
+      const words = item.name.split(' ');
+      let currentLine = '';
+      const lines = [];
+
+      for (let i = 0; i < words.length; i++) {
+        const testLine = currentLine ? currentLine + ' ' + words[i] : words[i];
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxTextWidth && currentLine) {
+          lines.push(currentLine);
+          currentLine = words[i];
+        } else {
+          currentLine = testLine;
+        }
+      }
+      if (currentLine) {
+        lines.push(currentLine);
+      }
+
+      let textY = 365;
+      const maxLines = Math.min(lines.length, 2);
+      for (let i = 0; i < maxLines; i++) {
+        ctx.fillText(lines[i], 250, textY);
+        textY += 26;
+      }
+
+      // 6. Draw Brand/Supplier (centered)
+      ctx.fillStyle = '#475569'; // slate-600
+      ctx.font = '16px sans-serif';
+      ctx.fillText(`Merk: ${item.supplier?.name || '-'}`, 250, 435);
+
+      // 7. Trigger download
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      const link = document.createElement('a');
+      link.download = 'QR_ItemInfo.jpeg';
+      link.href = dataUrl;
+      link.click();
+
+      // Revoke the blob URL
+      URL.revokeObjectURL(blobURL);
+    };
+    img.src = blobURL;
   };
 
   return (
@@ -25,52 +113,8 @@ export function QRViewDialog({ open, onOpenChange, item }: QRViewDialogProps) {
           <DialogTitle className="text-white">Cetak QR Label</DialogTitle>
         </DialogHeader>
 
-        {/* CSS for print isolation */}
-        <style dangerouslySetInnerHTML={{ __html: `
-          @media print {
-            /* Hide everything else on the screen */
-            body * {
-              visibility: hidden !important;
-            }
-            /* Show only the printable label area */
-            #printable-qr-label, #printable-qr-label * {
-              visibility: visible !important;
-            }
-            #printable-qr-label {
-              position: fixed !important;
-              left: 0 !important;
-              top: 0 !important;
-              width: 100vw !important;
-              height: 100vh !important;
-              display: flex !important;
-              flex-direction: column !important;
-              align-items: center !important;
-              justify-content: center !important;
-              background: white !important;
-              color: black !important;
-              padding: 20px !important;
-              margin: 0 !important;
-              box-sizing: border-box !important;
-            }
-            /* Adjust QR colors for print */
-            #printable-qr-label svg {
-              width: 200px !important;
-              height: 200px !important;
-            }
-            #printable-qr-label .print-border {
-              border: 2px solid black !important;
-              padding: 20px !important;
-              border-radius: 8px !important;
-              text-align: center !important;
-            }
-            #printable-qr-label .print-text-color {
-              color: black !important;
-            }
-          }
-        `}} />
-
         <div className="flex flex-col items-center justify-center p-6 space-y-6">
-          {/* Printable Area */}
+          {/* Printable Area preview */}
           <div id="printable-qr-label" className="bg-slate-950 border border-slate-850 p-6 rounded-lg text-center w-full max-w-[280px]">
             <div className="print-border flex flex-col items-center justify-center space-y-4">
               {/* QR Code SVG */}
@@ -87,13 +131,13 @@ export function QRViewDialog({ open, onOpenChange, item }: QRViewDialogProps) {
 
               {/* Label details */}
               <div className="space-y-1">
-                <h4 className="font-mono font-bold text-lg text-amber-500 print-text-color tracking-wider">
+                <h4 className="font-mono font-bold text-lg text-amber-500 tracking-wider">
                   {item.item_code}
                 </h4>
-                <p className="text-sm font-semibold text-white print-text-color line-clamp-2">
+                <p className="text-sm font-semibold text-white line-clamp-2">
                   {item.name}
                 </p>
-                <p className="text-xs text-slate-400 print-text-color">
+                <p className="text-xs text-slate-400">
                   Merk: {item.supplier?.name || '-'}
                 </p>
               </div>
@@ -115,11 +159,11 @@ export function QRViewDialog({ open, onOpenChange, item }: QRViewDialogProps) {
             <motion.div whileTap={{ scale: 0.97 }} className="flex-1">
               <Button
                 type="button"
-                onClick={handlePrint}
+                onClick={handleDownloadImage}
                 className="w-full bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-primary-foreground font-semibold rounded-xl min-h-[44px]"
               >
-                <Printer className="mr-2 h-4 w-4" />
-                Cetak Label
+                <Download className="mr-2 h-4 w-4" />
+                Unduh Label
               </Button>
             </motion.div>
           </div>
