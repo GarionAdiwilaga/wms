@@ -252,123 +252,94 @@ export function BranchStocksPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {/* Mobile Card List View */}
-          <div className="grid grid-cols-1 gap-4 md:hidden">
+          {/* Responsive Card Grid View */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {stocksResponse?.data.map((stock) => {
               const image = itemImageMap[stock.item_id];
+              const formattedDate = new Date(stock.updated_at).toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              });
+
               return (
                 <div
                   key={`${stock.branch_id}-${stock.item_id}`}
-                  className="bg-card border border-border rounded-xl p-4 flex gap-4 items-start relative shadow-lg hover:shadow-xl transition-shadow"
+                  className="bg-card border border-border rounded-xl p-5 flex flex-col justify-between shadow-lg hover:shadow-xl transition-all hover:border-slate-800"
                 >
-                  {/* Thumbnail Image */}
-                  <div className="h-16 w-16 rounded-lg overflow-hidden bg-background border border-border flex items-center justify-center flex-shrink-0">
-                    {image ? (
-                      <ImageLightbox src={image} alt={stock.item_name || ''} triggerClassName="h-full w-full">
-                        <img src={image} alt={stock.item_name || ''} className="h-full w-full object-cover" />
-                      </ImageLightbox>
-                    ) : (
-                      <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                    )}
+                  <div className="space-y-3">
+                    {/* Top Row: Image & Primary Attributes */}
+                    <div className="flex gap-4 items-start">
+                      <div className="h-16 w-16 rounded-xl overflow-hidden bg-background border border-border flex items-center justify-center flex-shrink-0">
+                        {image ? (
+                          <ImageLightbox src={image} alt={stock.item_name || ''} triggerClassName="h-full w-full">
+                            <img src={image} alt={stock.item_name || ''} className="h-full w-full object-cover" />
+                          </ImageLightbox>
+                        ) : (
+                          <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <span className="font-mono text-xs font-bold text-amber-500 tracking-wide block mb-1">
+                          {stock.item_code}
+                        </span>
+                        <h4 className="text-sm font-bold text-foreground leading-tight line-clamp-2" title={stock.item_name}>
+                          {stock.item_name}
+                        </h4>
+                      </div>
+                    </div>
+
+                    {/* Middle: Attributes Metadata Grid */}
+                    <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground pt-3 border-t border-border/40">
+                      {isSuperAdmin && (
+                        <div className="col-span-2">
+                          <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Cabang</span>
+                          <span className="text-foreground font-semibold truncate block" title={branchMap[stock.branch_id] || ''}>
+                            {branchMap[stock.branch_id] || '-'}
+                          </span>
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Kategori</span>
+                        <span className="text-foreground font-semibold truncate block" title={stock.category_name || ''}>
+                          {stock.category_name || '-'}
+                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Supplier</span>
+                        <span className="text-foreground font-semibold truncate block" title={stock.supplier_name || ''}>
+                          {stock.supplier_name || '-'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Stock Details */}
-                  <div className="flex-1 min-w-0">
-                    <span className="font-mono text-xs font-bold text-amber-500 tracking-wide block mb-1">
-                      {stock.item_code}
-                    </span>
-                    <h4 className="text-sm font-semibold text-foreground truncate mb-1">{stock.item_name}</h4>
-                    
-                    {isSuperAdmin && (
-                      <p className="text-xs text-muted-foreground mb-1">
-                        Cabang: <span className="text-foreground font-medium">{branchMap[stock.branch_id] || '-'}</span>
-                      </p>
-                    )}
-                    
-                    <p className="text-xs text-muted-foreground mb-1">
-                      Kategori: <span className="text-foreground font-medium">{stock.category_name || '-'}</span>
-                    </p>
-                    <p className="text-xs text-muted-foreground mb-2.5">
-                      Merk/Supplier: <span className="text-foreground font-medium">{stock.supplier_name || '-'}</span>
-                    </p>
-
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border">
-                      <div className="text-xs text-muted-foreground">
-                        Stok: <span className="text-sm font-bold text-foreground">{stock.quantity} {stock.uom_name || 'PCS'}</span>
-                        <span className="text-[10px] text-muted-foreground ml-1.5">(Min: {stock.minimum_stock})</span>
+                  {/* Bottom: Quantity, Status Badge & Last Updated */}
+                  <div className="mt-4 pt-3 border-t border-border/40 space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div>
+                        <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Total Stok</span>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-lg font-extrabold text-white font-mono">{stock.quantity}</span>
+                          <span className="text-xs text-slate-400 font-medium">{stock.uom_name || 'PCS'}</span>
+                          <span className="text-[10px] text-slate-500 ml-1.5">(Min: {stock.minimum_stock})</span>
+                        </div>
                       </div>
-                      {renderStatusBadge(stock)}
+                      <div className="flex-shrink-0">
+                        {renderStatusBadge(stock)}
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-between items-center text-[10px] text-slate-500 border-t border-slate-900/50 pt-2">
+                      <span>Terakhir Update</span>
+                      <span className="font-mono">{formattedDate}</span>
                     </div>
                   </div>
                 </div>
               );
             })}
-          </div>
-
-          {/* Desktop Table View */}
-          <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden shadow-lg">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-muted/50 border-b border-border">
-                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Foto</th>
-                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Kode Barang</th>
-                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Nama Barang</th>
-                  {isSuperAdmin && (
-                    <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Cabang</th>
-                  )}
-                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Kategori</th>
-                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Merk/Supplier</th>
-                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider text-right">Stok</th>
-                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider text-right">Min. Stok</th>
-                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider text-center">Status</th>
-                  <th className="py-3.5 px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider text-right">Terakhir Update</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {stocksResponse?.data.map((stock) => {
-                  const image = itemImageMap[stock.item_id];
-                  const formattedDate = new Date(stock.updated_at).toLocaleDateString('id-ID', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  });
-
-                  return (
-                    <tr
-                      key={`${stock.branch_id}-${stock.item_id}`}
-                      className="hover:bg-muted/30 transition-colors"
-                    >
-                      <td className="py-3.5 px-4">
-                        <div className="h-10 w-10 rounded-lg overflow-hidden bg-background border border-border flex items-center justify-center shadow-sm">
-                          {image ? (
-                            <ImageLightbox src={image} alt={stock.item_name || ''} triggerClassName="h-full w-full">
-                              <img src={image} alt={stock.item_name || ''} className="h-full w-full object-cover" />
-                            </ImageLightbox>
-                          ) : (
-                            <ImageIcon className="h-5 w-5 text-muted-foreground" />
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-3.5 px-4 font-mono font-bold text-amber-500">{stock.item_code}</td>
-                      <td className="py-3.5 px-4 text-foreground font-medium">{stock.item_name}</td>
-                      {isSuperAdmin && (
-                        <td className="py-3.5 px-4 text-foreground/90">{branchMap[stock.branch_id] || '-'}</td>
-                      )}
-                      <td className="py-3.5 px-4 text-muted-foreground">{stock.category_name || '-'}</td>
-                      <td className="py-3.5 px-4 text-muted-foreground">{stock.supplier_name || '-'}</td>
-                      <td className="py-3.5 px-4 text-foreground font-bold text-right">
-                        {stock.quantity} {stock.uom_name || 'PCS'}
-                      </td>
-                      <td className="py-3.5 px-4 text-muted-foreground text-right">{stock.minimum_stock}</td>
-                      <td className="py-3.5 px-4 text-center">{renderStatusBadge(stock)}</td>
-                      <td className="py-3.5 px-4 text-muted-foreground text-xs text-right">{formattedDate}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
           </div>
 
           {/* Pagination Controls */}

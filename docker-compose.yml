@@ -24,6 +24,7 @@ services:
     container_name: gpk_backend
     volumes:
       - ./backend:/app
+      - ./docs:/app/docs
     ports:
       - "8000:8000"
     environment:

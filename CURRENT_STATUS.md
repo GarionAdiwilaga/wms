@@ -2,9 +2,18 @@
 
 ## Phase
 - **Phase 7 (Production Readiness)**: ✅ COMPLETED
-- **Phase 8 (Pilot Deployment & Training)**: Ready to begin
+- **Phase 8 (Pilot Deployment & Training)**: ✅ COMPLETED
 
 ## Last Completed
+- **QR Image Export Fix**:
+  - Frontend: Replaced print utility with an in-memory canvas-based JPEG download handler in `QRViewDialog.tsx`.
+  - Layout: Generates `QR_ItemInfo.jpeg` at `500x500px` displaying a rounded border, centered QR code, monospace item code, wrapped item name (up to 2 lines), and brand metadata.
+  - Compliance: Ensures 100% backward-compatibility for database and VPS without modifying production master data or operational backend code.
+- **Phase 8 — Pilot Deployment & Training**:
+  - Documentation: Created a fully modular documentation system in `wms/docs/` containing structured User Manuals (`user/`) and Server Setup & Maintenance Guides (`server/`).
+  - Verification & Media: Spawned development containers, ran alembic migrations, seeded the database with a rich QA dataset, and used browser automation to take 10 high-resolution screenshots of the real UI.
+  - Integration: Mapped the screenshots directly into the documentation files to act as visual guides.
+  - Security: Documented production Swagger access with HTTPBasic Authentication using `super_admin` credentials.
 - **Phase 7 — Production Readiness**:
   - Backend: Added `prepare_go_live.py` to safely purge transaction tables and reset Postgres sequences prior to Go-Live, with interactive safety confirmations.
   - Backend: Added `verify_backup.sh` shell script to automatically rehearse a backup/restore cycle using a temporary database to ensure disaster recovery works.
@@ -21,11 +30,12 @@
 - `main`
 
 ## Current Focus
-- Awaiting user to execute Pilot deployment (deploying to the Ubuntu VPS and configuring Cloudflare Tunnel).
+- System handoff, production VPS setup (`wms.rionlab.space`), and Go-Live execution by the user.
 
 ## Next Task
-- Provide system walkthroughs or user training.
-- Address any post-deployment/pilot phase user feedback.
+- Support the user during production launch on the Ubuntu VPS.
+- Gather feedback on pilot phase or user operations.
 
 ## Blockers
-- None. System is feature-complete and infrastructure-ready.
+- None. System is fully documented, feature-complete, and production-ready.
+

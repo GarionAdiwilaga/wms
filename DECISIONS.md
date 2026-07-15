@@ -196,4 +196,12 @@
 **Business Rule:** Deployment setup must be automated and self-contained to minimize manual config errors.
 **Reason:** Automatically provisions Docker/Compose dependencies, auto-generates secure production secret values, guides admin credential generation, and runs database migrations in sequence.
 
+## 2026-07-15
+
+### QR Label Image Export
+**Decision:** Replaced browser-native print functionality (`window.print()`) in the item catalog view with a direct client-side JPEG image download of `500x500px` named `QR_ItemInfo.jpeg`.
+**Business Rule:** The export process must execute entirely on the frontend using the HTML5 Canvas 2D context API, serializing the rendered QR SVG and metadata to guarantee high print resolution without adding any external package dependencies or changing backend VPS databases.
+**Reason:** Eliminates browser-specific print-style formatting issues, aligns output size with standard compact label printers, and ensures no data or VPS deployment disruptions.
+
+
 

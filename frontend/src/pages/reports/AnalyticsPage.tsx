@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth-store';
 import { useBranches } from '../../hooks/useBranches';
@@ -40,6 +40,43 @@ import {
 
 // Chart Colors
 const CHART_PALETTE = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6', '#06b6d4', '#14b8a6', '#f43f5e'];
+
+const getLegendItems = (items: any[], totalQty: number, nameKey: string, idKey: string) => {
+  if (!items || items.length === 0) return [];
+  const sorted = [...items].sort((a, b) => b.total_quantity - a.total_quantity);
+  
+  if (sorted.length <= 6) {
+    return sorted.map((item, idx) => ({
+      id: item[idKey],
+      name: item[nameKey],
+      quantity: item.total_quantity,
+      percentage: totalQty > 0 ? ((item.total_quantity / totalQty) * 100).toFixed(1) : '0.0',
+      color: CHART_PALETTE[idx % CHART_PALETTE.length],
+    }));
+  }
+  
+  const top = sorted.slice(0, 5);
+  const others = sorted.slice(5);
+  const othersQty = others.reduce((acc, item) => acc + item.total_quantity, 0);
+  
+  const result = top.map((item, idx) => ({
+    id: item[idKey],
+    name: item[nameKey],
+    quantity: item.total_quantity,
+    percentage: totalQty > 0 ? ((item.total_quantity / totalQty) * 100).toFixed(1) : '0.0',
+    color: CHART_PALETTE[idx % CHART_PALETTE.length],
+  }));
+  
+  result.push({
+    id: null,
+    name: 'Lainnya',
+    quantity: othersQty,
+    percentage: totalQty > 0 ? ((othersQty / totalQty) * 100).toFixed(1) : '0.0',
+    color: '#64748b',
+  });
+  
+  return result;
+};
 
 export function AnalyticsPage() {
   const user = useAuthStore((state) => state.user);
@@ -86,6 +123,27 @@ export function AnalyticsPage() {
   const { data: velocityRes, isLoading: loadingVelocity } = useMovementVelocity(selectedBranchId, days);
   const { data: trendsRes, isLoading: loadingTrends } = useActivityTrends(selectedBranchId, days);
   const { data: distributionsRes, isLoading: loadingDistributions } = useDistributions(selectedBranchId);
+
+  const totalCategoryQty = useMemo(() => {
+    if (!distributionsRes?.categories) return 0;
+    return distributionsRes.categories.reduce((acc, c) => acc + c.total_quantity, 0);
+  }, [distributionsRes]);
+
+  const totalBranchQty = useMemo(() => {
+    if (!distributionsRes?.branches) return 0;
+    return distributionsRes.branches.reduce((acc, b) => acc + b.total_quantity, 0);
+  }, [distributionsRes]);
+
+  const categoryLegends = useMemo(() => {
+    if (!distributionsRes?.categories) return [];
+    return getLegendItems(distributionsRes.categories, totalCategoryQty, 'category_name', 'category_id');
+  }, [distributionsRes, totalCategoryQty]);
+
+  const branchLegends = useMemo(() => {
+    if (!distributionsRes?.branches) return [];
+    return getLegendItems(distributionsRes.branches, totalBranchQty, 'branch_name', 'branch_id');
+  }, [distributionsRes, totalBranchQty]);
+
   const { data: operatorsRes, isLoading: loadingOperators } = useTopOperators(selectedBranchId, days);
   const { data: classificationRes, isLoading: loadingClassification } = useMovementClassification(selectedBranchId, {
     category_id: classCategory,
@@ -324,9 +382,9 @@ export function AnalyticsPage() {
             {loadingDistributions ? (
               <div className="h-72 flex items-center justify-center"><LoadingState /></div>
             ) : distributionsRes ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-72">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-auto">
                 {/* Category Donut */}
-                <div className="flex flex-col items-center justify-center relative">
+                <div className="flex flex-col items-center justify-center relative pb-4 sm:pb-0">
                   <span className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Kategori Barang</span>
                   <div className="h-48 w-full">
                     <ResponsiveContainer width="100%" height="100%">
@@ -357,12 +415,34 @@ export function AnalyticsPage() {
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
-                  <div className="text-[10px] text-slate-500 text-center mt-1">Klik slice untuk drill-down laporan</div>
+                  <div className="w-full mt-3 px-4 grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px]">
+                    {categoryLegends.map((item, idx) => (
+                      <div 
+                        key={idx} 
+                        className={`flex items-center justify-between gap-1.5 p-1 rounded-md transition-colors ${
+                          item.id ? 'cursor-pointer hover:bg-slate-900/50' : ''
+                        }`}
+                        onClick={() => {
+                          if (item.id) {
+                            navigate(`/reports/stock?category_id=${item.id}`);
+                          }
+                        }}
+                      >
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+                          <span className="text-slate-350 truncate font-medium">{item.name}</span>
+                        </div>
+                        <span className="font-mono text-slate-450 font-semibold flex-shrink-0">
+                          {item.percentage}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Branch Pie (Super Admin Only) */}
                 {isSuperAdmin && distributionsRes.branches ? (
-                  <div className="flex flex-col items-center justify-center relative border-l border-slate-800/60">
+                  <div className="flex flex-col items-center justify-center relative border-t sm:border-t-0 sm:border-l border-slate-800/60 pt-4 sm:pt-0">
                     <span className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Penyebaran Cabang</span>
                     <div className="h-48 w-full">
                       <ResponsiveContainer width="100%" height="100%">
@@ -393,7 +473,29 @@ export function AnalyticsPage() {
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
-                    <div className="text-[10px] text-slate-500 text-center mt-1">Klik slice untuk drill-down laporan</div>
+                    <div className="w-full mt-3 px-4 grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px]">
+                      {branchLegends.map((item, idx) => (
+                        <div 
+                          key={idx} 
+                          className={`flex items-center justify-between gap-1.5 p-1 rounded-md transition-colors ${
+                            item.id ? 'cursor-pointer hover:bg-slate-900/50' : ''
+                          }`}
+                          onClick={() => {
+                            if (item.id) {
+                              navigate(`/reports/stock?branch_id=${item.id}`);
+                            }
+                          }}
+                        >
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+                            <span className="text-slate-350 truncate font-medium">{item.name}</span>
+                          </div>
+                          <span className="font-mono text-slate-450 font-semibold flex-shrink-0">
+                            {item.percentage}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center border-l border-slate-800/60 text-slate-500 text-xs p-6 text-center">
