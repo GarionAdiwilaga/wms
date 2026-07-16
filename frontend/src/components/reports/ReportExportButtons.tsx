@@ -116,14 +116,14 @@ export function ReportExportButtons({ endpoint, filename, filters }: ReportExpor
   };
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
       {/* CSV Export Button */}
-      <motion.div whileTap={{ scale: 0.95 }}>
+      <motion.div whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
         <Button
           variant="outline"
           onClick={() => handleExport('csv')}
           disabled={exportingCsv || exportingXlsx || exportingPdf}
-          className="border-slate-800 hover:bg-slate-800 text-slate-300 min-h-[40px] px-3.5 rounded-lg flex items-center gap-2"
+          className="w-full border-slate-800 hover:bg-slate-800 text-slate-300 min-h-[44px] sm:min-h-[40px] px-3.5 rounded-lg flex items-center justify-center gap-2"
         >
           {exportingCsv ? (
             <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
@@ -135,12 +135,12 @@ export function ReportExportButtons({ endpoint, filename, filters }: ReportExpor
       </motion.div>
 
       {/* XLSX Export Button */}
-      <motion.div whileTap={{ scale: 0.95 }}>
+      <motion.div whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
         <Button
           variant="outline"
           onClick={() => handleExport('xlsx')}
           disabled={exportingCsv || exportingXlsx || exportingPdf}
-          className="border-slate-800 hover:bg-slate-800 text-slate-300 min-h-[40px] px-3.5 rounded-lg flex items-center gap-2"
+          className="w-full border-slate-800 hover:bg-slate-800 text-slate-300 min-h-[44px] sm:min-h-[40px] px-3.5 rounded-lg flex items-center justify-center gap-2"
         >
           {exportingXlsx ? (
             <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
@@ -152,12 +152,12 @@ export function ReportExportButtons({ endpoint, filename, filters }: ReportExpor
       </motion.div>
 
       {/* PDF Export Button */}
-      <motion.div whileTap={{ scale: 0.95 }}>
+      <motion.div whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
         <Button
           variant="outline"
           onClick={handleExportPdf}
           disabled={exportingCsv || exportingXlsx || exportingPdf}
-          className="border-slate-800 hover:bg-slate-800 text-slate-350 min-h-[40px] px-3.5 rounded-lg flex items-center gap-2"
+          className="w-full border-slate-800 hover:bg-slate-800 text-slate-350 min-h-[44px] sm:min-h-[40px] px-3.5 rounded-lg flex items-center justify-center gap-2"
         >
           {exportingPdf ? (
             <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
