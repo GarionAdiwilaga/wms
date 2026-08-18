@@ -21,6 +21,7 @@ services:
         max-file: "3"
 
   backend:
+    image: gpk-backend:prod
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -44,6 +45,7 @@ services:
         max-file: "3"
 
   frontend:
+    image: gpk-frontend:prod
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod

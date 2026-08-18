@@ -91,7 +91,7 @@ export function QuantityStepper({
   };
 
   return (
-    <div className="flex items-center gap-1 bg-slate-950 border border-slate-800 rounded-lg p-1">
+    <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-1">
       <motion.div whileTap={{ scale: disabled || value <= min ? 1 : 0.85 }}>
         <Button
           type="button"
@@ -108,7 +108,7 @@ export function QuantityStepper({
             e.preventDefault();
             stopPress();
           }}
-          className="h-8 w-8 text-slate-400 hover:text-white rounded-md"
+          className="h-8 w-8 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 rounded-md"
           disabled={disabled || value <= min}
         >
           <Minus className="h-4 w-4" />
@@ -125,7 +125,7 @@ export function QuantityStepper({
         disabled={disabled}
         min={min}
         max={max}
-        className="bg-transparent text-white w-12 text-center text-sm font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="bg-transparent text-slate-900 dark:text-white w-12 text-center text-sm font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
 
       <motion.div whileTap={{ scale: disabled || (max !== undefined && value >= max) ? 1 : 0.85 }}>
@@ -144,7 +144,7 @@ export function QuantityStepper({
             e.preventDefault();
             stopPress();
           }}
-          className="h-8 w-8 text-slate-400 hover:text-white rounded-md"
+          className="h-8 w-8 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 rounded-md"
           disabled={disabled || (max !== undefined && value >= max)}
         >
           <Plus className="h-4 w-4" />

@@ -139,34 +139,34 @@ export function HistoryPage() {
           const isExpanded = !!expandedSessions[key];
           
           return (
-            <div key={session.session_id} className="bg-card border border-border rounded-xl overflow-hidden shadow-md">
+            <div key={session.session_id} className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
               {/* Header summary panel */}
               <button
                 type="button"
                 onClick={() => toggleExpand('stock-in', session.session_id)}
-                className="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-slate-900/35 transition-colors focus:outline-none"
+                className="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-900/35 transition-colors focus:outline-none"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 capitalize">
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 capitalize">
                       {session.status === 'completed' ? 'Selesai' : session.status}
                     </span>
-                    <span className="text-sm font-semibold text-slate-400 font-mono flex items-center gap-1">
+                    <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1">
                       <Hash className="h-3 w-3" /> #{session.session_id}
                     </span>
-                    <span className="text-xs text-slate-400 font-medium">
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                       | {getBranchName(session.branch_id)}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 mt-2">
-                    <div className="flex items-center gap-1.5 text-sm text-slate-300">
-                      <FileText className="h-4 w-4 text-slate-500" />
-                      <span className="font-semibold text-white">Ref:</span> {session.reference_no || '-'}
+                    <div className="flex items-center gap-1.5 text-sm text-slate-700 dark:text-slate-300">
+                      <FileText className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                      <span className="font-semibold text-slate-900 dark:text-white">Ref:</span> {session.reference_no || '-'}
                     </div>
-                    <div className="flex items-center gap-1.5 text-sm text-slate-300">
-                      <Calendar className="h-4 w-4 text-slate-500" />
-                      <span className="font-semibold text-white">Tanggal:</span> {formatDate(session.transaction_date)}
+                    <div className="flex items-center gap-1.5 text-sm text-slate-700 dark:text-slate-300">
+                      <Calendar className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                      <span className="font-semibold text-slate-900 dark:text-white">Tanggal:</span> {formatDate(session.transaction_date)}
                     </div>
                   </div>
                 </div>
@@ -174,7 +174,7 @@ export function HistoryPage() {
                 <div className="flex items-center gap-2">
                   <div className="text-right hidden sm:block">
                     <p className="text-xs text-slate-500">Jumlah Barang</p>
-                    <p className="text-sm font-bold text-white">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">
                       {session.lines.reduce((sum, l) => sum + l.quantity, 0)} pcs
                     </p>
                   </div>
@@ -190,18 +190,18 @@ export function HistoryPage() {
                     animate={{ height: 'auto' }}
                     exit={{ height: 0 }}
                     transition={{ duration: 0.25, ease: 'easeInOut' }}
-                    className="overflow-hidden border-t border-slate-800 bg-slate-950/20"
+                    className="overflow-hidden border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20"
                   >
                     <div className="p-4 sm:p-5 space-y-4">
                       {/* Meta info row */}
-                      <div className="flex justify-between items-start gap-4 border-b border-slate-850 pb-3">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-400 flex-1">
+                      <div className="flex justify-between items-start gap-4 border-b border-slate-200 dark:border-slate-850 pb-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-500 dark:text-slate-400 flex-1">
                           <div>
-                            <p><span className="font-semibold text-slate-300">No. Invoice Supplier:</span> {session.supplier_invoice_no || '-'}</p>
-                            <p className="mt-1"><span className="font-semibold text-slate-300">Catatan:</span> {session.notes || '-'}</p>
+                            <p><span className="font-semibold text-slate-700 dark:text-slate-300">No. Invoice Supplier:</span> {session.supplier_invoice_no || '-'}</p>
+                            <p className="mt-1"><span className="font-semibold text-slate-700 dark:text-slate-300">Catatan:</span> {session.notes || '-'}</p>
                           </div>
                           <div>
-                            <p><span className="font-semibold text-slate-300">Dibuat Oleh:</span> User #{session.created_by}</p>
+                            <p><span className="font-semibold text-slate-700 dark:text-slate-300">Dibuat Oleh:</span> User #{session.created_by}</p>
                           </div>
                         </div>
                         <div>
@@ -210,12 +210,12 @@ export function HistoryPage() {
                             size="sm"
                             disabled={downloadingPdf[`stock-in-${session.session_id}`]}
                             onClick={() => handleDownloadPdf('stock-in', session.session_id)}
-                            className="border-slate-800 hover:bg-slate-900 text-xs flex items-center gap-1.5 min-h-[32px]"
+                            className="border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 text-xs flex items-center gap-1.5 min-h-[32px]"
                           >
                             {downloadingPdf[`stock-in-${session.session_id}`] ? (
                               <Loader2 className="h-3.5 w-3.5 animate-spin" />
                             ) : (
-                              <FileText className="h-3.5 w-3.5 text-slate-400" />
+                              <FileText className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
                             )}
                             <span>Cetak PDF</span>
                           </Button>
@@ -227,14 +227,14 @@ export function HistoryPage() {
                         <h4 className="text-xs font-semibold text-amber-500 uppercase tracking-wider mb-2">Item Detail</h4>
                         <div className="space-y-2">
                           {session.lines.map((line) => (
-                            <div key={line.line_id} className="flex justify-between items-center gap-4 bg-slate-900/30 p-2.5 rounded-lg border border-slate-850/50">
+                            <div key={line.line_id} className="flex justify-between items-center gap-4 bg-slate-50 dark:bg-slate-900/30 p-2.5 rounded-lg border border-slate-200 dark:border-slate-850/50">
                               <div className="min-w-0">
-                                <p className="text-sm font-semibold text-white truncate">{line.item_name || 'Komponen'}</p>
-                                <span className="text-[10px] font-mono px-1 rounded bg-slate-800 border border-slate-700 text-amber-500 mt-0.5 inline-block">
+                                <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{line.item_name || 'Komponen'}</p>
+                                <span className="text-[10px] font-mono px-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-amber-600 dark:text-amber-500 mt-0.5 inline-block">
                                   {line.item_code}
                                 </span>
                               </div>
-                              <span className="text-sm font-bold text-white flex-shrink-0">
+                              <span className="text-sm font-bold text-slate-900 dark:text-white flex-shrink-0">
                                 {line.quantity} pcs
                               </span>
                             </div>
@@ -258,12 +258,12 @@ export function HistoryPage() {
                 size="sm"
                 disabled={stockInPage === 1}
                 onClick={() => setStockInPage(p => Math.max(p - 1, 1))}
-                className="border-slate-800 text-white hover:bg-slate-900"
+                className="border-slate-200 dark:border-slate-800 text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-900"
               >
                 Sebelumnya
               </Button>
             </motion.div>
-            <span className="text-sm text-slate-400">
+            <span className="text-sm text-slate-500 dark:text-slate-400">
               Halaman {stockInPage} dari {stockInResponse.total_pages}
             </span>
             <motion.div whileTap={{ scale: 0.95 }}>
@@ -272,7 +272,7 @@ export function HistoryPage() {
                 size="sm"
                 disabled={stockInPage === stockInResponse.total_pages}
                 onClick={() => setStockInPage(p => Math.min(p + 1, stockInResponse.total_pages))}
-                className="border-slate-800 text-white hover:bg-slate-900"
+                className="border-slate-200 dark:border-slate-800 text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-900"
               >
                 Selanjutnya
               </Button>
@@ -301,34 +301,34 @@ export function HistoryPage() {
           const isExpanded = !!expandedSessions[key];
           
           return (
-            <div key={session.session_id} className="bg-card border border-border rounded-xl overflow-hidden shadow-md">
+            <div key={session.session_id} className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
               {/* Header summary panel */}
               <button
                 type="button"
                 onClick={() => toggleExpand('outbound', session.session_id)}
-                className="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-slate-900/35 transition-colors focus:outline-none"
+                className="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-900/35 transition-colors focus:outline-none"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-500 capitalize">
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-500 capitalize">
                       {session.status === 'completed' ? 'Selesai' : session.status}
                     </span>
-                    <span className="text-sm font-semibold text-slate-400 font-mono flex items-center gap-1">
+                    <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1">
                       <Hash className="h-3 w-3" /> #{session.session_id}
                     </span>
-                    <span className="text-xs text-slate-400 font-medium">
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                       | {getBranchName(session.branch_id)}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 mt-2">
-                    <div className="flex items-center gap-1.5 text-sm text-slate-300">
-                      <FileText className="h-4 w-4 text-slate-500" />
-                      <span className="font-semibold text-white">Ref (Order/SPK):</span> {session.reference_no || '-'}
+                    <div className="flex items-center gap-1.5 text-sm text-slate-700 dark:text-slate-300">
+                      <FileText className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                      <span className="font-semibold text-slate-900 dark:text-white">Ref (Order/SPK):</span> {session.reference_no || '-'}
                     </div>
-                    <div className="flex items-center gap-1.5 text-sm text-slate-300">
-                      <Calendar className="h-4 w-4 text-slate-500" />
-                      <span className="font-semibold text-white">Tanggal:</span> {formatDate(session.transaction_date)}
+                    <div className="flex items-center gap-1.5 text-sm text-slate-700 dark:text-slate-300">
+                      <Calendar className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                      <span className="font-semibold text-slate-900 dark:text-white">Tanggal:</span> {formatDate(session.transaction_date)}
                     </div>
                   </div>
                 </div>
@@ -336,7 +336,7 @@ export function HistoryPage() {
                 <div className="flex items-center gap-2">
                   <div className="text-right hidden sm:block">
                     <p className="text-xs text-slate-500">Jumlah Barang</p>
-                    <p className="text-sm font-bold text-white">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">
                       {session.lines.reduce((sum, l) => sum + l.quantity, 0)} pcs
                     </p>
                   </div>
@@ -352,17 +352,17 @@ export function HistoryPage() {
                     animate={{ height: 'auto' }}
                     exit={{ height: 0 }}
                     transition={{ duration: 0.25, ease: 'easeInOut' }}
-                    className="overflow-hidden border-t border-slate-800 bg-slate-950/20"
+                    className="overflow-hidden border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20"
                   >
                     <div className="p-4 sm:p-5 space-y-4">
                       {/* Meta info row */}
-                      <div className="flex justify-between items-start gap-4 border-b border-slate-850 pb-3">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-400 flex-1">
+                      <div className="flex justify-between items-start gap-4 border-b border-slate-200 dark:border-slate-850 pb-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-500 dark:text-slate-400 flex-1">
                           <div>
-                            <p className="mt-1"><span className="font-semibold text-slate-300">Catatan:</span> {session.notes || '-'}</p>
+                            <p className="mt-1"><span className="font-semibold text-slate-700 dark:text-slate-300">Catatan:</span> {session.notes || '-'}</p>
                           </div>
                           <div>
-                            <p><span className="font-semibold text-slate-300">Checkout Oleh:</span> User #{session.created_by}</p>
+                            <p><span className="font-semibold text-slate-700 dark:text-slate-300">Checkout Oleh:</span> User #{session.created_by}</p>
                           </div>
                         </div>
                         <div>
@@ -371,12 +371,12 @@ export function HistoryPage() {
                             size="sm"
                             disabled={downloadingPdf[`outbound-${session.session_id}`]}
                             onClick={() => handleDownloadPdf('outbound', session.session_id)}
-                            className="border-slate-800 hover:bg-slate-900 text-xs flex items-center gap-1.5 min-h-[32px]"
+                            className="border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 text-xs flex items-center gap-1.5 min-h-[32px]"
                           >
                             {downloadingPdf[`outbound-${session.session_id}`] ? (
                               <Loader2 className="h-3.5 w-3.5 animate-spin" />
                             ) : (
-                              <FileText className="h-3.5 w-3.5 text-slate-400" />
+                              <FileText className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
                             )}
                             <span>Cetak PDF</span>
                           </Button>
@@ -388,14 +388,14 @@ export function HistoryPage() {
                         <h4 className="text-xs font-semibold text-amber-500 uppercase tracking-wider mb-2">Item Detail</h4>
                         <div className="space-y-2">
                           {session.lines.map((line) => (
-                            <div key={line.line_id} className="flex justify-between items-center gap-4 bg-slate-900/30 p-2.5 rounded-lg border border-slate-850/50">
+                            <div key={line.line_id} className="flex justify-between items-center gap-4 bg-slate-50 dark:bg-slate-900/30 p-2.5 rounded-lg border border-slate-200 dark:border-slate-850/50">
                               <div className="min-w-0">
-                                <p className="text-sm font-semibold text-white truncate">{line.item_name || 'Komponen'}</p>
-                                <span className="text-[10px] font-mono px-1 rounded bg-slate-800 border border-slate-700 text-amber-500 mt-0.5 inline-block">
+                                <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{line.item_name || 'Komponen'}</p>
+                                <span className="text-[10px] font-mono px-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-amber-600 dark:text-amber-500 mt-0.5 inline-block">
                                   {line.item_code}
                                 </span>
                               </div>
-                              <span className="text-sm font-bold text-white flex-shrink-0">
+                              <span className="text-sm font-bold text-slate-900 dark:text-white flex-shrink-0">
                                 {line.quantity} pcs
                               </span>
                             </div>
@@ -419,12 +419,12 @@ export function HistoryPage() {
                 size="sm"
                 disabled={outboundPage === 1}
                 onClick={() => setOutboundPage(p => Math.max(p - 1, 1))}
-                className="border-slate-800 text-white hover:bg-slate-900"
+                className="border-slate-200 dark:border-slate-800 text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-900"
               >
                 Sebelumnya
               </Button>
             </motion.div>
-            <span className="text-sm text-slate-400">
+            <span className="text-sm text-slate-500 dark:text-slate-400">
               Halaman {outboundPage} dari {outboundResponse.total_pages}
             </span>
             <motion.div whileTap={{ scale: 0.95 }}>
@@ -433,7 +433,7 @@ export function HistoryPage() {
                 size="sm"
                 disabled={outboundPage === outboundResponse.total_pages}
                 onClick={() => setOutboundPage(p => Math.min(p + 1, outboundResponse.total_pages))}
-                className="border-slate-800 text-white hover:bg-slate-900"
+                className="border-slate-200 dark:border-slate-800 text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-900"
               >
                 Selanjutnya
               </Button>
@@ -452,14 +452,14 @@ export function HistoryPage() {
       />
 
       {/* Tabs selectors with standard bento styling */}
-      <div className="flex gap-2 p-1 bg-slate-900 border border-slate-800 rounded-xl max-w-md shadow-inner">
+      <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl max-w-md shadow-inner">
         <button
           type="button"
           onClick={() => handleTabChange('stock-in')}
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all min-h-[40px] ${
             activeTab === 'stock-in'
               ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
-              : 'text-slate-400 hover:text-white hover:bg-slate-850'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-850'
           }`}
         >
           <Archive className="h-4 w-4" />
@@ -471,7 +471,7 @@ export function HistoryPage() {
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all min-h-[40px] ${
             activeTab === 'outbound'
               ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
-              : 'text-slate-400 hover:text-white hover:bg-slate-850'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-850'
           }`}
         >
           <ShoppingCart className="h-4 w-4" />

@@ -126,7 +126,7 @@ export function InventoryMovementReportPage() {
       header: 'Referensi',
       cell: (r) => (
         <div className="space-y-0.5">
-          <span className="text-xs font-medium text-white">{translateRefType(r.reference_type)}</span>
+          <span className="text-xs font-medium text-slate-900 dark:text-white">{translateRefType(r.reference_type)}</span>
           {r.document_no && (
             <span className="text-[10px] text-amber-500 font-mono block">{r.document_no}</span>
           )}
@@ -136,15 +136,15 @@ export function InventoryMovementReportPage() {
     {
       header: 'Operator',
       cell: (r) => (
-        <span className="flex items-center gap-1 text-slate-350 text-xs">
-          <User className="h-3 w-3 text-slate-500" />
+        <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300 text-xs">
+          <User className="h-3 w-3 text-slate-400 dark:text-slate-500" />
           {r.operator_name}
         </span>
       )
     },
     {
       header: 'Catatan',
-      cell: (r) => <span className="text-slate-400 text-xs line-clamp-1 max-w-[150px]" title={r.notes || ''}>{r.notes || '-'}</span>
+      cell: (r) => <span className="text-slate-500 dark:text-slate-400 text-xs line-clamp-1 max-w-[150px]" title={r.notes || ''}>{r.notes || '-'}</span>
     }
   ];
 

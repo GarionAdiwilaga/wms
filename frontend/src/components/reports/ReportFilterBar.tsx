@@ -25,7 +25,6 @@ interface ReportFilterBarProps {
 export const calculateDateRange = (preset: DatePreset, customStart?: string, customEnd?: string) => {
   const today = new Date();
   const formatLocalISO = (d: Date) => {
-    // Format as YYYY-MM-DD
     const offset = d.getTimezoneOffset();
     const local = new Date(d.getTime() - offset * 60 * 1000);
     return local.toISOString().split('T')[0];
@@ -38,12 +37,12 @@ export const calculateDateRange = (preset: DatePreset, customStart?: string, cus
     }
     case '7d': {
       const past = new Date();
-      past.setDate(today.getDate() - 6); // 7 days total including today
+      past.setDate(today.getDate() - 6);
       return { start_date: formatLocalISO(past), end_date: formatLocalISO(today) };
     }
     case '30d': {
       const past = new Date();
-      past.setDate(today.getDate() - 29); // 30 days total including today
+      past.setDate(today.getDate() - 29);
       return { start_date: formatLocalISO(past), end_date: formatLocalISO(today) };
     }
     case 'this_month': {
@@ -166,14 +165,14 @@ export function ReportFilterBar({
   };
 
   return (
-    <div className="bg-card border border-border rounded-xl p-5 shadow-md space-y-4">
+    <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-5 shadow-sm space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Search Field */}
         {showSearch && (
           <div className="space-y-1 sm:col-span-2">
-            <Label htmlFor="search-filter" className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Cari Kata Kunci</Label>
+            <Label htmlFor="search-filter" className="text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider">Cari Kata Kunci</Label>
             <div className="relative flex items-center">
-              <Search className="absolute left-3 h-4 w-4 text-slate-500 pointer-events-none" />
+              <Search className="absolute left-3 h-4 w-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
               <input
                 id="search-filter"
                 name="search-filter"
@@ -181,7 +180,7 @@ export function ReportFilterBar({
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={searchPlaceholder}
-                className="w-full h-10 pl-9 pr-4 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent placeholder-slate-650"
+                className="w-full h-10 pl-9 pr-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent placeholder:text-slate-400 dark:placeholder:text-slate-500"
               />
             </div>
           </div>
@@ -190,13 +189,13 @@ export function ReportFilterBar({
         {/* Branch Selector (Super Admin Only) */}
         {showBranch && isSuperAdmin && (
           <div className="space-y-1">
-            <Label htmlFor="branch-filter" className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Gudang Cabang</Label>
+            <Label htmlFor="branch-filter" className="text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider">Gudang Cabang</Label>
             <select
               id="branch-filter"
               name="branch_filter"
               value={filters.branch_id || ''}
               onChange={handleBranchChange}
-              className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
+              className="w-full h-10 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
             >
               <option value="">Semua Cabang</option>
               {branches?.filter(b => b.is_active).map((b) => (
@@ -211,13 +210,13 @@ export function ReportFilterBar({
         {/* Category Selector */}
         {showCategory && (
           <div className="space-y-1">
-            <Label htmlFor="category-filter" className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Kategori Barang</Label>
+            <Label htmlFor="category-filter" className="text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider">Kategori Barang</Label>
             <select
               id="category-filter"
               name="category_filter"
               value={filters.category_id || ''}
               onChange={handleCategoryChange}
-              className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
+              className="w-full h-10 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
             >
               <option value="">Semua Kategori</option>
               {categories?.filter(c => c.is_active).map((c) => (
@@ -232,19 +231,17 @@ export function ReportFilterBar({
         {/* Supplier Selector */}
         {showSupplier && (
           <div className="space-y-1">
-            <Label htmlFor="supplier-filter" className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Merk / Supplier</Label>
+            <Label htmlFor="supplier-filter" className="text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider">Merk / Supplier</Label>
             <select
               id="supplier-filter"
               name="supplier_filter"
               value={filters.supplier_id || ''}
               onChange={handleSupplierChange}
-              className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
+              className="w-full h-10 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
             >
               <option value="">Semua Supplier</option>
               {suppliers?.filter(s => s.is_active).map((s) => (
-                <option key={s.supplier_id} value={s.supplier_id}>
-                  {s.name}
-                </option>
+                <option key={s.supplier_id} value={s.supplier_id}>{s.name}</option>
               ))}
             </select>
           </div>
@@ -253,13 +250,13 @@ export function ReportFilterBar({
         {/* Date Presets Selector */}
         {showDateRange && (
           <div className="space-y-1">
-            <Label htmlFor="date-preset" className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Periode Waktu</Label>
+            <Label htmlFor="date-preset" className="text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider">Periode Waktu</Label>
             <select
               id="date-preset"
               name="date_preset"
               value={datePreset}
               onChange={handlePresetChange}
-              className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
+              className="w-full h-10 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
             >
               <option value="all">Semua Waktu</option>
               <option value="today">Hari Ini</option>
@@ -274,32 +271,32 @@ export function ReportFilterBar({
 
       {/* Conditional Custom Date Inputs */}
       {showDateRange && datePreset === 'custom' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-800/40">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200 dark:border-slate-800/40">
           <div className="space-y-1">
-            <Label htmlFor="start-date" className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Dari Tanggal</Label>
+            <Label htmlFor="start-date" className="text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider">Dari Tanggal</Label>
             <div className="relative flex items-center">
-              <Calendar className="absolute left-3 h-4 w-4 text-slate-500 pointer-events-none" />
+              <Calendar className="absolute left-3 h-4 w-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
               <input
                 id="start-date"
                 name="start_date"
                 type="date"
                 value={customStart}
                 onChange={(e) => handleCustomDateChange('start', e.target.value)}
-                className="w-full h-10 pl-9 pr-4 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
+                className="w-full h-10 pl-9 pr-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
               />
             </div>
           </div>
           <div className="space-y-1">
-            <Label htmlFor="end-date" className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Sampai Tanggal</Label>
+            <Label htmlFor="end-date" className="text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider">Sampai Tanggal</Label>
             <div className="relative flex items-center">
-              <Calendar className="absolute left-3 h-4 w-4 text-slate-500 pointer-events-none" />
+              <Calendar className="absolute left-3 h-4 w-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
               <input
                 id="end-date"
                 name="end_date"
                 type="date"
                 value={customEnd}
                 onChange={(e) => handleCustomDateChange('end', e.target.value)}
-                className="w-full h-10 pl-9 pr-4 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
+                className="w-full h-10 pl-9 pr-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
               />
             </div>
           </div>

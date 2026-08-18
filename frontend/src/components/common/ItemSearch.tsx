@@ -43,9 +43,6 @@ export function ItemSearch({
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   // Phase 6 — Frequent Items Carousel
-  // branchId === undefined  → carousel feature disabled (backward-compat)
-  // branchId === null       → hook idle (super_admin, no branch selected)
-  // branchId === number     → hook fires, carousel rendered when query empty
   const carouselEnabled = branchId !== undefined;
   const { data: frequentData, isLoading: isFrequentLoading } = useFrequentItems(
     carouselEnabled ? branchId : undefined
@@ -195,8 +192,6 @@ export function ItemSearch({
             }
           },
           (decodedText) => {
-            // QR successfully scanned!
-            // Populate the search field and stop scanning
             setQuery(decodedText);
             setDebouncedQuery(decodedText);
             if (onChange) {
@@ -204,9 +199,7 @@ export function ItemSearch({
             }
             stopScanning();
           },
-          () => {
-            // Silent failure for individual frames
-          }
+          () => {}
         );
       } catch (err: any) {
         console.error('Camera access failed:', err);
@@ -255,7 +248,7 @@ export function ItemSearch({
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
           placeholder={placeholder}
-          className="pl-10 pr-12 bg-slate-950 border-slate-800 focus-visible:ring-amber-500 text-white min-h-[44px]"
+          className="pl-10 pr-12 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus-visible:ring-amber-500 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 min-h-[44px] shadow-sm"
           onFocus={() => {
             if (showDropdown && query.trim().length >= 2) {
               setIsDropdownOpen(true);
@@ -273,7 +266,7 @@ export function ItemSearch({
               }
               setIsDropdownOpen(false);
             }}
-            className="absolute right-12 text-slate-400 hover:text-white"
+            className="absolute right-12 text-slate-400 hover:text-slate-600 dark:hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>
@@ -294,11 +287,11 @@ export function ItemSearch({
 
       {/* Dropdown Results */}
       {showDropdown && isDropdownOpen && (
-        <div className="absolute z-40 mt-1 w-full rounded-md border border-slate-800 bg-slate-900 shadow-lg max-h-80 overflow-y-auto">
+        <div className="absolute z-40 mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl max-h-80 overflow-y-auto">
           {isLoading ? (
-            <div className="p-4 text-center text-sm text-slate-400">Mencari...</div>
+            <div className="p-4 text-center text-sm text-slate-500 dark:text-slate-400">Mencari...</div>
           ) : searchResults?.data.length === 0 ? (
-            <div className="p-4 text-center text-sm text-slate-400">Barang tidak ditemukan.</div>
+            <div className="p-4 text-center text-sm text-slate-500 dark:text-slate-400">Barang tidak ditemukan.</div>
           ) : (
             <ul className="py-1">
               {searchResults?.data.map((item, index) => (
@@ -307,11 +300,11 @@ export function ItemSearch({
                     type="button"
                     onClick={() => handleSelect(item)}
                     className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors ${
-                      selectedIndex === index ? 'bg-slate-800' : 'hover:bg-slate-800'
+                      selectedIndex === index ? 'bg-slate-100 dark:bg-slate-800' : 'hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                   >
                     {/* Thumbnail Preview */}
-                    <div className="h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-slate-950 overflow-hidden border border-slate-800 flex">
+                    <div className="h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-slate-100 dark:bg-slate-950 overflow-hidden border border-slate-200 dark:border-slate-800 flex">
                       {item.image_url ? (
                         <img 
                           src={item.image_url} 
@@ -319,18 +312,18 @@ export function ItemSearch({
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <ImageIcon className="h-5 w-5 text-slate-600" />
+                        <ImageIcon className="h-5 w-5 text-slate-400 dark:text-slate-600" />
                       )}
                     </div>
                     {/* Text Details */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-semibold text-white truncate">{item.name}</p>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-850 border border-slate-800 text-amber-500 uppercase font-mono font-semibold">
+                        <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{item.name}</p>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-amber-600 dark:text-amber-500 uppercase font-mono font-semibold">
                           {item.item_code}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-400 truncate">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                         Merk: {item.supplier?.name || '-'} | Kategori: {item.category?.name || '-'}
                       </p>
                     </div>
@@ -342,13 +335,7 @@ export function ItemSearch({
         </div>
       )}
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Phase 6 — Frequent Items Carousel                                   */}
-      {/* Appears below the search bar when:                                  */}
-      {/*   • branchId prop is provided (feature enabled)                     */}
-      {/*   • a branch is actually selected (branchId is truthy)              */}
-      {/*   • the search query is empty (gives way to dropdown results)       */}
-      {/* ------------------------------------------------------------------ */}
+      {/* Frequent Items Carousel */}
       <AnimatePresence>
         {showCarousel && (
           <motion.div
@@ -359,35 +346,29 @@ export function ItemSearch({
             transition={{ duration: 0.18, ease: 'easeOut' }}
             className="mt-2"
           >
-            {/* Section header */}
             <div className="flex items-center gap-1.5 px-1 mb-2">
               <Zap className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Sering Digunakan
               </span>
             </div>
 
             {isFrequentLoading ? (
-              /* Skeleton shimmer while loading */
               <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div
                     key={i}
-                    className="flex-shrink-0 w-20 h-24 rounded-lg bg-slate-800 animate-pulse"
+                    className="flex-shrink-0 w-20 h-24 rounded-lg bg-slate-200 dark:bg-slate-800 animate-pulse"
                   />
                 ))}
               </div>
             ) : frequentItems.length === 0 ? (
-              /* Empty state — only shown if user has no history yet */
-              <p className="text-xs text-slate-600 px-1 pb-1">
+              <p className="text-xs text-slate-500 dark:text-slate-600 px-1 pb-1">
                 Belum ada riwayat. Gunakan fitur ini setelah melakukan transaksi pertama.
               </p>
             ) : (
-              /* Horizontal chip strip */
               <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {frequentItems.map((entry: FrequentItemEntry, idx: number) => {
-                  // Map FrequentItemEntry → Item shape so handleSelect receives
-                  // the same object type as a standard search-dropdown pick.
                   const itemProxy: Item = {
                     item_id: entry.item_id,
                     item_code: entry.item_code,
@@ -418,14 +399,14 @@ export function ItemSearch({
                       aria-label={`Pilih ${entry.name}`}
                       className={
                         'flex-shrink-0 flex flex-col items-center gap-1.5 w-20 p-2 rounded-lg ' +
-                        'bg-slate-900 border border-slate-800 ' +
-                        'hover:border-amber-500/60 hover:bg-slate-800 ' +
+                        'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm ' +
+                        'hover:border-amber-500/60 hover:bg-slate-50 dark:hover:bg-slate-800 ' +
                         'active:scale-95 transition-all duration-150 ' +
                         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500'
                       }
                     >
                       {/* Item thumbnail */}
-                      <div className="h-10 w-10 flex-shrink-0 rounded-md bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center">
+                      <div className="h-10 w-10 flex-shrink-0 rounded-md bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 overflow-hidden flex items-center justify-center">
                         {entry.image_url ? (
                           <img
                             src={entry.image_url}
@@ -434,17 +415,17 @@ export function ItemSearch({
                             loading="lazy"
                           />
                         ) : (
-                          <ImageIcon className="h-4 w-4 text-slate-600" />
+                          <ImageIcon className="h-4 w-4 text-slate-400 dark:text-slate-600" />
                         )}
                       </div>
 
-                      {/* Item name — truncated to 2 lines */}
-                      <p className="text-[10px] text-slate-300 text-center leading-tight line-clamp-2 w-full">
+                      {/* Item name */}
+                      <p className="text-[10px] text-slate-700 dark:text-slate-300 text-center leading-tight line-clamp-2 w-full">
                         {entry.name}
                       </p>
 
                       {/* Item code badge */}
-                      <span className="text-[9px] px-1 py-0.5 rounded bg-slate-950 border border-slate-800 text-amber-500 font-mono font-semibold truncate max-w-full">
+                      <span className="text-[9px] px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-amber-600 dark:text-amber-500 font-mono font-semibold truncate max-w-full">
                         {entry.item_code}
                       </span>
                     </motion.button>
@@ -458,17 +439,17 @@ export function ItemSearch({
 
       {/* QR Code Scanner Overlay */}
       {isScanning && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-slate-950 md:bg-slate-950/90 items-center justify-center p-4">
-          <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-lg overflow-hidden relative flex flex-col h-full md:h-auto max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex flex-col bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden relative flex flex-col h-full md:h-auto max-h-[90vh] shadow-2xl">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
-              <h3 className="font-semibold text-white">Scan QR Code Barang</h3>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-800">
+              <h3 className="font-semibold text-slate-900 dark:text-white">Scan QR Code Barang</h3>
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
                 onClick={stopScanning}
-                className="text-slate-400 hover:text-white min-h-[40px] min-w-[40px]"
+                className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white min-h-[40px] min-w-[40px]"
               >
                 <X className="h-5 w-5" />
               </Button>
@@ -477,14 +458,14 @@ export function ItemSearch({
             {/* Camera View Area */}
             <div className="flex-1 relative bg-black flex items-center justify-center min-h-[300px]">
               {cameraError ? (
-                <div className="flex flex-col items-center justify-center p-6 text-center text-red-400">
+                <div className="flex flex-col items-center justify-center p-6 text-center text-red-500 dark:text-red-400">
                   <CameraOff className="h-12 w-12 mb-3" />
                   <p className="text-sm font-medium mb-4">{cameraError}</p>
                   <Button 
                     type="button" 
                     variant="outline" 
                     onClick={stopScanning}
-                    className="border-slate-700 hover:bg-slate-800 text-white"
+                    className="border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-white"
                   >
                     Tutup & Input Manual
                   </Button>
@@ -495,7 +476,7 @@ export function ItemSearch({
             </div>
 
             {/* Footer */}
-            <div className="px-4 py-4 border-t border-slate-800 text-center text-xs text-slate-400">
+            <div className="px-4 py-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400">
               Arahkan kamera ke QR Code barang untuk memindai otomatis.
             </div>
           </div>

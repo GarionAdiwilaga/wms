@@ -8,17 +8,17 @@ import {
   Truck, 
   LogOut, 
   Ruler, 
-  LayoutDashboard,
-  Layers,
-  Database,
+  LayoutDashboard, 
+  Layers, 
+  Database, 
   Archive, 
   ShoppingCart, 
-  History,
-  ArrowLeftRight,
-  ClipboardList,
-  AlertTriangle,
-  BarChart3,
-  TrendingUp
+  History, 
+  ArrowLeftRight, 
+  ClipboardList, 
+  AlertTriangle, 
+  BarChart3, 
+  TrendingUp 
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
@@ -26,6 +26,7 @@ import { useState } from 'react';
 import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { APP_VERSION } from '../../lib/version';
+import { ThemeToggle } from '../common/ThemeToggle';
 
 interface NavItem {
   name: string;
@@ -94,7 +95,9 @@ export function AppShell() {
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors min-h-[48px]",
-                  isActive ? "bg-amber-500/10 text-amber-500" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  isActive 
+                    ? "bg-amber-500/10 text-amber-600 dark:text-amber-500 font-semibold" 
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                 )
               }
             >
@@ -106,7 +109,7 @@ export function AppShell() {
       </div>
 
       <div>
-        <h3 className="mb-2 px-4 text-xs font-semibold tracking-tight text-slate-400 uppercase">
+        <h3 className="mb-2 px-4 text-xs font-semibold tracking-tight text-slate-500 dark:text-slate-400 uppercase">
           Warehouse Operations
         </h3>
         <div className="space-y-1">
@@ -118,7 +121,9 @@ export function AppShell() {
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors min-h-[48px]",
-                  isActive ? "bg-amber-500/10 text-amber-500" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  isActive 
+                    ? "bg-amber-500/10 text-amber-600 dark:text-amber-500 font-semibold" 
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                 )
               }
             >
@@ -130,7 +135,7 @@ export function AppShell() {
       </div>
 
       <div>
-        <h3 className="mb-2 px-4 text-xs font-semibold tracking-tight text-slate-400 uppercase">
+        <h3 className="mb-2 px-4 text-xs font-semibold tracking-tight text-slate-500 dark:text-slate-400 uppercase">
           Master Data
         </h3>
         <div className="space-y-1">
@@ -142,7 +147,9 @@ export function AppShell() {
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors min-h-[48px]",
-                  isActive ? "bg-amber-500/10 text-amber-500" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  isActive 
+                    ? "bg-amber-500/10 text-amber-600 dark:text-amber-500 font-semibold" 
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                 )
               }
             >
@@ -155,8 +162,8 @@ export function AppShell() {
 
       {(user?.role === 'super_admin' || user?.role === 'branch_head') && (
         <div>
-          <h3 className="mb-2 px-4 text-xs font-semibold tracking-tight text-slate-400 uppercase">
-            Laporan & Analisis
+          <h3 className="mb-2 px-4 text-xs font-semibold tracking-tight text-slate-500 dark:text-slate-400 uppercase">
+            Laporan &amp; Analisis
           </h3>
           <div className="space-y-1">
             {reportsItems.map((item) => (
@@ -167,7 +174,9 @@ export function AppShell() {
                 className={({ isActive }) =>
                   cn(
                     "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors min-h-[48px]",
-                    isActive ? "bg-amber-500/10 text-amber-500" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                    isActive 
+                      ? "bg-amber-500/10 text-amber-600 dark:text-amber-500 font-semibold" 
+                      : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                   )
                 }
               >
@@ -181,7 +190,7 @@ export function AppShell() {
 
       {user?.role === 'super_admin' && (
         <div>
-          <h3 className="mb-2 px-4 text-xs font-semibold tracking-tight text-slate-400 uppercase">
+          <h3 className="mb-2 px-4 text-xs font-semibold tracking-tight text-slate-500 dark:text-slate-400 uppercase">
             Settings
           </h3>
           <div className="space-y-1">
@@ -193,7 +202,9 @@ export function AppShell() {
                 className={({ isActive }) =>
                   cn(
                     "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors min-h-[48px]",
-                    isActive ? "bg-amber-500/10 text-amber-500" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                    isActive 
+                      ? "bg-amber-500/10 text-amber-600 dark:text-amber-500 font-semibold" 
+                      : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                   )
                 }
               >
@@ -208,26 +219,29 @@ export function AppShell() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 flex transition-colors duration-150">
       {/* Desktop/Tablet Sidebar */}
-      <aside className="hidden md:flex w-64 flex-col border-r border-slate-800 bg-slate-900">
-        <div className="flex h-16 items-center px-6 border-b border-slate-800">
-          <LayoutDashboard className="h-6 w-6 text-amber-500 mr-3" />
-          <span className="font-bold text-lg tracking-tight">Gudang Piala</span>
+      <aside className="hidden md:flex w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors duration-150">
+        <div className="flex h-16 items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex items-center">
+            <LayoutDashboard className="h-6 w-6 text-amber-500 mr-3 flex-shrink-0" />
+            <span className="font-bold text-lg tracking-tight text-slate-900 dark:text-white">Gudang Piala</span>
+          </div>
+          <ThemeToggle />
         </div>
         <div className="flex-1 overflow-y-auto py-6 px-3">
           <NavLinks />
         </div>
-        <div className="border-t border-slate-800 p-4">
+        <div className="border-t border-slate-200 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-slate-900/50">
           <div className="mb-4 px-2">
-            <p className="text-sm font-medium text-white">{user?.full_name}</p>
-            <p className="text-xs text-slate-400 capitalize">{user?.role?.replace('_', ' ') || ''}</p>
+            <p className="text-sm font-medium text-slate-900 dark:text-white">{user?.full_name}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">{user?.role?.replace('_', ' ') || ''}</p>
           </div>
-          <Button variant="ghost" className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-400/10 min-h-[48px]" onClick={handleLogout}>
+          <Button variant="ghost" className="w-full justify-start text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-red-500/10 min-h-[48px]" onClick={handleLogout}>
             <LogOut className="mr-3 h-5 w-5" />
             Logout
           </Button>
-          <div className="mt-4 text-center text-[10px] text-slate-500 font-medium tracking-wider uppercase">
+          <div className="mt-4 text-center text-[10px] text-slate-400 dark:text-slate-500 font-medium tracking-wider uppercase">
             {APP_VERSION}
           </div>
         </div>
@@ -235,49 +249,52 @@ export function AppShell() {
 
       {/* Mobile Header & Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="md:hidden flex h-16 items-center justify-between border-b border-slate-800 bg-slate-900/95 backdrop-blur-sm px-4 sticky top-0 z-40">
+        <header className="md:hidden flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm px-4 sticky top-0 z-40 transition-colors duration-150">
           <div className="flex items-center gap-3">
             <LayoutDashboard className="h-6 w-6 text-amber-500" />
-            <span className="font-bold text-lg">Gudang Piala</span>
+            <span className="font-bold text-lg text-slate-900 dark:text-white">Gudang Piala</span>
           </div>
-          <Sheet open={open} onOpenChange={setOpen}>
-            <motion.div whileTap={{ scale: 0.9 }} className="inline-block">
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="min-h-[48px] min-w-[48px]">
-                  <Menu className="h-6 w-6" />
-                  <span className="sr-only">Toggle navigation</span>
-                </Button>
-              </SheetTrigger>
-            </motion.div>
-            <SheetContent side="right" className="w-[300px] bg-slate-900 border-slate-800 p-0 flex flex-col">
-              <div className="flex h-16 items-center px-6 border-b border-slate-800">
-                <LayoutDashboard className="h-6 w-6 text-amber-500 mr-3" />
-                <span className="font-bold text-lg">Gudang Piala</span>
-              </div>
-              <div className="flex-1 overflow-y-auto py-6 px-3">
-                <NavLinks onClick={() => setOpen(false)} />
-              </div>
-              <div className="border-t border-slate-800 p-4">
-                 <div className="mb-4 px-2">
-                  <p className="text-sm font-medium text-white">{user?.full_name}</p>
-                  <p className="text-xs text-slate-400 capitalize">{user?.role?.replace('_', ' ') || ''}</p>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <Sheet open={open} onOpenChange={setOpen}>
+              <motion.div whileTap={{ scale: 0.9 }} className="inline-block">
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="min-h-[48px] min-w-[48px] text-slate-700 dark:text-slate-200">
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Toggle navigation</span>
+                  </Button>
+                </SheetTrigger>
+              </motion.div>
+              <SheetContent side="right" className="w-[300px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 p-0 flex flex-col">
+                <div className="flex h-16 items-center px-6 border-b border-slate-200 dark:border-slate-800">
+                  <LayoutDashboard className="h-6 w-6 text-amber-500 mr-3" />
+                  <span className="font-bold text-lg text-slate-900 dark:text-white">Gudang Piala</span>
                 </div>
-                <Button variant="ghost" className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-400/10 min-h-[48px]" onClick={() => {
-                  setOpen(false);
-                  handleLogout();
-                }}>
-                  <LogOut className="mr-3 h-5 w-5" />
-                  Logout
-                </Button>
-                <div className="mt-4 text-center text-[10px] text-slate-500 font-medium tracking-wider uppercase">
-                  {APP_VERSION}
+                <div className="flex-1 overflow-y-auto py-6 px-3">
+                  <NavLinks onClick={() => setOpen(false)} />
                 </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+                <div className="border-t border-slate-200 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-slate-900/50">
+                  <div className="mb-4 px-2">
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">{user?.full_name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">{user?.role?.replace('_', ' ') || ''}</p>
+                  </div>
+                  <Button variant="ghost" className="w-full justify-start text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-red-500/10 min-h-[48px]" onClick={() => {
+                    setOpen(false);
+                    handleLogout();
+                  }}>
+                    <LogOut className="mr-3 h-5 w-5" />
+                    Logout
+                  </Button>
+                  <div className="mt-4 text-center text-[10px] text-slate-400 dark:text-slate-500 font-medium tracking-wider uppercase">
+                    {APP_VERSION}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto bg-slate-950 p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950 p-4 md:p-8 transition-colors duration-150">
           <AnimatePresence mode="wait">
             {outlet && (
               <motion.div

@@ -43,24 +43,24 @@ export function CartSummaryDialog({
     >
       <div className="flex-1 overflow-y-auto min-h-0 my-3 space-y-3">
         {items.map((item) => (
-          <div key={item.item_id} className="flex items-center justify-between gap-3 p-3 rounded-lg bg-slate-800/60 border border-slate-700/50">
+          <div key={item.item_id} className="flex items-center justify-between gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-slate-950 overflow-hidden border border-slate-800 flex">
+              <div className="h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-slate-100 dark:bg-slate-950 overflow-hidden border border-slate-200 dark:border-slate-800 flex">
                 {item.image_url ? (
                   <ImageLightbox src={item.image_url} alt={item.name} triggerClassName="h-full w-full flex items-center justify-center">
                     <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
                   </ImageLightbox>
                 ) : (
-                  <ImageIcon className="h-5 w-5 text-slate-600" />
+                  <ImageIcon className="h-5 w-5 text-slate-400 dark:text-slate-600" />
                 )}
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-white truncate">{item.name}</p>
+                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{item.name}</p>
                 <p className="text-[10px] text-slate-500 font-mono">{item.item_code}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0 text-xs font-mono">
-              <span className="text-white font-bold">{item.quantity}</span> pcs
+            <div className="flex items-center gap-2 flex-shrink-0 text-xs font-mono text-slate-600 dark:text-slate-400">
+              <span className="text-slate-900 dark:text-white font-bold">{item.quantity}</span> pcs
             </div>
           </div>
         ))}

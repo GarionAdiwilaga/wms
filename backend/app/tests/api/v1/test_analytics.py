@@ -20,54 +20,56 @@ def get_auth_headers(user_id: int, role: str) -> dict[str, str]:
 @pytest.fixture(scope="function")
 def test_data(db_session: Session):
     # Setup UOM
-    uom = UOM(code="PCS", name="Pieces", is_active=True)
-    db_session.add(uom)
-    db_session.flush()
+    uom = db_session.query(UOM).filter(UOM.code == "PCS").first()
+    if not uom:
+        uom = UOM(code="PCS", name="Pieces", is_active=True)
+        db_session.add(uom)
+        db_session.flush()
 
     # Create Branches
-    branch_a = Branch(code="BRA", name="Branch A", location="Location A", is_active=True)
-    branch_b = Branch(code="BRB", name="Branch B", location="Location B", is_active=True)
+    branch_a = Branch(code="AN_BRA", name="Branch A Analytics", location="Location A", is_active=True)
+    branch_b = Branch(code="AN_BRB", name="Branch B Analytics", location="Location B", is_active=True)
     db_session.add_all([branch_a, branch_b])
     db_session.flush()
 
     # Create Categories
-    cat_marmer = Category(code="MRM", name="Marmer", is_active=True)
-    cat_akrilik = Category(code="AKR", name="Akrilik", is_active=True)
+    cat_marmer = Category(code="AN_MRM", name="Marmer Analytics", is_active=True)
+    cat_akrilik = Category(code="AN_AKR", name="Akrilik Analytics", is_active=True)
     db_session.add_all([cat_marmer, cat_akrilik])
     db_session.flush()
 
     # Create Suppliers
-    supplier_a = Supplier(code="SUPA", name="Supplier A", contact_person="A", is_active=True)
+    supplier_a = Supplier(code="AN_SUP", name="Supplier Analytics A", contact_person="A", is_active=True)
     db_session.add(supplier_a)
     db_session.flush()
 
     # Create Users
     admin = User(
-        username="super_admin_test",
+        username="an_super_admin",
         password_hash=get_password_hash("admin123"),
-        full_name="Super Admin User",
+        full_name="Super Admin User Analytics",
         role="super_admin",
         branch_id=None,
         is_active=True
     )
     head_a = User(
-        username="branch_head_a",
+        username="an_branch_head_a",
         password_hash=get_password_hash("head123"),
-        full_name="Branch Head A",
+        full_name="Branch Head A Analytics",
         role="branch_head",
         branch_id=branch_a.branch_id,
         is_active=True
     )
     head_b = User(
-        username="branch_head_b",
+        username="an_branch_head_b",
         password_hash=get_password_hash("head123"),
-        full_name="Branch Head B",
+        full_name="Branch Head B Analytics",
         role="branch_head",
         branch_id=branch_b.branch_id,
         is_active=True
     )
     staff_a = User(
-        username="staff_a",
+        username="an_staff_a",
         password_hash=get_password_hash("staff123"),
         full_name="Staff User A",
         role="warehouse_staff",
@@ -79,7 +81,7 @@ def test_data(db_session: Session):
 
     # Create Items
     item1 = Item(
-        item_code="MRM-SUPA-001",
+        item_code="AN_MRM-AN_SUP-001",
         manual_code="001",
         name="Piala Marmer Besar",
         category_id=cat_marmer.category_id,
@@ -89,7 +91,7 @@ def test_data(db_session: Session):
         is_active=True
     )
     item2 = Item(
-        item_code="AKR-SUPA-002",
+        item_code="AN_AKR-AN_SUP-002",
         manual_code="002",
         name="Plakat Akrilik Custom",
         category_id=cat_akrilik.category_id,
@@ -99,7 +101,7 @@ def test_data(db_session: Session):
         is_active=True
     )
     item3 = Item(
-        item_code="MRM-SUPA-003",
+        item_code="AN_MRM-AN_SUP-003",
         manual_code="003",
         name="Piala Marmer Kecil (Never Moved)",
         category_id=cat_marmer.category_id,
@@ -256,10 +258,13 @@ def test_analytics_top_operators(db_client: TestClient, test_data: dict):
 
 def test_analytics_classification(db_client: TestClient, test_data: dict):
     headers = get_auth_headers(test_data["head_a"].user_id, "branch_head")
-    response = db_client.get("/api/v1/analytics/classification?page=1&page_size=10", headers=headers)
+    response = db_client.get(
+        f"/api/v1/analytics/classification?category_id={test_data['item1'].category_id}&page=1&page_size=10", 
+        headers=headers
+    )
     assert response.status_code == 200
     res = response.json()
-    assert res["total"] == 3 # all 3 active items are included
+    assert res["total"] == 2 # 2 items in AN_MRM category (item1 and item3)
     
     # item3 has never moved (should fall back to creation date, which is today/0 days ago)
     item3_entry = next(i for i in res["data"] if i["item_id"] == test_data["item3"].item_id)

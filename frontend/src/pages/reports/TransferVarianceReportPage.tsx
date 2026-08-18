@@ -86,8 +86,8 @@ export function TransferVarianceReportPage() {
     {
       header: 'Tanggal Terima',
       cell: (r) => (
-        <span className="flex items-center gap-1 text-slate-350 text-xs whitespace-nowrap">
-          <Calendar className="h-3.5 w-3.5 text-slate-500" />
+        <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300 text-xs whitespace-nowrap">
+          <Calendar className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
           {formatDate(r.received_at)}
         </span>
       )
@@ -100,18 +100,18 @@ export function TransferVarianceReportPage() {
     {
       header: 'Dikirim',
       align: 'right',
-      cell: (r) => <span className="font-mono text-slate-400">{r.sent_quantity} pcs</span>
+      cell: (r) => <span className="font-mono text-slate-500 dark:text-slate-400">{r.sent_quantity} pcs</span>
     },
     {
       header: 'Diterima',
       align: 'right',
-      cell: (r) => <span className="font-mono font-bold text-white">{r.received_quantity} pcs</span>
+      cell: (r) => <span className="font-mono font-bold text-slate-900 dark:text-white">{r.received_quantity} pcs</span>
     },
     {
       header: 'Selisih',
       align: 'right',
       cell: (r) => (
-        <span className={`font-mono font-bold ${r.variance === 0 ? 'text-slate-400' : 'text-red-500'}`}>
+        <span className={`font-mono font-bold ${r.variance === 0 ? 'text-slate-500 dark:text-slate-400' : 'text-red-500'}`}>
           {r.variance > 0 ? `+${r.variance}` : r.variance} pcs
         </span>
       )
@@ -121,12 +121,12 @@ export function TransferVarianceReportPage() {
       cell: (r) => (
         <div className="space-y-0.5 max-w-[150px]">
           {r.variance_reason && (
-            <span className="inline-block text-[10px] font-semibold bg-red-500/10 border border-red-500/20 text-red-400 px-1.5 py-0.2 rounded">
+            <span className="inline-block text-[10px] font-semibold bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 px-1.5 py-0.2 rounded">
               {r.variance_reason}
             </span>
           )}
           {r.variance_notes && (
-            <p className="text-[11px] text-slate-400 truncate" title={r.variance_notes}>{r.variance_notes}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate" title={r.variance_notes}>{r.variance_notes}</p>
           )}
           {!r.variance_reason && !r.variance_notes && <span>-</span>}
         </div>
@@ -156,33 +156,33 @@ export function TransferVarianceReportPage() {
       {/* Summary Cards */}
       {data?.summary && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-card border border-border rounded-xl p-5 shadow-lg flex items-center gap-4">
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex items-center gap-4">
             <div className="p-3 bg-amber-500/10 rounded-lg text-amber-500">
               <ClipboardCheck className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Total Mutasi</p>
-              <h4 className="text-xl font-bold text-white font-mono mt-0.5">{data.summary.total_transfers} Transaksi</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Total Mutasi</p>
+              <h4 className="text-xl font-bold text-slate-900 dark:text-white font-mono mt-0.5">{data.summary.total_transfers} Transaksi</h4>
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-xl p-5 shadow-lg flex items-center gap-4">
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex items-center gap-4">
             <div className="p-3 bg-red-500/10 rounded-lg text-red-500">
               <AlertTriangle className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Mutasi Berselisih</p>
-              <h4 className="text-xl font-bold text-white font-mono mt-0.5">{data.summary.transfers_with_variance} Item</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Mutasi Berselisih</p>
+              <h4 className="text-xl font-bold text-slate-900 dark:text-white font-mono mt-0.5">{data.summary.transfers_with_variance} Item</h4>
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-xl p-5 shadow-lg flex items-center gap-4">
-            <div className="p-3 bg-red-550/10 rounded-lg text-red-500">
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex items-center gap-4">
+            <div className="p-3 bg-red-500/10 rounded-lg text-red-500">
               <AlertTriangle className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Unit Hilang / Rusak</p>
-              <h4 className="text-xl font-bold text-white font-mono mt-0.5">{data.summary.total_lost_units} Pcs</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Unit Hilang / Rusak</p>
+              <h4 className="text-xl font-bold text-slate-900 dark:text-white font-mono mt-0.5">{data.summary.total_lost_units} Pcs</h4>
             </div>
           </div>
         </div>

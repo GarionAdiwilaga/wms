@@ -173,7 +173,7 @@ export function StockOpnamePage() {
         <motion.div whileTap={{ scale: 0.97 }} className="self-start sm:self-auto">
           <Button
             onClick={handleOpenCreate}
-            className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-primary-foreground font-semibold rounded-xl min-h-[44px] shadow-md flex items-center gap-2"
+            className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-slate-950 font-bold rounded-xl min-h-[44px] shadow-md flex items-center gap-2"
           >
             <Plus className="h-5 w-5" /> Sesi Opname Baru
           </Button>
@@ -181,11 +181,11 @@ export function StockOpnamePage() {
       </div>
 
       {/* Filters Panel - Bento Box */}
-      <div className="bg-card border border-border rounded-xl p-4 shadow-lg grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+      <div className="bg-card border border-border rounded-xl p-4 shadow-sm grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
         {/* Branch selection for Super Admin */}
         {isSuperAdmin && (
           <div className="space-y-2">
-            <label htmlFor="branch_filter" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Cabang</label>
+            <label htmlFor="branch_filter" className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Cabang</label>
             <select
               id="branch_filter"
               name="branch_filter"
@@ -194,7 +194,7 @@ export function StockOpnamePage() {
                 setBranchFilter(e.target.value);
                 setPage(1);
               }}
-              className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
+              className="w-full h-10 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
             >
               <option value="">Semua Cabang</option>
               {branches?.filter(b => b.is_active).map((b) => (
@@ -208,7 +208,7 @@ export function StockOpnamePage() {
 
         {/* Status Selection */}
         <div className="space-y-2">
-          <label htmlFor="status_filter" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</label>
+          <label htmlFor="status_filter" className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Status</label>
           <select
             id="status_filter"
             name="status_filter"
@@ -217,7 +217,7 @@ export function StockOpnamePage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
+            className="w-full h-10 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
           >
             <option value="">Semua Status</option>
             <option value="draft">Draft</option>
@@ -237,7 +237,7 @@ export function StockOpnamePage() {
                 setBranchFilter('');
                 setPage(1);
               }}
-              className="w-full border-slate-800 hover:bg-slate-800 text-slate-350 rounded-lg h-10"
+              className="w-full border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg h-10"
             >
               Reset Filter
             </Button>
@@ -262,26 +262,26 @@ export function StockOpnamePage() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 25, delay: idx * 0.05 }}
-                className="bg-card border border-border rounded-xl p-5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-slate-800 transition-all cursor-pointer"
+                className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-slate-300 dark:hover:border-slate-800 transition-all cursor-pointer"
                 onClick={() => navigate(`/operations/stock-opname/${opname.session_id}`)}
               >
                 {/* Info block */}
                 <div className="space-y-2 flex-1 min-w-0">
                   <div className="flex items-center gap-3">
-                    <h3 className="font-bold text-white text-sm">
+                    <h3 className="font-bold text-slate-900 dark:text-white text-sm">
                       Sesi Opname #{opname.session_id}
                     </h3>
                     {getStatusBadge(opname.status)}
                   </div>
 
-                  <div className="text-sm font-semibold text-slate-300">
+                  <div className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                     Kategori: <span className="text-amber-500">{opname.category_id ? getCategoryName(opname.category_id) : 'Per Item (Semua Kategori)'}</span>
                     <span className="text-slate-500 font-medium"> | {getBranchName(opname.branch_id)}</span>
                   </div>
 
-                  <div className="flex items-center gap-4 text-xs text-slate-450">
+                  <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
                     <span className="flex items-center gap-1">
-                      <Calendar className="h-3.5 w-3.5 text-slate-650" />
+                      <Calendar className="h-3.5 w-3.5 text-slate-400 dark:text-slate-600" />
                       {formatDate(opname.created_at)}
                     </span>
                     <span>•</span>
@@ -295,7 +295,7 @@ export function StockOpnamePage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="border border-slate-800 text-slate-300 hover:text-white rounded-lg px-4 h-9"
+                      className="border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-lg px-4 h-9"
                     >
                       {opname.status === 'draft' ? 'Lanjutkan Count' : 'Lihat Hasil'}
                     </Button>
@@ -306,7 +306,6 @@ export function StockOpnamePage() {
           </AnimatePresence>
 
           {/* Pagination */}
-          {/* Pagination Controls */}
           {opnamesResponse && (
             <PaginationControl
               currentPage={page}
@@ -322,13 +321,13 @@ export function StockOpnamePage() {
 
       {/* Start Opname Session Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800 text-white rounded-xl">
+        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-2xl rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
+            <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-2">
               <ClipboardList className="h-5 w-5 text-amber-500" />
               Mulai Opname Stok Baru
             </DialogTitle>
-            <DialogDescription className="text-slate-400 text-xs">
+            <DialogDescription className="text-slate-600 dark:text-slate-400 text-xs">
               Pilih cabang dan kategori. Sistem akan mengambil snapshot database stock saat ini untuk seluruh item di kategori tersebut.
             </DialogDescription>
           </DialogHeader>
@@ -337,13 +336,13 @@ export function StockOpnamePage() {
             <div className="space-y-2">
               {isSuperAdmin ? (
                 <>
-                  <Label htmlFor="opname_branch">Gudang Cabang</Label>
+                  <Label htmlFor="opname_branch" className="text-slate-700 dark:text-slate-300">Gudang Cabang</Label>
                   <select
                     id="opname_branch"
                     name="opname_branch_id"
                     value={opnameBranchId || ''}
                     onChange={(e) => setOpnameBranchId(Number(e.target.value) || null)}
-                    className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
+                    className="w-full h-10 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
                     required
                   >
                     <option value="">Pilih Gudang...</option>
@@ -356,8 +355,8 @@ export function StockOpnamePage() {
                 </>
               ) : (
                 <>
-                  <Label>Gudang Cabang</Label>
-                  <div className="h-10 px-3 py-2 bg-slate-900 border border-slate-850 rounded-lg text-sm text-slate-350 flex items-center font-medium">
+                  <Label className="text-slate-700 dark:text-slate-300">Gudang Cabang</Label>
+                  <div className="h-10 px-3 py-2 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-850 rounded-lg text-sm text-slate-800 dark:text-slate-300 flex items-center font-medium">
                     {getBranchName(user?.branch_id || 0)}
                   </div>
                 </>
@@ -366,13 +365,13 @@ export function StockOpnamePage() {
 
             {/* Category Selection */}
             <div className="space-y-2">
-              <Label htmlFor="opname_category">Kategori Barang</Label>
+              <Label htmlFor="opname_category" className="text-slate-700 dark:text-slate-300">Kategori Barang</Label>
               <select
                 id="opname_category"
                 name="opname_category_id"
                 value={opnameCategoryId || ''}
                 onChange={(e) => setOpnameCategoryId(Number(e.target.value) || null)}
-                className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
+                className="w-full h-10 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm"
               >
                 <option value="">Pilih Kategori Barang...</option>
                 {categories?.filter(c => c.is_active).map((c) => (
@@ -385,7 +384,7 @@ export function StockOpnamePage() {
 
             {/* Notes */}
             <div className="space-y-2">
-              <Label htmlFor="opname_notes">Catatan/Keterangan (Opsional)</Label>
+              <Label htmlFor="opname_notes" className="text-slate-700 dark:text-slate-300">Catatan/Keterangan (Opsional)</Label>
               <textarea
                 id="opname_notes"
                 name="opname_notes"
@@ -393,12 +392,12 @@ export function StockOpnamePage() {
                 value={opnameNotes}
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setOpnameNotes(e.target.value)}
                 rows={2}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm resize-none"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm resize-none"
               />
             </div>
 
             {modalError && (
-              <div className="text-xs bg-red-500/10 border border-red-500/20 text-red-400 p-2.5 rounded-lg font-medium break-words">
+              <div className="text-xs bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 p-2.5 rounded-lg font-medium break-words">
                 {modalError}
               </div>
             )}
@@ -408,7 +407,7 @@ export function StockOpnamePage() {
                 type="button"
                 variant="ghost"
                 onClick={() => setCreateOpen(false)}
-                className="border border-slate-850 text-slate-400 hover:text-white rounded-lg w-full sm:w-auto"
+                className="border border-slate-200 dark:border-slate-850 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg w-full sm:w-auto"
                 disabled={isInitializing}
               >
                 Kembali
@@ -416,7 +415,7 @@ export function StockOpnamePage() {
               <Button
                 type="submit"
                 disabled={isInitializing}
-                className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-primary-foreground font-semibold rounded-lg w-full sm:w-auto flex items-center justify-center gap-2"
+                className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-slate-950 font-bold rounded-lg w-full sm:w-auto flex items-center justify-center gap-2"
               >
                 <Play className="h-4 w-4" /> {isInitializing ? 'Memproses...' : 'Mulai Opname'}
               </Button>

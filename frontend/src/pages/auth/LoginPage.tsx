@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { LayoutDashboard } from 'lucide-react';
+import { ThemeToggle } from '../../components/common/ThemeToggle';
 
 export function LoginPage() {
   const [username, setUsername] = useState('');
@@ -30,7 +31,7 @@ export function LoginPage() {
       });
 
       setAuth(access_token, userResponse.data);
-      navigate('/master-data/categories');
+      navigate('/dashboard');
     } catch (err: any) {
       if (err.response?.status === 401) {
         setError('Invalid username or password');
@@ -43,25 +44,29 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative transition-colors duration-150">
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+        <ThemeToggle />
+      </div>
+
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <LayoutDashboard className="h-12 w-12 text-amber-500" />
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900 dark:text-white">
           Gudang Piala Kaltim
         </h2>
-        <p className="mt-2 text-center text-sm text-slate-400">
+        <p className="mt-2 text-center text-sm text-slate-600 dark:text-slate-400">
           Warehouse Management System
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-slate-900 py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-slate-800">
+        <div className="bg-white dark:bg-slate-900 py-8 px-4 shadow-xl sm:rounded-2xl sm:px-10 border border-slate-200 dark:border-slate-800">
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
-              <Label htmlFor="username">Username</Label>
-              <div className="mt-1">
+              <Label htmlFor="username" className="text-slate-700 dark:text-slate-300">Username</Label>
+              <div className="mt-1.5">
                 <Input
                   id="username"
                   name="username"
@@ -69,14 +74,15 @@ export function LoginPage() {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/\s/g, ''))}
-                  className="bg-slate-950 border-slate-800"
+                  placeholder="Masukkan username"
+                  className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                 />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="password">Password</Label>
-              <div className="mt-1">
+              <Label htmlFor="password" className="text-slate-700 dark:text-slate-300">Password</Label>
+              <div className="mt-1.5">
                 <Input
                   id="password"
                   name="password"
@@ -84,19 +90,20 @@ export function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-slate-950 border-slate-800"
+                  placeholder="Masukkan password"
+                  className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="text-sm text-red-500 bg-red-500/10 p-3 rounded-md">
+              <div className="text-sm text-red-600 dark:text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20">
                 {error}
               </div>
             )}
 
             <div>
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold" disabled={loading}>
                 {loading ? 'Signing in...' : 'Sign in'}
               </Button>
             </div>

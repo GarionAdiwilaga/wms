@@ -144,7 +144,7 @@ export function ItemHistoryReportPage() {
       header: 'Referensi',
       cell: (r) => (
         <div className="space-y-0.5">
-          <span className="text-xs font-medium text-white">{translateRefType(r.reference_type)}</span>
+          <span className="text-xs font-medium text-slate-900 dark:text-white">{translateRefType(r.reference_type)}</span>
           {r.document_no && (
             <span className="text-[10px] text-amber-500 font-mono block">{r.document_no}</span>
           )}
@@ -154,15 +154,15 @@ export function ItemHistoryReportPage() {
     {
       header: 'Operator',
       cell: (r) => (
-        <span className="flex items-center gap-1 text-slate-350 text-xs">
-          <User className="h-3 w-3 text-slate-500" />
+        <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300 text-xs">
+          <User className="h-3 w-3 text-slate-400 dark:text-slate-500" />
           {r.operator_name}
         </span>
       )
     },
     {
       header: 'Catatan',
-      cell: (r) => <span className="text-slate-400 text-xs line-clamp-2 max-w-[200px]" title={r.notes || ''}>{r.notes || '-'}</span>
+      cell: (r) => <span className="text-slate-500 dark:text-slate-400 text-xs line-clamp-2 max-w-[200px]" title={r.notes || ''}>{r.notes || '-'}</span>
     }
   ];
 
@@ -186,28 +186,28 @@ export function ItemHistoryReportPage() {
 
       {/* Select Item Card */}
       {!selectedItemId ? (
-        <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
-          <h3 className="font-semibold text-base text-white flex items-center gap-2">
+        <div className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-4">
+          <h3 className="font-semibold text-base text-slate-900 dark:text-white flex items-center gap-2">
             <Search className="h-5 w-5 text-amber-500" />
             Pilih Barang untuk Dilihat Riwayatnya
           </h3>
           <ItemSearch onSelect={handleItemSelect} clearOnSelect={false} />
         </div>
       ) : (
-        <div className="bg-slate-900 border border-slate-850 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-card border border-border rounded-xl p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-lg overflow-hidden bg-background border border-border flex items-center justify-center flex-shrink-0">
+            <div className="h-12 w-12 rounded-lg overflow-hidden bg-slate-100 dark:bg-background border border-slate-200 dark:border-border flex items-center justify-center flex-shrink-0">
               {item?.image_url ? (
                 <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
               ) : (
-                <FileText className="h-6 w-6 text-slate-500" />
+                <FileText className="h-6 w-6 text-slate-400 dark:text-slate-500" />
               )}
             </div>
             <div>
               <span className="font-mono text-xs font-bold text-amber-500 uppercase">{item?.item_code}</span>
-              <h3 className="font-bold text-white text-base leading-tight">{item?.name || 'Memuat...'}</h3>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Kategori: <span className="text-slate-200 font-medium">{item?.category?.name || '-'}</span> | Supplier: <span className="text-slate-200 font-medium">{item?.supplier?.name || '-'}</span>
+              <h3 className="font-bold text-slate-900 dark:text-white text-base leading-tight">{item?.name || 'Memuat...'}</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Kategori: <span className="text-slate-800 dark:text-slate-200 font-medium">{item?.category?.name || '-'}</span> | Supplier: <span className="text-slate-800 dark:text-slate-200 font-medium">{item?.supplier?.name || '-'}</span>
               </p>
             </div>
           </div>
@@ -216,7 +216,7 @@ export function ItemHistoryReportPage() {
               variant="outline"
               size="sm"
               onClick={handleClearItem}
-              className="border-slate-800 hover:bg-slate-800 text-slate-350 rounded-lg flex items-center gap-1.5 h-9"
+              className="border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg flex items-center gap-1.5 h-9"
             >
               <RefreshCw className="h-3.5 w-3.5" /> Ganti Barang
             </Button>

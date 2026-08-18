@@ -73,13 +73,13 @@ export function LowStockReportPage() {
       header: 'Stok Saat Ini',
       accessorKey: 'quantity',
       align: 'right',
-      cell: (r) => <span className="font-mono font-bold text-red-400">{r.quantity} pcs</span>
+      cell: (r) => <span className="font-mono font-bold text-red-500 dark:text-red-400">{r.quantity} pcs</span>
     },
     {
       header: 'Min Stok',
       accessorKey: 'minimum_stock',
       align: 'right',
-      cell: (r) => <span className="font-mono text-slate-400">{r.minimum_stock} pcs</span>
+      cell: (r) => <span className="font-mono text-slate-500 dark:text-slate-400">{r.minimum_stock} pcs</span>
     },
     {
       header: 'Kekurangan',

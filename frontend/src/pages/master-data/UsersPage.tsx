@@ -162,21 +162,33 @@ export function UsersPage() {
       )}
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800 text-white overflow-y-auto max-h-[90vh]">
-          <DialogHeader><DialogTitle className="text-white">{editingUser ? 'Ubah Pengguna' : 'Tambah Pengguna'}</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-2xl overflow-y-auto max-h-[90vh]">
+          <DialogHeader><DialogTitle className="text-slate-900 dark:text-white">{editingUser ? 'Ubah Pengguna' : 'Tambah Pengguna'}</DialogTitle></DialogHeader>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-            <div className="space-y-2"><Label htmlFor="username">Username</Label><Input id="username" placeholder="Masukkan username" {...form.register('username')} onChange={(e) => {
-              const val = e.target.value.toLowerCase().replace(/\s/g, '');
-              e.target.value = val;
-              form.setValue('username', val, { shouldValidate: true, shouldDirty: true });
-            }} className="bg-slate-950 border-slate-800 text-white" />{form.formState.errors.username && <p className="text-sm text-red-500">{form.formState.errors.username.message}</p>}</div>
-            <div className="space-y-2"><Label htmlFor="full_name">Nama Lengkap</Label><Input id="full_name" placeholder="Masukkan nama lengkap" {...form.register('full_name')} className="bg-slate-950 border-slate-800 text-white" />{form.formState.errors.full_name && <p className="text-sm text-red-500">{form.formState.errors.full_name.message}</p>}</div>
-            
-            <div className="space-y-2"><Label htmlFor="password">{editingUser ? 'Kata Sandi Baru (kosongkan jika tidak diubah)' : 'Kata Sandi'}</Label><Input id="password" type="password" placeholder={editingUser ? 'Masukkan sandi baru jika ingin diubah' : 'Masukkan kata sandi'} {...form.register('password')} className="bg-slate-950 border-slate-800 text-white" />{form.formState.errors.password && <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>}</div>
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-slate-700 dark:text-slate-300">Username</Label>
+              <Input id="username" placeholder="Masukkan username" {...form.register('username')} onChange={(e) => {
+                const val = e.target.value.toLowerCase().replace(/\s/g, '');
+                e.target.value = val;
+                form.setValue('username', val, { shouldValidate: true, shouldDirty: true });
+              }} className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white" />
+              {form.formState.errors.username && <p className="text-sm text-red-500">{form.formState.errors.username.message}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="full_name" className="text-slate-700 dark:text-slate-300">Nama Lengkap</Label>
+              <Input id="full_name" placeholder="Masukkan nama lengkap" {...form.register('full_name')} className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white" />
+              {form.formState.errors.full_name && <p className="text-sm text-red-500">{form.formState.errors.full_name.message}</p>}
+            </div>
             
             <div className="space-y-2">
-              <Label htmlFor="role">Peran / Hak Akses</Label>
-              <select id="role" {...form.register('role')} className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-800 rounded-md text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+              <Label htmlFor="password" className="text-slate-700 dark:text-slate-300">{editingUser ? 'Kata Sandi Baru (kosongkan jika tidak diubah)' : 'Kata Sandi'}</Label>
+              <Input id="password" type="password" placeholder={editingUser ? 'Masukkan sandi baru jika ingin diubah' : 'Masukkan kata sandi'} {...form.register('password')} className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white" />
+              {form.formState.errors.password && <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>}
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="role" className="text-slate-700 dark:text-slate-300">Peran / Hak Akses</Label>
+              <select id="role" {...form.register('role')} className="w-full h-10 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-md text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent">
                 <option value="warehouse_staff">Staf Gudang</option>
                 <option value="branch_head">Kepala Cabang</option>
                 <option value="super_admin">Super Admin</option>
@@ -185,8 +197,8 @@ export function UsersPage() {
 
             {form.watch('role') !== 'super_admin' && (
               <div className="space-y-2">
-                <Label htmlFor="branch_id">Cabang Tugas</Label>
-                <select id="branch_id" {...form.register('branch_id', { valueAsNumber: true })} className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-800 rounded-md text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                <Label htmlFor="branch_id" className="text-slate-700 dark:text-slate-300">Cabang Tugas</Label>
+                <select id="branch_id" {...form.register('branch_id', { valueAsNumber: true })} className="w-full h-10 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-md text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent">
                   <option value="">Pilih Cabang...</option>
                   {branches?.filter(b => b.is_active).map(b => (
                     <option key={b.branch_id} value={b.branch_id}>{b.name}</option>
@@ -196,13 +208,16 @@ export function UsersPage() {
               </div>
             )}
 
-            <div className="flex items-center gap-2 mt-4"><input type="checkbox" id="is_active" {...form.register('is_active')} className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-amber-500" /><Label htmlFor="is_active">Aktif</Label></div>
+            <div className="flex items-center gap-2 mt-4">
+              <input type="checkbox" id="is_active" {...form.register('is_active')} className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-amber-500 focus:ring-amber-500" />
+              <Label htmlFor="is_active" className="text-slate-700 dark:text-slate-300">Aktif</Label>
+            </div>
             <div className="flex justify-end gap-3 mt-6">
               <motion.div whileTap={{ scale: 0.97 }}>
-                <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)} className="border-slate-700 text-white bg-transparent hover:bg-slate-800 rounded-xl min-h-[44px]">Batal</Button>
+                <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)} className="border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl min-h-[44px]">Batal</Button>
               </motion.div>
               <motion.div whileTap={{ scale: 0.97 }}>
-                <Button type="submit" disabled={createUser.isPending || updateUser.isPending} className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-primary-foreground font-semibold rounded-xl min-h-[44px]">
+                <Button type="submit" disabled={createUser.isPending || updateUser.isPending} className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-slate-950 font-bold rounded-xl min-h-[44px]">
                   {editingUser ? 'Simpan' : 'Tambah'}
                 </Button>
               </motion.div>

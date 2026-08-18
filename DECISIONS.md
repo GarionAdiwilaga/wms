@@ -196,12 +196,21 @@
 **Business Rule:** Deployment setup must be automated and self-contained to minimize manual config errors.
 **Reason:** Automatically provisions Docker/Compose dependencies, auto-generates secure production secret values, guides admin credential generation, and runs database migrations in sequence.
 
-## 2026-07-15
+## 2026-08-18
 
-### QR Label Image Export
-**Decision:** Replaced browser-native print functionality (`window.print()`) in the item catalog view with a direct client-side JPEG image download of `500x500px` named `QR_ItemInfo.jpeg`.
-**Business Rule:** The export process must execute entirely on the frontend using the HTML5 Canvas 2D context API, serializing the rendered QR SVG and metadata to guarantee high print resolution without adding any external package dependencies or changing backend VPS databases.
-**Reason:** Eliminates browser-specific print-style formatting issues, aligns output size with standard compact label printers, and ensures no data or VPS deployment disruptions.
+### Dual Light & Dark Theme Architecture
+**Decision:** Implemented a full dual-theme design system supporting Dark Mode (default) and Light Mode.
+**Business Rule:**
+- Theme preferences (`'dark' | 'light' | 'system'`) are persisted in `localStorage` via Zustand `useThemeStore`.
+- Class-based Tailwind dark mode (`darkMode: ['class']`) toggling the `.dark` class on `document.documentElement`.
+- Semantic CSS variables in `index.css` define high-contrast neutral backgrounds (`#f8fafc` for light, `#020617` for dark), surface cards, borders, and amber accents.
+- Responsive theme toggle button in header and login views with smooth transitions.
+**Reason:** Accommodates bright warehouse environments where daylight makes dark screens hard to read, while preserving the sleek dark aesthetic by default.
+
+### Analytics Circle Chart & Legend Color Synchronization
+**Decision:** Synchronized pie chart slice colors directly with bullet indicators in `AnalyticsPage.tsx` via centralized `prepareChartData` color assignment (`CHART_PALETTE[idx % CHART_PALETTE.length]`).
+**Business Rule:** Recharts pie chart slices and legend list items must always render with identical color indices.
+**Reason:** Fixed visual color mismatch between pie chart slices and legend bullet lists.
 
 
 

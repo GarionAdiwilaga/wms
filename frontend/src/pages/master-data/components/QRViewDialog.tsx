@@ -108,17 +108,17 @@ export function QRViewDialog({ open, onOpenChange, item }: QRViewDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-slate-900 border-slate-800 text-white">
+      <DialogContent className="max-w-md bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-white">Cetak QR Label</DialogTitle>
+          <DialogTitle className="text-slate-900 dark:text-white">Cetak QR Label</DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col items-center justify-center p-6 space-y-6">
           {/* Printable Area preview */}
-          <div id="printable-qr-label" className="bg-slate-950 border border-slate-850 p-6 rounded-lg text-center w-full max-w-[280px]">
+          <div id="printable-qr-label" className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 p-6 rounded-xl text-center w-full max-w-[280px] shadow-sm">
             <div className="print-border flex flex-col items-center justify-center space-y-4">
               {/* QR Code SVG */}
-              <div className="bg-white p-3 rounded flex items-center justify-center">
+              <div className="bg-white p-3 rounded-lg flex items-center justify-center shadow-sm">
                 <QRCodeSVG
                   value={item.item_code}
                   size={160}
@@ -131,13 +131,13 @@ export function QRViewDialog({ open, onOpenChange, item }: QRViewDialogProps) {
 
               {/* Label details */}
               <div className="space-y-1">
-                <h4 className="font-mono font-bold text-lg text-amber-500 tracking-wider">
+                <h4 className="font-mono font-bold text-lg text-amber-600 dark:text-amber-500 tracking-wider">
                   {item.item_code}
                 </h4>
-                <p className="text-sm font-semibold text-white line-clamp-2">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white line-clamp-2">
                   {item.name}
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   Merk: {item.supplier?.name || '-'}
                 </p>
               </div>
@@ -145,13 +145,13 @@ export function QRViewDialog({ open, onOpenChange, item }: QRViewDialogProps) {
           </div>
 
           {/* Action buttons */}
-          <div className="flex w-full gap-3 pt-4 border-t border-slate-800">
+          <div className="flex w-full gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
             <motion.div whileTap={{ scale: 0.97 }} className="flex-1">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="w-full border-slate-700 bg-transparent hover:bg-slate-800 text-white rounded-xl min-h-[44px]"
+                className="w-full border-slate-200 dark:border-slate-700 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-white rounded-xl min-h-[44px]"
               >
                 Tutup
               </Button>

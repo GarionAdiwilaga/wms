@@ -198,24 +198,24 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg bg-slate-900 border-slate-800 text-white overflow-y-auto max-h-[90vh]">
+      <DialogContent className="max-w-lg bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-2xl overflow-y-auto max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle className="text-white">
+          <DialogTitle className="text-slate-900 dark:text-white">
             {isEdit ? 'Ubah Barang' : 'Tambah Barang Baru'}
           </DialogTitle>
         </DialogHeader>
 
         {errorMsg && (
-          <div className="bg-red-500/10 border border-red-500 text-red-500 rounded p-3 text-sm">
+          <div className="bg-red-500/10 border border-red-500 text-red-600 dark:text-red-500 rounded-lg p-3 text-sm">
             {errorMsg}
           </div>
         )}
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-2">
           {/* Item Code Preview (Visible to help user see final generated code) */}
-          <div className="bg-slate-950 border border-slate-850 rounded-lg p-3">
-            <span className="text-xs text-slate-400 block mb-1">Preview Kode Barang</span>
-            <span className="font-mono text-lg font-bold text-amber-500 tracking-wider">
+          <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-lg p-3">
+            <span className="text-xs text-slate-500 dark:text-slate-400 block mb-1">Preview Kode Barang</span>
+            <span className="font-mono text-lg font-bold text-amber-600 dark:text-amber-500 tracking-wider">
               {codePreview || 'Pilih Kategori & Supplier...'}
             </span>
           </div>
@@ -223,12 +223,12 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Category selection */}
             <div className="space-y-2">
-              <Label htmlFor="category_id">Kategori</Label>
+              <Label htmlFor="category_id" className="text-slate-700 dark:text-slate-300">Kategori</Label>
               <select
                 id="category_id"
                 disabled={isEdit}
                 {...form.register('category_id', { valueAsNumber: true })}
-                className="w-full rounded-md border border-slate-800 bg-slate-950 p-2.5 text-sm text-white focus:border-amber-500 focus:outline-none disabled:opacity-50"
+                className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2.5 text-sm text-slate-900 dark:text-white focus:border-amber-500 focus:outline-none disabled:opacity-50"
               >
                 <option value={0}>Pilih Kategori</option>
                 {categories?.filter(c => c.is_active).map(c => (
@@ -244,12 +244,12 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
 
             {/* Supplier Selection */}
             <div className="space-y-2">
-              <Label htmlFor="supplier_id">Merk / Supplier</Label>
+              <Label htmlFor="supplier_id" className="text-slate-700 dark:text-slate-300">Merk / Supplier</Label>
               <select
                 id="supplier_id"
                 disabled={isEdit}
                 {...form.register('supplier_id', { valueAsNumber: true })}
-                className="w-full rounded-md border border-slate-800 bg-slate-950 p-2.5 text-sm text-white focus:border-amber-500 focus:outline-none disabled:opacity-50"
+                className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2.5 text-sm text-slate-900 dark:text-white focus:border-amber-500 focus:outline-none disabled:opacity-50"
               >
                 <option value={0}>Pilih Merk/Supplier</option>
                 {suppliers?.filter(s => s.is_active).map(s => (
@@ -267,13 +267,13 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Manual Code */}
             <div className="space-y-2">
-              <Label htmlFor="manual_code">Kode Manual</Label>
+              <Label htmlFor="manual_code" className="text-slate-700 dark:text-slate-300">Kode Manual</Label>
               <Input
                 id="manual_code"
                 disabled={isEdit}
                 placeholder="Contoh: 001, A1"
                 {...form.register('manual_code')}
-                className="bg-slate-950 border-slate-800 text-white uppercase disabled:opacity-50"
+                className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white uppercase disabled:opacity-50"
               />
               {form.formState.errors.manual_code && (
                 <p className="text-xs text-red-500">{form.formState.errors.manual_code.message}</p>
@@ -282,13 +282,13 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
 
             {/* Minimum Stock */}
             <div className="space-y-2">
-              <Label htmlFor="minimum_stock">Stok Minimal</Label>
+              <Label htmlFor="minimum_stock" className="text-slate-700 dark:text-slate-300">Stok Minimal</Label>
               <Input
                 id="minimum_stock"
                 type="number"
                 placeholder="Contoh: 10"
                 {...form.register('minimum_stock', { valueAsNumber: true })}
-                className="bg-slate-950 border-slate-800 text-white"
+                className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
               />
               {form.formState.errors.minimum_stock && (
                 <p className="text-xs text-red-500">{form.formState.errors.minimum_stock.message}</p>
@@ -298,12 +298,12 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
 
           {/* Name */}
           <div className="space-y-2">
-            <Label htmlFor="name">Nama Barang</Label>
+            <Label htmlFor="name" className="text-slate-700 dark:text-slate-300">Nama Barang</Label>
             <Input
               id="name"
               placeholder="Masukkan nama barang"
               {...form.register('name')}
-              className="bg-slate-950 border-slate-800 text-white"
+              className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
             />
             {form.formState.errors.name && (
               <p className="text-xs text-red-500">{form.formState.errors.name.message}</p>
@@ -312,22 +312,22 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">Deskripsi (Opsional)</Label>
+            <Label htmlFor="description" className="text-slate-700 dark:text-slate-300">Deskripsi (Opsional)</Label>
             <textarea
               id="description"
               placeholder="Masukkan deskripsi atau keterangan barang"
               rows={3}
               {...form.register('description')}
-              className="w-full rounded-md border border-slate-800 bg-slate-950 p-2.5 text-sm text-white focus:border-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2.5 text-sm text-slate-900 dark:text-white focus:border-amber-500 focus:outline-none"
             />
           </div>
 
           {/* Image Upload Area */}
           <div className="space-y-2">
-            <Label>Foto Barang (Opsional)</Label>
+            <Label className="text-slate-700 dark:text-slate-300">Foto Barang (Opsional)</Label>
             <div className="flex gap-4 items-center">
               {/* Preview Box */}
-              <div className="h-24 w-24 rounded border border-slate-800 bg-slate-950 flex items-center justify-center overflow-hidden flex-shrink-0 relative">
+              <div className="h-24 w-24 rounded border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 flex items-center justify-center overflow-hidden flex-shrink-0 relative">
                 {imagePreview ? (
                   <>
                     <img src={imagePreview} alt="Preview" className="h-full w-full object-cover" />
@@ -340,7 +340,7 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
                     </button>
                   </>
                 ) : (
-                  <ImageIcon className="h-8 w-8 text-slate-700" />
+                  <ImageIcon className="h-8 w-8 text-slate-400 dark:text-slate-700" />
                 )}
               </div>
 
@@ -360,13 +360,13 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
                     type="button"
                     variant="outline"
                     onClick={() => document.getElementById('image-file-input')?.click()}
-                    className="border-slate-800 bg-slate-950 hover:bg-slate-850 text-white min-h-[44px] rounded-xl"
+                    className="border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-900 dark:text-white min-h-[44px] rounded-xl"
                   >
-                    <Upload className="mr-2 h-4 w-4 text-slate-400" />
+                    <Upload className="mr-2 h-4 w-4 text-slate-500 dark:text-slate-400" />
                     Pilih Foto
                   </Button>
                 </motion.div>
-                <p className="text-xs text-slate-400 mt-2">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
                   Format gambar disarankan persegi/square. Upload foto adalah langkah opsional.
                 </p>
               </div>
@@ -379,19 +379,19 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
               type="checkbox"
               id="is_active"
               {...form.register('is_active')}
-              className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-amber-500"
+              className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-amber-500 focus:ring-amber-500"
             />
-            <Label htmlFor="is_active">Barang Aktif</Label>
+            <Label htmlFor="is_active" className="text-slate-700 dark:text-slate-300">Barang Aktif</Label>
           </div>
 
           {/* Submit Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
             <motion.div whileTap={{ scale: 0.97 }}>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="border-slate-700 bg-transparent hover:bg-slate-800 text-white rounded-xl min-h-[44px]"
+                className="border-slate-200 dark:border-slate-700 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-white rounded-xl min-h-[44px]"
               >
                 Batal
               </Button>
@@ -400,7 +400,7 @@ export function ItemFormDialog({ open, onOpenChange, item, onSuccess }: ItemForm
               <Button
                 type="submit"
                 disabled={createItem.isPending || updateItem.isPending || uploadImage.isPending}
-                className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-primary-foreground font-semibold rounded-xl min-h-[44px]"
+                className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-slate-950 font-bold rounded-xl min-h-[44px]"
               >
                 {isEdit ? 'Simpan' : 'Tambah'}
               </Button>

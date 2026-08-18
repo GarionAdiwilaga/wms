@@ -87,7 +87,7 @@ export function StockReportPage() {
       header: 'Min Stok',
       accessorKey: 'minimum_stock',
       align: 'right',
-      cell: (r) => <span className="font-mono text-slate-400">{r.minimum_stock} pcs</span>
+      cell: (r) => <span className="font-mono text-slate-500 dark:text-slate-400">{r.minimum_stock} pcs</span>
     }
   ];
 

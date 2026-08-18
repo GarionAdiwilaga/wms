@@ -50,11 +50,11 @@ export function ImageLightbox({ src, alt, triggerClassName, children }: ImageLig
                 <img
                   src={src}
                   alt={alt}
-                  className="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl border border-slate-800 bg-slate-900"
+                  className="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
                 />
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="absolute -top-4 -right-4 p-2 bg-slate-800 text-slate-400 hover:text-white rounded-full border border-slate-700 shadow-lg"
+                  className="absolute -top-4 -right-4 p-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-full border border-slate-200 dark:border-slate-700 shadow-lg"
                 >
                   <X className="h-5 w-5" />
                 </button>

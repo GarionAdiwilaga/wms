@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth-store';
+import { useThemeStore } from '../../store/theme-store';
 import { useBranches } from '../../hooks/useBranches';
 import { useCategories } from '../../hooks/useCategories';
 import { useSuppliers } from '../../hooks/useSuppliers';
@@ -38,49 +39,74 @@ import {
   Info,
 } from 'lucide-react';
 
-// Chart Colors
+// Chart Colors Palette
 const CHART_PALETTE = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6', '#06b6d4', '#14b8a6', '#f43f5e'];
 
-const getLegendItems = (items: any[], totalQty: number, nameKey: string, idKey: string) => {
-  if (!items || items.length === 0) return [];
+interface DistributionItem {
+  id: number | null;
+  name: string;
+  quantity: number;
+  item_count: number;
+  percentage: string;
+  color: string;
+}
+
+const prepareChartData = (
+  items: any[] | null | undefined,
+  nameKey: string,
+  idKey: string
+): { chartData: DistributionItem[]; totalQty: number } => {
+  if (!items || items.length === 0) {
+    return { chartData: [], totalQty: 0 };
+  }
+
+  const totalQty = items.reduce((acc, c) => acc + (c.total_quantity || 0), 0);
   const sorted = [...items].sort((a, b) => b.total_quantity - a.total_quantity);
-  
+
   if (sorted.length <= 6) {
-    return sorted.map((item, idx) => ({
+    const chartData = sorted.map((item, idx) => ({
       id: item[idKey],
       name: item[nameKey],
       quantity: item.total_quantity,
+      item_count: item.item_count || 0,
       percentage: totalQty > 0 ? ((item.total_quantity / totalQty) * 100).toFixed(1) : '0.0',
       color: CHART_PALETTE[idx % CHART_PALETTE.length],
     }));
+    return { chartData, totalQty };
   }
-  
+
   const top = sorted.slice(0, 5);
   const others = sorted.slice(5);
   const othersQty = others.reduce((acc, item) => acc + item.total_quantity, 0);
-  
-  const result = top.map((item, idx) => ({
+  const othersCount = others.reduce((acc, item) => acc + (item.item_count || 0), 0);
+
+  const chartData: DistributionItem[] = top.map((item, idx) => ({
     id: item[idKey],
     name: item[nameKey],
     quantity: item.total_quantity,
+    item_count: item.item_count || 0,
     percentage: totalQty > 0 ? ((item.total_quantity / totalQty) * 100).toFixed(1) : '0.0',
     color: CHART_PALETTE[idx % CHART_PALETTE.length],
   }));
-  
-  result.push({
+
+  chartData.push({
     id: null,
     name: 'Lainnya',
     quantity: othersQty,
+    item_count: othersCount,
     percentage: totalQty > 0 ? ((othersQty / totalQty) * 100).toFixed(1) : '0.0',
     color: '#64748b',
   });
-  
-  return result;
+
+  return { chartData, totalQty };
 };
 
 export function AnalyticsPage() {
   const user = useAuthStore((state) => state.user);
+  const theme = useThemeStore((state) => state.theme);
   const navigate = useNavigate();
+
+  const isDark = theme === 'dark' || (theme === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   // Guard for role permission (Super Admin or Branch Head only)
   const canAccess = user?.role === 'super_admin' || user?.role === 'branch_head';
@@ -124,25 +150,13 @@ export function AnalyticsPage() {
   const { data: trendsRes, isLoading: loadingTrends } = useActivityTrends(selectedBranchId, days);
   const { data: distributionsRes, isLoading: loadingDistributions } = useDistributions(selectedBranchId);
 
-  const totalCategoryQty = useMemo(() => {
-    if (!distributionsRes?.categories) return 0;
-    return distributionsRes.categories.reduce((acc, c) => acc + c.total_quantity, 0);
-  }, [distributionsRes]);
+  const { chartData: categoryChartData } = useMemo(() => {
+    return prepareChartData(distributionsRes?.categories, 'category_name', 'category_id');
+  }, [distributionsRes?.categories]);
 
-  const totalBranchQty = useMemo(() => {
-    if (!distributionsRes?.branches) return 0;
-    return distributionsRes.branches.reduce((acc, b) => acc + b.total_quantity, 0);
-  }, [distributionsRes]);
-
-  const categoryLegends = useMemo(() => {
-    if (!distributionsRes?.categories) return [];
-    return getLegendItems(distributionsRes.categories, totalCategoryQty, 'category_name', 'category_id');
-  }, [distributionsRes, totalCategoryQty]);
-
-  const branchLegends = useMemo(() => {
-    if (!distributionsRes?.branches) return [];
-    return getLegendItems(distributionsRes.branches, totalBranchQty, 'branch_name', 'branch_id');
-  }, [distributionsRes, totalBranchQty]);
+  const { chartData: branchChartData } = useMemo(() => {
+    return prepareChartData(distributionsRes?.branches, 'branch_name', 'branch_id');
+  }, [distributionsRes?.branches]);
 
   const { data: operatorsRes, isLoading: loadingOperators } = useTopOperators(selectedBranchId, days);
   const { data: classificationRes, isLoading: loadingClassification } = useMovementClassification(selectedBranchId, {
@@ -193,16 +207,35 @@ export function AnalyticsPage() {
   // Movement Classification Color/Label Mapping
   const getClassification = (days: number | null) => {
     if (days === null) {
-      return { label: 'Dead Stock (Never)', bg: 'bg-red-500/10 text-red-400 border-red-500/20' };
+      return { 
+        label: 'Dead Stock (Never)', 
+        bg: 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20' 
+      };
     }
     if (days <= 60) {
-      return { label: `Aktif (${days} hari)`, bg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' };
+      return { 
+        label: `Aktif (${days} hari)`, 
+        bg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' 
+      };
     }
     if (days <= 180) {
-      return { label: `Slow Moving (${days} hari)`, bg: 'bg-amber-500/10 text-amber-400 border-amber-500/20' };
+      return { 
+        label: `Slow Moving (${days} hari)`, 
+        bg: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' 
+      };
     }
-    return { label: `Dead Stock (${days} hari)`, bg: 'bg-red-500/10 text-red-400 border-red-500/20' };
+    return { 
+      label: `Dead Stock (${days} hari)`, 
+      bg: 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20' 
+    };
   };
+
+  const tooltipContentStyle = isDark
+    ? { backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px', color: '#f8fafc' }
+    : { backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '8px', color: '#0f172a', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' };
+
+  const gridStroke = isDark ? '#1e293b' : '#e2e8f0';
+  const axisStroke = isDark ? '#64748b' : '#94a3b8';
 
   const isSuperAdmin = user?.role === 'super_admin';
 
@@ -216,16 +249,16 @@ export function AnalyticsPage() {
         />
 
         {/* Global Controls */}
-        <div className="flex flex-wrap items-center gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+        <div className="flex flex-wrap items-center gap-3 bg-white dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
           {/* Branch Select (Super Admin Only) */}
           {isSuperAdmin && (
             <div className="flex items-center gap-2">
-              <label htmlFor="global-branch" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Cabang:</label>
+              <label htmlFor="global-branch" className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Cabang:</label>
               <select
                 id="global-branch"
                 value={selectedBranchId || ''}
                 onChange={handleBranchChange}
-                className="h-9 px-3 py-1 bg-slate-950 border border-slate-850 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-primary"
+                className="h-9 px-3 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 <option value="">Semua Cabang</option>
                 {branches?.filter((b) => b.is_active).map((b) => (
@@ -239,12 +272,12 @@ export function AnalyticsPage() {
 
           {/* Timeframe selector */}
           <div className="flex items-center gap-2">
-            <label htmlFor="global-days" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Waktu:</label>
+            <label htmlFor="global-days" className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Waktu:</label>
             <select
               id="global-days"
               value={days}
               onChange={handleDaysChange}
-              className="h-9 px-3 py-1 bg-slate-950 border border-slate-850 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-primary"
+              className="h-9 px-3 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value={7}>7 Hari Terakhir</option>
               <option value={15}>15 Hari Terakhir</option>
@@ -260,14 +293,14 @@ export function AnalyticsPage() {
       <div className="space-y-6">
 
         {/* 1. Activity Trends Widget */}
-        <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
-          <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-5 shadow-sm space-y-4">
+          <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
             <div>
-              <h3 className="font-semibold text-lg text-white">Tren Aktivitas Gudang</h3>
-              <p className="text-xs text-slate-400 mt-0.5">Volume logistik harian (Stok Masuk, Stok Keluar, dan Mutasi Cabang)</p>
+              <h3 className="font-semibold text-lg text-slate-900 dark:text-white">Tren Aktivitas Gudang</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Volume logistik harian (Stok Masuk, Stok Keluar, dan Mutasi Cabang)</p>
             </div>
             {trendsRes && (
-              <span className="text-[10px] text-slate-500 font-mono">
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
                 Diperbarui: {formatGeneratedAt(trendsRes.generated_at)}
               </span>
             )}
@@ -281,24 +314,24 @@ export function AnalyticsPage() {
                 <AreaChart data={trendsRes.data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorInbound" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.25} />
                       <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="colorOutbound" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.2} />
+                      <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.25} />
                       <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="colorTransfers" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.25} />
                       <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                  <XAxis dataKey="date" stroke="#64748b" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#64748b" fontSize={11} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                  <XAxis dataKey="date" stroke={axisStroke} fontSize={11} tickLine={false} />
+                  <YAxis stroke={axisStroke} fontSize={11} tickLine={false} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }}
-                    labelStyle={{ color: '#fff', fontWeight: 'bold' }}
+                    contentStyle={tooltipContentStyle}
+                    labelStyle={{ color: isDark ? '#fff' : '#0f172a', fontWeight: 'bold' }}
                   />
                   <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: 12 }} />
                   <Area type="monotone" dataKey="inbound" stroke="#10b981" fillOpacity={1} fill="url(#colorInbound)" name="Stok Masuk" />
@@ -316,14 +349,14 @@ export function AnalyticsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* 2. Movement Velocity Widget */}
-          <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+          <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-5 shadow-sm space-y-4">
+            <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
               <div>
-                <h3 className="font-semibold text-lg text-white">Kecepatan Aliran Komponen</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Top 10 Komponen dengan pengeluaran unit tercepat (pcs/hari)</p>
+                <h3 className="font-semibold text-lg text-slate-900 dark:text-white">Kecepatan Aliran Komponen</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Top 10 Komponen dengan pengeluaran unit tercepat (pcs/hari)</p>
               </div>
               {velocityRes && (
-                <span className="text-[10px] text-slate-500 font-mono">
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
                   Diperbarui: {formatGeneratedAt(velocityRes.generated_at)}
                 </span>
               )}
@@ -335,11 +368,11 @@ export function AnalyticsPage() {
               <div className="h-72 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={velocityRes.data} layout="vertical" margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
-                    <XAxis type="number" stroke="#64748b" fontSize={11} tickLine={false} />
-                    <YAxis type="category" dataKey="item_name" stroke="#64748b" fontSize={10} width={100} tickLine={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} horizontal={false} />
+                    <XAxis type="number" stroke={axisStroke} fontSize={11} tickLine={false} />
+                    <YAxis type="category" dataKey="item_name" stroke={axisStroke} fontSize={10} width={100} tickLine={false} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }}
+                      contentStyle={tooltipContentStyle}
                       formatter={(value: any) => [`${value} pcs/hari`, 'Laju Aliran']}
                     />
                     <Bar
@@ -366,14 +399,14 @@ export function AnalyticsPage() {
           </div>
 
           {/* 3 & 4. Category & Branch Distributions */}
-          <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+          <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-5 shadow-sm space-y-4">
+            <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
               <div>
-                <h3 className="font-semibold text-lg text-white">Distribusi Volume Stok</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Proporsi total unit fisik di gudang saat ini</p>
+                <h3 className="font-semibold text-lg text-slate-900 dark:text-white">Distribusi Volume Stok</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Proporsi total unit fisik di gudang saat ini</p>
               </div>
               {distributionsRes && (
-                <span className="text-[10px] text-slate-500 font-mono">
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
                   Diperbarui: {formatGeneratedAt(distributionsRes.generated_at)}
                 </span>
               )}
@@ -385,42 +418,42 @@ export function AnalyticsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-auto">
                 {/* Category Donut */}
                 <div className="flex flex-col items-center justify-center relative pb-4 sm:pb-0">
-                  <span className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Kategori Barang</span>
+                  <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wider">Kategori Barang</span>
                   <div className="h-48 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
-                          data={distributionsRes.categories}
-                          dataKey="total_quantity"
-                          nameKey="category_name"
+                          data={categoryChartData}
+                          dataKey="quantity"
+                          nameKey="name"
                           cx="50%"
                           cy="50%"
                           innerRadius={50}
                           outerRadius={70}
                           paddingAngle={2}
                           onClick={(data: any) => {
-                            const cid = data?.payload?.category_id || data?.category_id;
+                            const cid = data?.payload?.id || data?.id;
                             if (cid) navigate(`/reports/stock?category_id=${cid}`);
                           }}
                           className="cursor-pointer"
                         >
-                          {distributionsRes.categories.map((_entry, index) => (
-                            <Cell key={`cell-${index}`} fill={CHART_PALETTE[index % CHART_PALETTE.length]} />
+                          {categoryChartData.map((entry, index) => (
+                            <Cell key={`cell-cat-${index}`} fill={entry.color} />
                           ))}
                         </Pie>
                         <Tooltip
-                          contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }}
+                          contentStyle={tooltipContentStyle}
                           formatter={(value: any, name: any, props: any) => [`${value} pcs (${props.payload.item_count} item)`, name]}
                         />
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
-                  <div className="w-full mt-3 px-4 grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px]">
-                    {categoryLegends.map((item, idx) => (
+                  <div className="w-full mt-3 px-2 grid grid-cols-2 gap-x-2 gap-y-1 text-[11px]">
+                    {categoryChartData.map((item, idx) => (
                       <div 
                         key={idx} 
                         className={`flex items-center justify-between gap-1.5 p-1 rounded-md transition-colors ${
-                          item.id ? 'cursor-pointer hover:bg-slate-900/50' : ''
+                          item.id ? 'cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/60' : ''
                         }`}
                         onClick={() => {
                           if (item.id) {
@@ -429,10 +462,10 @@ export function AnalyticsPage() {
                         }}
                       >
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
-                          <span className="text-slate-350 truncate font-medium">{item.name}</span>
+                          <span className="h-2.5 w-2.5 rounded-full flex-shrink-0 shadow-sm" style={{ backgroundColor: item.color }} />
+                          <span className="text-slate-700 dark:text-slate-300 truncate font-medium">{item.name}</span>
                         </div>
-                        <span className="font-mono text-slate-450 font-semibold flex-shrink-0">
+                        <span className="font-mono text-slate-500 dark:text-slate-400 font-semibold flex-shrink-0">
                           {item.percentage}%
                         </span>
                       </div>
@@ -442,43 +475,43 @@ export function AnalyticsPage() {
 
                 {/* Branch Pie (Super Admin Only) */}
                 {isSuperAdmin && distributionsRes.branches ? (
-                  <div className="flex flex-col items-center justify-center relative border-t sm:border-t-0 sm:border-l border-slate-800/60 pt-4 sm:pt-0">
-                    <span className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Penyebaran Cabang</span>
+                  <div className="flex flex-col items-center justify-center relative border-t sm:border-t-0 sm:border-l border-slate-200 dark:border-slate-800/60 pt-4 sm:pt-0">
+                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wider">Penyebaran Cabang</span>
                     <div className="h-48 w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                           <Pie
-                            data={distributionsRes.branches}
-                            dataKey="total_quantity"
-                            nameKey="branch_name"
+                            data={branchChartData}
+                            dataKey="quantity"
+                            nameKey="name"
                             cx="50%"
                             cy="50%"
                             innerRadius={50}
                             outerRadius={70}
                             paddingAngle={2}
                             onClick={(data: any) => {
-                              const bid = data?.payload?.branch_id || data?.branch_id;
+                              const bid = data?.payload?.id || data?.id;
                               if (bid) navigate(`/reports/stock?branch_id=${bid}`);
                             }}
                             className="cursor-pointer"
                           >
-                            {distributionsRes.branches.map((_entry, index) => (
-                              <Cell key={`cell-${index}`} fill={CHART_PALETTE[(index + 3) % CHART_PALETTE.length]} />
+                            {branchChartData.map((entry, index) => (
+                              <Cell key={`cell-branch-${index}`} fill={entry.color} />
                             ))}
                           </Pie>
                           <Tooltip
-                            contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }}
+                            contentStyle={tooltipContentStyle}
                             formatter={(value: any, name: any, props: any) => [`${value} pcs (${props.payload.item_count} item)`, name]}
                           />
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
-                    <div className="w-full mt-3 px-4 grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px]">
-                      {branchLegends.map((item, idx) => (
+                    <div className="w-full mt-3 px-2 grid grid-cols-2 gap-x-2 gap-y-1 text-[11px]">
+                      {branchChartData.map((item, idx) => (
                         <div 
                           key={idx} 
                           className={`flex items-center justify-between gap-1.5 p-1 rounded-md transition-colors ${
-                            item.id ? 'cursor-pointer hover:bg-slate-900/50' : ''
+                            item.id ? 'cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/60' : ''
                           }`}
                           onClick={() => {
                             if (item.id) {
@@ -487,10 +520,10 @@ export function AnalyticsPage() {
                           }}
                         >
                           <div className="flex items-center gap-1.5 min-w-0">
-                            <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
-                            <span className="text-slate-350 truncate font-medium">{item.name}</span>
+                            <span className="h-2.5 w-2.5 rounded-full flex-shrink-0 shadow-sm" style={{ backgroundColor: item.color }} />
+                            <span className="text-slate-700 dark:text-slate-300 truncate font-medium">{item.name}</span>
                           </div>
-                          <span className="font-mono text-slate-450 font-semibold flex-shrink-0">
+                          <span className="font-mono text-slate-500 dark:text-slate-400 font-semibold flex-shrink-0">
                             {item.percentage}%
                           </span>
                         </div>
@@ -498,8 +531,8 @@ export function AnalyticsPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center border-l border-slate-800/60 text-slate-500 text-xs p-6 text-center">
-                    <Info className="h-8 w-8 text-slate-600 mb-2" />
+                  <div className="flex flex-col items-center justify-center border-l border-slate-200 dark:border-slate-800/60 text-slate-500 text-xs p-6 text-center">
+                    <Info className="h-8 w-8 text-slate-400 dark:text-slate-600 mb-2" />
                     Penyebaran Cabang hanya dapat diakses oleh peran Super Admin.
                   </div>
                 )}
@@ -512,14 +545,14 @@ export function AnalyticsPage() {
         </div>
 
         {/* 5. Top Operators Widget */}
-        <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
-          <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-5 shadow-sm space-y-4">
+          <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
             <div>
-              <h3 className="font-semibold text-lg text-white">Leaderboard Operator Teraktif</h3>
-              <p className="text-xs text-slate-400 mt-0.5">Warehouse staff berdasarkan volume logistik transaksi (tidak termasuk penyesuaian opname)</p>
+              <h3 className="font-semibold text-lg text-slate-900 dark:text-white">Leaderboard Operator Teraktif</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Warehouse staff berdasarkan volume logistik transaksi (tidak termasuk penyesuaian opname)</p>
             </div>
             {operatorsRes && (
-              <span className="text-[10px] text-slate-500 font-mono">
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
                 Diperbarui: {formatGeneratedAt(operatorsRes.generated_at)}
               </span>
             )}
@@ -530,24 +563,24 @@ export function AnalyticsPage() {
           ) : operatorsRes && operatorsRes.data.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {operatorsRes.data.slice(0, 5).map((op, idx) => (
-                <div key={op.user_id} className="flex items-center justify-between p-3.5 bg-slate-900/40 rounded-xl border border-slate-850">
+                <div key={op.user_id} className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-slate-200 dark:border-slate-800">
                   <div className="flex items-center gap-3">
                     <span className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold font-mono ${
-                      idx === 0 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                      idx === 1 ? 'bg-slate-400/20 text-slate-350 border border-slate-400/30' :
-                      idx === 2 ? 'bg-orange-850/20 text-orange-400 border border-orange-500/30' :
-                      'bg-slate-800 text-slate-400'
+                      idx === 0 ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30' :
+                      idx === 1 ? 'bg-slate-200 dark:bg-slate-400/20 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-400/30' :
+                      idx === 2 ? 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border border-orange-500/30' :
+                      'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                     }`}>
                       {idx + 1}
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-white">{op.operator_name}</p>
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white">{op.operator_name}</p>
                       <p className="text-xs text-slate-500">User ID #{op.user_id}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-white">{op.total_transactions} Transaksi</p>
-                    <p className="text-xs text-slate-400">{op.total_units} unit diproses</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">{op.total_transactions} Transaksi</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{op.total_units} unit diproses</p>
                   </div>
                 </div>
               ))}
@@ -561,30 +594,30 @@ export function AnalyticsPage() {
         </div>
 
         {/* 6. Movement Classification Widget */}
-        <div ref={classificationRef} className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+        <div ref={classificationRef} className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-5 shadow-sm space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
             <div>
-              <h3 className="font-semibold text-lg text-white">Analisis Usia &amp; Klasifikasi Perputaran</h3>
-              <p className="text-xs text-slate-400 mt-0.5">Daftar lengkap seluruh komponen aktif untuk audit dead stock (stok mati)</p>
+              <h3 className="font-semibold text-lg text-slate-900 dark:text-white">Analisis Usia &amp; Klasifikasi Perputaran</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Daftar lengkap seluruh komponen aktif untuk audit dead stock (stok mati)</p>
             </div>
             {classificationRes && (
-              <span className="text-[10px] text-slate-500 font-mono">
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
                 Diperbarui: {formatGeneratedAt(classificationRes.generated_at)}
               </span>
             )}
           </div>
 
           {/* Classification Filters Bar */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-950 p-3 rounded-lg border border-slate-850/80">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-200 dark:border-slate-800">
             {/* Search Input */}
             <div className="relative flex items-center">
-              <Search className="absolute left-3 h-4 w-4 text-slate-500" />
+              <Search className="absolute left-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
               <input
                 type="text"
                 value={classSearch}
                 onChange={(e) => setClassSearch(e.target.value)}
                 placeholder="Cari item..."
-                className="w-full h-9 pl-9 pr-3 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full h-9 pl-9 pr-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
 
@@ -595,7 +628,7 @@ export function AnalyticsPage() {
                 setClassCategory(e.target.value ? Number(e.target.value) : null);
                 setClassPage(1);
               }}
-              className="h-9 px-3 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-primary"
+              className="h-9 px-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="">Semua Kategori</option>
               {categories?.filter(c => c.is_active).map(c => (
@@ -610,7 +643,7 @@ export function AnalyticsPage() {
                 setClassSupplier(e.target.value ? Number(e.target.value) : null);
                 setClassPage(1);
               }}
-              className="h-9 px-3 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-primary"
+              className="h-9 px-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="">Semua Supplier/Brand</option>
               {suppliers?.filter(s => s.is_active).map(s => (
@@ -626,7 +659,7 @@ export function AnalyticsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
-                    <tr className="border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
+                    <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">
                       <th className="py-3 px-4">Kode</th>
                       <th className="py-3 px-4">Nama Barang</th>
                       <th className="py-3 px-4">Kategori</th>
@@ -639,8 +672,8 @@ export function AnalyticsPage() {
                     {classificationRes.data.map((item) => {
                       const cls = getClassification(item.days_since_last_movement);
                       return (
-                        <tr key={item.item_id} className="border-b border-slate-850 hover:bg-slate-900/20">
-                          <td className="py-3 px-4 font-mono font-bold text-amber-500">
+                        <tr key={item.item_id} className="border-b border-slate-100 dark:border-slate-850 hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors">
+                          <td className="py-3 px-4 font-mono font-bold text-amber-600 dark:text-amber-500">
                             <button
                               type="button"
                               onClick={() => navigate(`/master-data/items/${item.item_id}`)}
@@ -649,10 +682,10 @@ export function AnalyticsPage() {
                               {item.item_code}
                             </button>
                           </td>
-                          <td className="py-3 px-4 font-medium text-white">{item.item_name}</td>
-                          <td className="py-3 px-4 text-slate-350">{item.category_name}</td>
-                          <td className="py-3 px-4 text-slate-350">{item.supplier_name}</td>
-                          <td className="py-3 px-4 text-slate-400">
+                          <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">{item.item_name}</td>
+                          <td className="py-3 px-4 text-slate-600 dark:text-slate-350">{item.category_name}</td>
+                          <td className="py-3 px-4 text-slate-600 dark:text-slate-350">{item.supplier_name}</td>
+                          <td className="py-3 px-4 text-slate-500 dark:text-slate-400">
                             {item.last_movement_date ? (
                               new Date(item.last_movement_date).toLocaleDateString('id-ID', {
                                 day: 'numeric',
@@ -660,7 +693,7 @@ export function AnalyticsPage() {
                                 year: 'numeric',
                               })
                             ) : (
-                              <span className="text-slate-600 italic">Never Moved</span>
+                              <span className="text-slate-400 dark:text-slate-600 italic">Never Moved</span>
                             )}
                           </td>
                           <td className="py-3 px-4 text-right">
@@ -688,14 +721,14 @@ export function AnalyticsPage() {
             </div>
           ) : (
             <div className="py-12 flex flex-col items-center justify-center text-center text-slate-500">
-              <AlertTriangle className="h-8 w-8 text-slate-600 mb-2" />
+              <AlertTriangle className="h-8 w-8 text-slate-400 dark:text-slate-600 mb-2" />
               <p>Tidak ada komponen yang cocok dengan filter pencarian.</p>
               {(classCategory || classSupplier || classSearch) && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleResetFilters}
-                  className="mt-3 text-xs text-primary hover:text-white"
+                  className="mt-3 text-xs text-amber-600 dark:text-amber-500 hover:text-slate-900 dark:hover:text-white"
                 >
                   <RotateCcw className="h-3.5 w-3.5 mr-1" /> Reset Filter
                 </Button>

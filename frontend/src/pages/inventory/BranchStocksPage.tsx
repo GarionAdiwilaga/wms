@@ -267,7 +267,7 @@ export function BranchStocksPage() {
               return (
                 <div
                   key={`${stock.branch_id}-${stock.item_id}`}
-                  className="bg-card border border-border rounded-xl p-5 flex flex-col justify-between shadow-lg hover:shadow-xl transition-all hover:border-slate-800"
+                  className="bg-card border border-border rounded-xl p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-all hover:border-slate-300 dark:hover:border-slate-700"
                 >
                   <div className="space-y-3">
                     {/* Top Row: Image & Primary Attributes */}
@@ -282,7 +282,7 @@ export function BranchStocksPage() {
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <span className="font-mono text-xs font-bold text-amber-500 tracking-wide block mb-1">
+                        <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-500 tracking-wide block mb-1">
                           {stock.item_code}
                         </span>
                         <h4 className="text-sm font-bold text-foreground leading-tight line-clamp-2" title={stock.item_name}>
@@ -322,8 +322,8 @@ export function BranchStocksPage() {
                       <div>
                         <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Total Stok</span>
                         <div className="flex items-baseline gap-1">
-                          <span className="text-lg font-extrabold text-white font-mono">{stock.quantity}</span>
-                          <span className="text-xs text-slate-400 font-medium">{stock.uom_name || 'PCS'}</span>
+                          <span className="text-lg font-extrabold text-slate-900 dark:text-white font-mono">{stock.quantity}</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{stock.uom_name || 'PCS'}</span>
                           <span className="text-[10px] text-slate-500 ml-1.5">(Min: {stock.minimum_stock})</span>
                         </div>
                       </div>
@@ -332,7 +332,7 @@ export function BranchStocksPage() {
                       </div>
                     </div>
                     
-                    <div className="flex justify-between items-center text-[10px] text-slate-500 border-t border-slate-900/50 pt-2">
+                    <div className="flex justify-between items-center text-[10px] text-slate-500 border-t border-slate-100 dark:border-slate-800/50 pt-2">
                       <span>Terakhir Update</span>
                       <span className="font-mono">{formattedDate}</span>
                     </div>

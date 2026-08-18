@@ -145,8 +145,8 @@ export function AuditLogReportPage() {
     {
       header: 'Operator',
       cell: (r) => (
-        <span className="flex items-center gap-1 text-xs">
-          <User className="h-3.5 w-3.5 text-slate-500" />
+        <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300 text-xs">
+          <User className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
           {r.operator_name}
         </span>
       )
@@ -163,21 +163,21 @@ export function AuditLogReportPage() {
       header: 'Entitas',
       cell: (r) => (
         <div className="space-y-0.5">
-          <span className="text-xs font-medium text-white">{translateEntityType(r.entity_type)}</span>
+          <span className="text-xs font-medium text-slate-900 dark:text-white">{translateEntityType(r.entity_type)}</span>
           <span className="text-[10px] text-slate-500 font-mono block">ID: {r.entity_id}</span>
         </div>
       )
     },
     {
       header: 'IP Address',
-      cell: (r) => <span className="font-mono text-xs text-slate-400">{r.ip_address || '-'}</span>
+      cell: (r) => <span className="font-mono text-xs text-slate-500 dark:text-slate-400">{r.ip_address || '-'}</span>
     },
     {
       header: 'Detail Data',
       align: 'center',
       cell: (r) => {
         const hasValues = r.old_values || r.new_values;
-        if (!hasValues) return <span className="text-xs text-slate-600">-</span>;
+        if (!hasValues) return <span className="text-xs text-slate-400 dark:text-slate-600">-</span>;
         
         const isExpanded = expandedLogIds.has(r.log_id);
         return (
@@ -216,7 +216,7 @@ export function AuditLogReportPage() {
 
     if (!data || data.data.length === 0) {
       return (
-        <div className="bg-card border border-border rounded-xl p-8 text-center text-slate-400 shadow-md">
+        <div className="bg-card border border-border rounded-xl p-8 text-center text-slate-500 dark:text-slate-400 shadow-sm">
           <p className="text-sm font-medium">Tidak ada audit log ditemukan.</p>
         </div>
       );
@@ -231,28 +231,28 @@ export function AuditLogReportPage() {
             const hasValues = r.old_values || r.new_values;
 
             return (
-              <div key={r.log_id} className="bg-card border border-border rounded-xl p-4 shadow-md space-y-3 hover:border-slate-800 transition-colors">
-                <div className="flex justify-between border-b border-slate-850/50 pb-2">
-                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Waktu</span>
-                  <span className="text-xs text-white">{formatDate(r.created_at)}</span>
+              <div key={r.log_id} className="bg-card border border-border rounded-xl p-4 shadow-sm space-y-3 hover:border-slate-300 dark:hover:border-slate-800 transition-colors">
+                <div className="flex justify-between border-b border-slate-200 dark:border-slate-850/50 pb-2">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Waktu</span>
+                  <span className="text-xs text-slate-900 dark:text-white">{formatDate(r.created_at)}</span>
                 </div>
-                <div className="flex justify-between border-b border-slate-850/50 pb-2">
-                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Operator</span>
-                  <span className="text-xs text-white">{r.operator_name}</span>
+                <div className="flex justify-between border-b border-slate-200 dark:border-slate-850/50 pb-2">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Operator</span>
+                  <span className="text-xs text-slate-900 dark:text-white">{r.operator_name}</span>
                 </div>
-                <div className="flex justify-between border-b border-slate-850/50 pb-2">
-                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Aksi</span>
+                <div className="flex justify-between border-b border-slate-200 dark:border-slate-850/50 pb-2">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Aksi</span>
                   <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${getActionColor(r.action)}`}>
                     {translateAction(r.action)}
                   </span>
                 </div>
-                <div className="flex justify-between border-b border-slate-850/50 pb-2">
-                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Entitas</span>
-                  <span className="text-xs text-white">{translateEntityType(r.entity_type)} (ID: {r.entity_id})</span>
+                <div className="flex justify-between border-b border-slate-200 dark:border-slate-850/50 pb-2">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Entitas</span>
+                  <span className="text-xs text-slate-900 dark:text-white">{translateEntityType(r.entity_type)} (ID: {r.entity_id})</span>
                 </div>
-                <div className="flex justify-between border-b border-slate-850/50 pb-2">
-                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">IP Address</span>
-                  <span className="text-xs text-slate-400 font-mono">{r.ip_address || '-'}</span>
+                <div className="flex justify-between border-b border-slate-200 dark:border-slate-850/50 pb-2">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">IP Address</span>
+                  <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">{r.ip_address || '-'}</span>
                 </div>
 
                 {hasValues && (
@@ -261,7 +261,7 @@ export function AuditLogReportPage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => toggleRowExpansion(r.log_id)}
-                      className="text-xs text-amber-500 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg flex items-center gap-1.5 h-8 w-full justify-center border border-slate-850"
+                      className="text-xs text-amber-500 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg flex items-center gap-1.5 h-8 w-full justify-center border border-slate-200 dark:border-slate-850"
                     >
                       {isExpanded ? (
                         <>
@@ -277,19 +277,19 @@ export function AuditLogReportPage() {
                 )}
 
                 {isExpanded && hasValues && (
-                  <div className="pt-2 space-y-3 border-t border-slate-800/60 mt-2">
+                  <div className="pt-2 space-y-3 border-t border-slate-200 dark:border-slate-800/60 mt-2">
                     {r.old_values && (
                       <div className="space-y-1">
-                        <span className="text-[10px] text-slate-550 font-bold uppercase tracking-wider">Nilai Sebelum</span>
-                        <pre className="bg-slate-950 p-3 rounded-lg border border-slate-850 text-[10px] text-red-400 overflow-x-auto font-mono max-h-[150px] overflow-y-auto">
+                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Nilai Sebelum</span>
+                        <pre className="bg-slate-100 dark:bg-slate-950 p-3 rounded-lg border border-slate-200 dark:border-slate-850 text-[10px] text-red-600 dark:text-red-400 overflow-x-auto font-mono max-h-[150px] overflow-y-auto">
                           {JSON.stringify(r.old_values, null, 2)}
                         </pre>
                       </div>
                     )}
                     {r.new_values && (
                       <div className="space-y-1">
-                        <span className="text-[10px] text-slate-550 font-bold uppercase tracking-wider">Nilai Sesudah</span>
-                        <pre className="bg-slate-950 p-3 rounded-lg border border-slate-850 text-[10px] text-emerald-450 overflow-x-auto font-mono max-h-[150px] overflow-y-auto">
+                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Nilai Sesudah</span>
+                        <pre className="bg-slate-100 dark:bg-slate-950 p-3 rounded-lg border border-slate-200 dark:border-slate-850 text-[10px] text-emerald-600 dark:text-emerald-400 overflow-x-auto font-mono max-h-[150px] overflow-y-auto">
                           {JSON.stringify(r.new_values, null, 2)}
                         </pre>
                       </div>
@@ -302,10 +302,10 @@ export function AuditLogReportPage() {
         </div>
 
         {/* Desktop view with custom nested tr */}
-        <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden shadow-lg">
+        <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left border-collapse text-slate-350">
-              <thead className="bg-slate-900/60 text-slate-300 font-semibold border-b border-slate-850">
+            <table className="w-full text-sm text-left border-collapse text-slate-700 dark:text-slate-350">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-850">
                 <tr>
                   {columns.map((col, idx) => (
                     <th key={idx} className="px-4 py-3.5 text-xs font-bold uppercase tracking-wider text-left">
@@ -314,17 +314,17 @@ export function AuditLogReportPage() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-850">
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-850">
                 {data.data.map((r) => {
                   const isExpanded = expandedLogIds.has(r.log_id);
                   return (
                     <React.Fragment key={r.log_id}>
-                      <tr className="hover:bg-slate-900/30 transition-colors">
+                      <tr className="hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors">
                         {columns.map((col, idx) => {
                           const val = col.cell ? col.cell(r) : col.accessorKey ? (r[col.accessorKey as keyof AuditLogReportRow] as any) : null;
                           return (
                             <td key={idx} className="px-4 py-3.5">
-                              <div className="text-white font-medium">{val}</div>
+                              <div className="text-slate-900 dark:text-white font-medium">{val}</div>
                             </td>
                           );
                         })}
@@ -332,14 +332,14 @@ export function AuditLogReportPage() {
 
                       {/* Expandable row */}
                       {isExpanded && (r.old_values || r.new_values) && (
-                        <tr className="bg-slate-950/40">
-                          <td colSpan={columns.length} className="px-6 py-4 border-t border-slate-900">
+                        <tr className="bg-slate-50/50 dark:bg-slate-950/40">
+                          <td colSpan={columns.length} className="px-6 py-4 border-t border-slate-200 dark:border-slate-900">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               <div className="space-y-1">
                                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1">
                                   <Terminal className="h-3 w-3" /> Nilai Sebelum Perubahan
                                 </span>
-                                <pre className="bg-slate-950 p-4 rounded-xl border border-slate-850/80 text-xs text-red-400 overflow-x-auto font-mono max-h-[250px] overflow-y-auto leading-relaxed shadow-inner">
+                                <pre className="bg-slate-100 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-850/80 text-xs text-red-600 dark:text-red-400 overflow-x-auto font-mono max-h-[250px] overflow-y-auto leading-relaxed shadow-inner">
                                   {r.old_values ? JSON.stringify(r.old_values, null, 2) : '// Tidak ada data sebelumnya'}
                                 </pre>
                               </div>
@@ -347,7 +347,7 @@ export function AuditLogReportPage() {
                                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1">
                                   <Terminal className="h-3 w-3" /> Nilai Sesudah Perubahan
                                 </span>
-                                <pre className="bg-slate-950 p-4 rounded-xl border border-slate-850/80 text-xs text-emerald-450 overflow-x-auto font-mono max-h-[250px] overflow-y-auto leading-relaxed shadow-inner">
+                                <pre className="bg-slate-100 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-850/80 text-xs text-emerald-600 dark:text-emerald-400 overflow-x-auto font-mono max-h-[250px] overflow-y-auto leading-relaxed shadow-inner">
                                   {r.new_values ? JSON.stringify(r.new_values, null, 2) : '// Tidak ada perubahan nilai'}
                                 </pre>
                               </div>
@@ -397,15 +397,15 @@ export function AuditLogReportPage() {
       />
 
       {/* Custom selectors specific to audit logging */}
-      <div className="bg-card border border-border rounded-xl p-4 shadow-md grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="bg-card border border-border rounded-xl p-4 shadow-sm grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="space-y-1">
-          <Label htmlFor="audit-user" className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Operator / Pengguna</Label>
+          <Label htmlFor="audit-user" className="text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider">Operator / Pengguna</Label>
           <select
             id="audit-user"
             name="audit_user"
             value={filters.user_id || ''}
             onChange={(e) => handleFilterChange({ ...filters, user_id: e.target.value ? Number(e.target.value) : null })}
-            className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
+            className="w-full h-10 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
           >
             <option value="">Semua Operator</option>
             {users?.map((u) => (
@@ -417,13 +417,13 @@ export function AuditLogReportPage() {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="audit-action" className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Aksi Aktivitas</Label>
+          <Label htmlFor="audit-action" className="text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider">Aksi Aktivitas</Label>
           <select
             id="audit-action"
             name="audit_action"
             value={filters.action || ''}
             onChange={(e) => handleFilterChange({ ...filters, action: e.target.value || null })}
-            className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
+            className="w-full h-10 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
           >
             <option value="">Semua Aksi</option>
             <option value="create">Tambah (Create)</option>
@@ -439,13 +439,13 @@ export function AuditLogReportPage() {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="audit-entity" className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Tipe Entitas</Label>
+          <Label htmlFor="audit-entity" className="text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider">Tipe Entitas</Label>
           <select
             id="audit-entity"
             name="audit_entity"
             value={filters.entity_type || ''}
             onChange={(e) => handleFilterChange({ ...filters, entity_type: e.target.value || null })}
-            className="w-full h-10 px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
+            className="w-full h-10 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
           >
             <option value="">Semua Entitas</option>
             <option value="item">Barang (Item)</option>

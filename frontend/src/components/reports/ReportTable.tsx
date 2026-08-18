@@ -52,7 +52,7 @@ export function ReportTable<T>({
         {data.map((row) => (
           <div
             key={keyExtractor(row)}
-            className="bg-card border border-border rounded-xl p-4 shadow-md space-y-2.5 hover:border-slate-800 transition-colors"
+            className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-4 shadow-sm space-y-2.5 hover:border-slate-300 dark:hover:border-slate-800 transition-colors"
           >
             {columns.map((col, idx) => {
               const val = col.cell
@@ -61,14 +61,12 @@ export function ReportTable<T>({
                 ? (row[col.accessorKey as keyof T] as any)
                 : null;
 
-              // Action or primary field can be rendered differently, but keeping it uniform works great.
-              // Skip "Aksi" column header mapping if not desired or show it.
               return (
-                <div key={idx} className="flex justify-between items-start gap-4 border-b border-slate-850/50 pb-2 last:border-b-0 last:pb-0">
-                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">
+                <div key={idx} className="flex justify-between items-start gap-4 border-b border-slate-100 dark:border-slate-800/50 pb-2 last:border-b-0 last:pb-0">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider mt-0.5">
                     {col.header}
                   </span>
-                  <div className={`text-sm font-medium text-white max-w-[70%] text-right break-words`}>
+                  <div className="text-sm font-medium text-slate-900 dark:text-white max-w-[70%] text-right break-words">
                     {val}
                   </div>
                 </div>
@@ -79,10 +77,10 @@ export function ReportTable<T>({
       </div>
 
       {/* Desktop/Tablet Table View */}
-      <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden shadow-lg">
+      <div className="hidden md:block rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left border-collapse text-slate-350">
-            <thead className="bg-slate-900/60 text-slate-300 font-semibold border-b border-slate-850">
+          <table className="w-full text-sm text-left border-collapse text-slate-700 dark:text-slate-300">
+            <thead className="bg-slate-50 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-800">
               <tr>
                 {columns.map((col, idx) => (
                   <th
@@ -100,9 +98,9 @@ export function ReportTable<T>({
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-850">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {data.map((row) => (
-                <tr key={keyExtractor(row)} className="hover:bg-slate-900/30 transition-colors">
+                <tr key={keyExtractor(row)} className="hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors">
                   {columns.map((col, idx) => {
                     const val = col.cell
                       ? col.cell(row)
@@ -121,7 +119,7 @@ export function ReportTable<T>({
                             : 'text-left'
                         }`}
                       >
-                        <div className="text-white font-medium">{val}</div>
+                        <div className="text-slate-900 dark:text-white font-medium">{val}</div>
                       </td>
                     );
                   })}

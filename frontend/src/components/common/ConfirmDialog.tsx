@@ -40,12 +40,12 @@ export function ConfirmDialog({
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`bg-slate-900 border-slate-800 ${className || "sm:max-w-[425px]"}`}>
+      <DialogContent className={`bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-2xl ${className || "sm:max-w-[425px]"}`}>
         <DialogHeader>
-          <DialogTitle className={isDestructive ? "text-red-500" : "text-white"}>
+          <DialogTitle className={isDestructive ? "text-red-600 dark:text-red-500" : "text-slate-900 dark:text-white"}>
             {title}
           </DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogDescription className="text-slate-600 dark:text-slate-400">
             {description}
           </DialogDescription>
         </DialogHeader>
@@ -56,7 +56,7 @@ export function ConfirmDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
-              className="w-full border-slate-700 hover:bg-slate-800 hover:text-white rounded-xl min-h-[44px]"
+              className="w-full border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl min-h-[44px]"
             >
               {cancelLabel}
             </Button>
@@ -67,7 +67,7 @@ export function ConfirmDialog({
               onClick={onConfirm}
               disabled={isLoading}
               className={`w-full min-h-[44px] rounded-xl ${
-                !isDestructive && "bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0"
+                !isDestructive && "bg-gradient-to-r from-primary to-primary/80 text-slate-950 font-bold hover:opacity-90 border-0"
               }`}
             >
               {isLoading ? "Memproses..." : confirmLabel}

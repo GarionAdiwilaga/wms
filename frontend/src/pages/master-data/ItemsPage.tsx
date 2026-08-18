@@ -414,25 +414,25 @@ export function ItemsPage() {
 
       {/* Filter scan overlay */}
       {isScanning && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-slate-950 items-center justify-center p-4">
-          <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-lg overflow-hidden relative flex flex-col h-full md:h-auto max-h-[90vh]">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
-              <h3 className="font-semibold text-white">Scan QR Barang (Filter)</h3>
-              <Button type="button" variant="ghost" size="icon" onClick={stopScanning} className="text-slate-400 hover:text-white min-h-[40px] min-w-[40px]">
+        <div className="fixed inset-0 z-50 flex flex-col bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden relative flex flex-col h-full md:h-auto max-h-[90vh] shadow-2xl">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-800">
+              <h3 className="font-semibold text-slate-900 dark:text-white">Scan QR Barang (Filter)</h3>
+              <Button type="button" variant="ghost" size="icon" onClick={stopScanning} className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white min-h-[40px] min-w-[40px]">
                 <X className="h-5 w-5" />
               </Button>
             </div>
             <div className="flex-1 relative bg-black flex items-center justify-center min-h-[300px]">
               {cameraError ? (
-                <div className="flex flex-col items-center justify-center p-6 text-center text-red-400">
+                <div className="flex flex-col items-center justify-center p-6 text-center text-red-500 dark:text-red-400">
                   <p className="text-sm font-medium mb-4">{cameraError}</p>
-                  <Button type="button" variant="outline" onClick={stopScanning} className="border-slate-700 hover:bg-slate-800 text-white">Tutup</Button>
+                  <Button type="button" variant="outline" onClick={stopScanning} className="border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-white">Tutup</Button>
                 </div>
               ) : (
                 <div id={scannerId} className="w-full h-full object-cover"></div>
               )}
             </div>
-            <div className="px-4 py-4 border-t border-slate-800 text-center text-xs text-slate-400">
+            <div className="px-4 py-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400">
               Arahkan kamera ke QR label barang untuk memfilter daftar barang.
             </div>
           </div>

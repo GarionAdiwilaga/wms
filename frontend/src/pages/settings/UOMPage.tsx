@@ -133,18 +133,29 @@ export function UOMPage() {
       )}
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800 text-white">
-          <DialogHeader><DialogTitle className="text-white">{editingUOM ? 'Ubah UOM' : 'Tambah UOM'}</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-2xl">
+          <DialogHeader><DialogTitle className="text-slate-900 dark:text-white">{editingUOM ? 'Ubah UOM' : 'Tambah UOM'}</DialogTitle></DialogHeader>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-            <div className="space-y-2"><Label htmlFor="code">Kode</Label><Input id="code" placeholder="Contoh: PCS" {...form.register('code')} className="bg-slate-950 border-slate-800 uppercase text-white" />{form.formState.errors.code && <p className="text-sm text-red-500">{form.formState.errors.code.message}</p>}</div>
-            <div className="space-y-2"><Label htmlFor="name">Nama Satuan</Label><Input id="name" placeholder="Contoh: Pieces" {...form.register('name')} className="bg-slate-950 border-slate-800 text-white" />{form.formState.errors.name && <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>}</div>
-            <div className="flex items-center gap-2 mt-4"><input type="checkbox" id="is_active" {...form.register('is_active')} className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-amber-500" /><Label htmlFor="is_active">Aktif</Label></div>
+            <div className="space-y-2">
+              <Label htmlFor="code" className="text-slate-700 dark:text-slate-300">Kode</Label>
+              <Input id="code" placeholder="Contoh: PCS" {...form.register('code')} className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 uppercase text-slate-900 dark:text-white" />
+              {form.formState.errors.code && <p className="text-sm text-red-500">{form.formState.errors.code.message}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-slate-700 dark:text-slate-300">Nama Satuan</Label>
+              <Input id="name" placeholder="Contoh: Pieces" {...form.register('name')} className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white" />
+              {form.formState.errors.name && <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>}
+            </div>
+            <div className="flex items-center gap-2 mt-4">
+              <input type="checkbox" id="is_active" {...form.register('is_active')} className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-amber-500 focus:ring-amber-500" />
+              <Label htmlFor="is_active" className="text-slate-700 dark:text-slate-300">Aktif</Label>
+            </div>
             <div className="flex justify-end gap-3 mt-6">
               <motion.div whileTap={{ scale: 0.97 }}>
-                <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)} className="border-slate-700 text-white bg-transparent hover:bg-slate-800 rounded-xl min-h-[44px]">Batal</Button>
+                <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)} className="border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl min-h-[44px]">Batal</Button>
               </motion.div>
               <motion.div whileTap={{ scale: 0.97 }}>
-                <Button type="submit" disabled={createUOM.isPending || updateUOM.isPending} className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-primary-foreground font-semibold rounded-xl min-h-[44px]">
+                <Button type="submit" disabled={createUOM.isPending || updateUOM.isPending} className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 border-0 text-slate-950 font-bold rounded-xl min-h-[44px]">
                   {editingUOM ? 'Simpan' : 'Tambah'}
                 </Button>
               </motion.div>

@@ -141,7 +141,7 @@ export function TransferReceivePage() {
             variant="ghost"
             size="icon"
             onClick={() => navigate(`/operations/transfers/${transferId}`)}
-            className="text-slate-400 hover:text-white rounded-lg h-10 w-10 border border-slate-800"
+            className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg h-10 w-10 border border-slate-200 dark:border-slate-800"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -155,9 +155,9 @@ export function TransferReceivePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left Column: Count Entry Sheet */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-              <h3 className="font-semibold text-lg text-white flex items-center gap-2">
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-4">
+            <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="font-semibold text-lg text-slate-900 dark:text-white flex items-center gap-2">
                 <ClipboardCheck className="h-5 w-5 text-amber-500" />
                 Penghitungan Fisik Item
               </h3>
@@ -176,14 +176,14 @@ export function TransferReceivePage() {
                       className={`border rounded-xl p-4 flex flex-col gap-4 transition-colors ${
                         hasVariance 
                           ? 'border-red-500/30 bg-red-500/5' 
-                          : 'border-border bg-slate-900/40'
+                          : 'border-slate-200 dark:border-border bg-slate-50 dark:bg-slate-900/40'
                       }`}
                     >
                       {/* Item Basic Info */}
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-white truncate">{line.item_name}</p>
-                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-850 border border-slate-750 text-amber-500 inline-block mt-1">
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{line.item_name}</p>
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-850 border border-slate-200 dark:border-slate-750 text-amber-600 dark:text-amber-500 inline-block mt-1">
                             {line.item_code}
                           </span>
                         </div>
@@ -192,7 +192,7 @@ export function TransferReceivePage() {
                         <div className="flex items-center gap-4 justify-between sm:justify-end">
                           <div className="text-right">
                             <span className="text-[10px] text-slate-500 block">Dikirim</span>
-                            <span className="text-sm font-bold text-white font-mono">{line.sent_quantity} pcs</span>
+                            <span className="text-sm font-bold text-slate-900 dark:text-white font-mono">{line.sent_quantity} pcs</span>
                           </div>
                           
                           {/* Received Qty count input */}
@@ -205,7 +205,7 @@ export function TransferReceivePage() {
                               type="number"
                               value={line.received_quantity}
                               onChange={(e) => handleQtyChange(line.line_id, parseInt(e.target.value) || 0)}
-                              className="w-20 h-9 px-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-center font-bold font-mono text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
+                              className="w-20 h-9 px-2 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-lg text-sm text-center font-bold font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent"
                               min={0}
                             />
                           </div>
@@ -215,8 +215,8 @@ export function TransferReceivePage() {
                             <span className="text-[10px] text-slate-500 block">Selisih</span>
                             <span className={`text-xs font-bold font-mono px-2 py-0.5 rounded ${
                               variance === 0 
-                                ? 'text-slate-400 bg-slate-800' 
-                                : 'text-red-400 bg-red-500/10'
+                                ? 'text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800' 
+                                : 'text-red-600 dark:text-red-400 bg-red-500/10'
                             }`}>
                               {variance > 0 ? `+${variance}` : variance}
                             </span>
@@ -230,16 +230,16 @@ export function TransferReceivePage() {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-800"
+                          className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-200 dark:border-slate-800"
                         >
                           <div className="space-y-1">
-                            <Label htmlFor={`variance_reason_${line.line_id}`} className="text-[10px] uppercase font-bold text-slate-400">Alasan Selisih</Label>
+                            <Label htmlFor={`variance_reason_${line.line_id}`} className="text-[10px] uppercase font-bold text-slate-600 dark:text-slate-400">Alasan Selisih</Label>
                             <select
                               id={`variance_reason_${line.line_id}`}
                               name={`variance_reason_${line.line_id}`}
                               value={line.variance_reason}
                               onChange={(e) => handleReasonChange(line.line_id, e.target.value)}
-                              className="w-full h-8 px-2 bg-slate-950 border border-slate-850 rounded-md text-xs text-white focus:outline-none focus:ring-1 focus:ring-primary"
+                              className="w-full h-8 px-2 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
                             >
                               <option value="Kurang Kirim">Kurang Kirim (Shortage)</option>
                               <option value="Rusak">Barang Rusak (Damaged)</option>
@@ -249,7 +249,7 @@ export function TransferReceivePage() {
                           </div>
                           
                           <div className="space-y-1">
-                            <Label htmlFor={`variance_notes_${line.line_id}`} className="text-[10px] uppercase font-bold text-slate-400">Catatan Selisih (Opsional)</Label>
+                            <Label htmlFor={`variance_notes_${line.line_id}`} className="text-[10px] uppercase font-bold text-slate-600 dark:text-slate-400">Catatan Selisih (Opsional)</Label>
                             <input
                               id={`variance_notes_${line.line_id}`}
                               name={`variance_notes_${line.line_id}`}
@@ -257,7 +257,7 @@ export function TransferReceivePage() {
                               placeholder="Keterangan kondisi fisik barang..."
                               value={line.variance_notes}
                               onChange={(e) => handleLineNotesChange(line.line_id, e.target.value)}
-                              className="w-full h-8 px-2 bg-slate-950 border border-slate-850 rounded-md text-xs text-white focus:outline-none focus:ring-1 focus:ring-primary"
+                              className="w-full h-8 px-2 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
                             />
                           </div>
                         </motion.div>
@@ -272,15 +272,15 @@ export function TransferReceivePage() {
 
         {/* Right Column: Routing & Submit Controls */}
         <div className="space-y-6">
-          <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
-            <h3 className="font-semibold text-lg text-white border-b border-slate-800 pb-3">
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-4">
+            <h3 className="font-semibold text-lg text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-3">
               Konfirmasi Penerimaan
             </h3>
 
             {/* Source/Dest details display */}
-            <div className="space-y-1 text-sm bg-slate-950 p-3 rounded-lg border border-slate-850">
+            <div className="space-y-1 text-sm bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-200 dark:border-slate-850">
               <p className="text-xs text-slate-500 uppercase font-semibold">Mutasi Rute</p>
-              <div className="flex items-center justify-between text-white font-medium">
+              <div className="flex items-center justify-between text-slate-900 dark:text-white font-medium">
                 <span>{getBranchName(transfer.source_branch_id)}</span>
                 <ArrowRight className="h-3.5 w-3.5 text-amber-500" />
                 <span>{getBranchName(transfer.dest_branch_id)}</span>
@@ -289,7 +289,7 @@ export function TransferReceivePage() {
 
             {/* Received Notes */}
             <div className="space-y-2">
-              <Label htmlFor="received_notes">Catatan Penerimaan (Opsional)</Label>
+              <Label htmlFor="received_notes" className="text-slate-700 dark:text-slate-300">Catatan Penerimaan (Opsional)</Label>
               <textarea
                 id="received_notes"
                 name="received_notes"
@@ -297,12 +297,12 @@ export function TransferReceivePage() {
                 value={receivedNotes}
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setReceivedNotes(e.target.value)}
                 rows={4}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm resize-none"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent shadow-sm resize-none"
               />
             </div>
 
             {formError && (
-              <div className="text-sm bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg font-medium break-words">
+              <div className="text-sm bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 p-3 rounded-lg font-medium break-words">
                 {formError}
               </div>
             )}
@@ -324,11 +324,11 @@ export function TransferReceivePage() {
 
       {/* Irreversible Confirmation Dialog */}
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800 text-white rounded-xl">
+        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-2xl rounded-2xl">
           <DialogHeader className="flex flex-col items-center text-center">
             <AlertTriangle className="h-10 w-10 text-amber-500 mb-2 animate-bounce" />
-            <DialogTitle className="text-white text-lg">Konfirmasi Penerimaan Mutasi</DialogTitle>
-            <DialogDescription className="text-slate-400 text-xs mt-1">
+            <DialogTitle className="text-slate-900 dark:text-white text-lg">Konfirmasi Penerimaan Mutasi</DialogTitle>
+            <DialogDescription className="text-slate-600 dark:text-slate-400 text-xs mt-1">
               Harap pastikan jumlah fisik yang Anda hitung sudah benar. Penerimaan ini **bersifat final, mengunci transaksi, dan tidak dapat dibatalkan atau diubah** setelah dikonfirmasi.
             </DialogDescription>
           </DialogHeader>
@@ -338,7 +338,7 @@ export function TransferReceivePage() {
               type="button"
               variant="ghost"
               onClick={() => setConfirmOpen(false)}
-              className="border border-slate-850 text-slate-400 hover:text-white rounded-lg w-full sm:w-auto"
+              className="border border-slate-200 dark:border-slate-850 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg w-full sm:w-auto"
             >
               Kembali
             </Button>
@@ -346,7 +346,7 @@ export function TransferReceivePage() {
               type="button"
               onClick={handleConfirmSubmit}
               disabled={receiveTransfer.isPending}
-              className="bg-emerald-550 hover:bg-emerald-600 border-0 text-white font-semibold rounded-lg w-full sm:w-auto"
+              className="bg-emerald-500 hover:bg-emerald-600 border-0 text-white font-semibold rounded-lg w-full sm:w-auto"
             >
               {receiveTransfer.isPending ? 'Memproses...' : 'Ya, Selesaikan'}
             </Button>

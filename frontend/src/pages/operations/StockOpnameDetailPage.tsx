@@ -326,7 +326,7 @@ export function StockOpnameDetailPage() {
             variant="ghost"
             size="icon"
             onClick={() => navigate('/operations/stock-opname')}
-            className="text-slate-400 hover:text-white rounded-lg h-10 w-10 border border-slate-800"
+            className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg h-10 w-10 border border-slate-200 dark:border-slate-800"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -337,7 +337,7 @@ export function StockOpnameDetailPage() {
             description="Pencatatan jumlah fisik stock gudang dan audit stock opname."
             action={
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-[0_0_12px_rgba(245,158,11,0.05)]">
+                <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-[0_0_12px_rgba(245,158,11,0.05)]">
                   Kategori: {getCategoryName(session.category_id)}
                 </span>
                 {getStatusBadge(session.status)}
@@ -346,12 +346,12 @@ export function StockOpnameDetailPage() {
                   size="sm"
                   disabled={downloadingPdf}
                   onClick={handleDownloadPdf}
-                  className="border-slate-800 hover:bg-slate-900 text-slate-350 flex items-center gap-1.5 rounded-xl min-h-[36px] px-3 text-xs"
+                  className="border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-350 flex items-center gap-1.5 rounded-xl min-h-[36px] px-3 text-xs"
                 >
                   {downloadingPdf ? (
                     <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
                   ) : (
-                    <FileText className="h-4 w-4 text-slate-400" />
+                    <FileText className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                   )}
                   <span>Cetak PDF</span>
                 </Button>
@@ -368,9 +368,9 @@ export function StockOpnameDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Item Search / Focus */}
           {isDraft && (
-            <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
+            <div className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <h3 className="font-semibold text-base text-white flex items-center gap-2">
+                <h3 className="font-semibold text-base text-slate-900 dark:text-white flex items-center gap-2">
                   <Search className="h-5 w-5 text-amber-500" />
                   Cari &amp; Fokus Item
                 </h3>
@@ -396,8 +396,8 @@ export function StockOpnameDetailPage() {
           )}
 
           {/* Count Sheet */}
-          <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4 min-h-[300px]">
-            <h3 className="font-semibold text-lg text-white border-b border-slate-800 pb-3 flex justify-between items-center">
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-4 min-h-[300px]">
+            <h3 className="font-semibold text-lg text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-3 flex justify-between items-center">
               <span>Baris Opname ({lines.length} items)</span>
               {filterItemId && <span className="text-xs text-amber-500">Hasil Filter</span>}
             </h3>
@@ -418,24 +418,24 @@ export function StockOpnameDetailPage() {
                       id={`opname-line-item-${line.item_id}`}
                       className={`border rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-500 ${
                         isHighlighted 
-                          ? 'border-amber-500/80 bg-amber-950/20 shadow-[0_0_15px_rgba(245,158,11,0.2)] ring-1 ring-amber-500/30 scale-[1.02]' 
-                          : 'border-border bg-slate-900/40'
+                          ? 'border-amber-500/80 bg-amber-50 dark:bg-amber-950/20 shadow-[0_0_15px_rgba(245,158,11,0.2)] ring-1 ring-amber-500/30 scale-[1.02]' 
+                          : 'border-slate-200 dark:border-border bg-slate-50 dark:bg-slate-900/40'
                       }`}
                     >
                       {/* Item Info */}
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-slate-950 overflow-hidden border border-slate-800 flex">
+                        <div className="h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-slate-100 dark:bg-slate-950 overflow-hidden border border-slate-200 dark:border-slate-800 flex">
                           {line.image_url ? (
                             <ImageLightbox src={line.image_url} alt={line.item_name} triggerClassName="h-full w-full">
                               <img src={line.image_url} alt={line.item_name} className="h-full w-full object-cover" />
                             </ImageLightbox>
                           ) : (
-                            <ImageIcon className="h-5 w-5 text-slate-600" />
+                            <ImageIcon className="h-5 w-5 text-slate-400 dark:text-slate-600" />
                           )}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-white truncate">{line.item_name}</p>
-                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-850 border border-slate-750 text-amber-500 inline-block mt-1">
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{line.item_name}</p>
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-850 border border-slate-200 dark:border-slate-750 text-amber-600 dark:text-amber-500 inline-block mt-1">
                             {line.item_code}
                           </span>
                         </div>
@@ -447,9 +447,9 @@ export function StockOpnameDetailPage() {
                         <div className="text-right">
                           <span className="text-[10px] text-slate-500 block">Stok Sistem</span>
                           {line.line_id < 0 ? (
-                            <div className="h-5 w-10 bg-slate-800/80 animate-pulse rounded ml-auto mt-1" />
+                            <div className="h-5 w-10 bg-slate-200 dark:bg-slate-800/80 animate-pulse rounded ml-auto mt-1" />
                           ) : (
-                            <span className="text-sm font-bold text-slate-300 font-mono">{line.system_quantity}</span>
+                            <span className="text-sm font-bold text-slate-700 dark:text-slate-300 font-mono">{line.system_quantity}</span>
                           )}
                         </div>
 
@@ -458,7 +458,7 @@ export function StockOpnameDetailPage() {
                           {isCompleted ? (
                             <div className="text-right">
                               <span className="text-[10px] text-slate-500 block">Fisik</span>
-                              <span className="text-sm font-bold text-white font-mono">{line.physical_quantity}</span>
+                              <span className="text-sm font-bold text-slate-900 dark:text-white font-mono">{line.physical_quantity}</span>
                             </div>
                           ) : (
                             <div className="flex flex-col items-end">
@@ -478,7 +478,7 @@ export function StockOpnameDetailPage() {
                         <div className="text-right min-w-[60px]">
                           <span className="text-[10px] text-slate-500 block">Selisih</span>
                           {line.line_id < 0 ? (
-                            <div className="h-5 w-12 bg-slate-800/80 animate-pulse rounded ml-auto mt-1" />
+                            <div className="h-5 w-12 bg-slate-200 dark:bg-slate-800/80 animate-pulse rounded ml-auto mt-1" />
                           ) : (
                             <span className={`text-xs font-bold font-mono px-2 py-0.5 rounded border ${varianceColor(liveVariance)}`}>
                               {liveVariance > 0 ? `+${liveVariance}` : liveVariance}
@@ -498,20 +498,20 @@ export function StockOpnameDetailPage() {
         {/* Right Column — Controls & Metadata                               */}
         {/* ---------------------------------------------------------------- */}
         <div className="space-y-6">
-          <div className="bg-card border border-border rounded-xl p-5 shadow-lg space-y-4">
-            <h3 className="font-semibold text-lg text-white border-b border-slate-800 pb-3 flex justify-between items-center">
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-4">
+            <h3 className="font-semibold text-lg text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-3 flex justify-between items-center">
               <span>Detail Sesi</span>
               {getStatusBadge(session.status)}
             </h3>
 
-            <div className="space-y-3 text-sm text-slate-300">
+            <div className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
               <div>
                 <span className="text-[10px] uppercase font-bold text-slate-500">Gudang Cabang</span>
-                <p className="font-bold text-white mt-0.5">{getBranchName(session.branch_id)}</p>
+                <p className="font-bold text-slate-900 dark:text-white mt-0.5">{getBranchName(session.branch_id)}</p>
               </div>
               <div>
                 <span className="text-[10px] uppercase font-bold text-slate-500">Kategori Audit</span>
-                <p className="font-bold text-white mt-0.5">{getCategoryName(session.category_id)}</p>
+                <p className="font-bold text-slate-900 dark:text-white mt-0.5">{getCategoryName(session.category_id)}</p>
               </div>
 
               {/* Notes */}
@@ -525,10 +525,10 @@ export function StockOpnameDetailPage() {
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setNotes(e.target.value)}
                     rows={3}
                     placeholder="Tuliskan catatan detail audit..."
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-850 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary resize-none shadow-sm"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary resize-none shadow-sm"
                   />
                 ) : (
-                  <p className="text-slate-400 bg-slate-900/50 p-2.5 rounded-lg border border-slate-850/50">
+                  <p className="text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-lg border border-slate-200 dark:border-slate-850/50">
                     {session.notes || 'Tidak ada catatan'}
                   </p>
                 )}
@@ -537,12 +537,12 @@ export function StockOpnameDetailPage() {
 
             {/* Feedback */}
             {actionError && (
-              <div className="text-sm bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg font-medium break-words">
+              <div className="text-sm bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 p-3 rounded-lg font-medium break-words">
                 {actionError}
               </div>
             )}
             {actionSuccess && (
-              <div className="text-sm bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-3 rounded-lg font-medium">
+              <div className="text-sm bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-3 rounded-lg font-medium">
                 {actionSuccess}
               </div>
             )}
@@ -555,7 +555,7 @@ export function StockOpnameDetailPage() {
                   <Button
                     onClick={handleSaveDraft}
                     disabled={updateOpname.isPending}
-                    className="w-full bg-slate-900 hover:bg-slate-800 text-white border border-slate-800 font-semibold rounded-xl min-h-[44px] shadow-sm flex items-center justify-center gap-2"
+                    className="w-full bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 font-semibold rounded-xl min-h-[44px] shadow-sm flex items-center justify-center gap-2"
                   >
                     <Save className="h-4 w-4" /> Simpan Draft
                   </Button>
@@ -583,7 +583,7 @@ export function StockOpnameDetailPage() {
                     type="button"
                     variant="ghost"
                     onClick={() => setCancelOpen(true)}
-                    className="w-full border border-red-500/20 text-red-400 hover:bg-red-500/10 hover:border-red-500/40 font-semibold rounded-xl min-h-[44px] flex items-center justify-center gap-2 transition-all"
+                    className="w-full border border-red-500/20 text-red-500 dark:text-red-400 hover:bg-red-500/10 hover:border-red-500/40 font-semibold rounded-xl min-h-[44px] flex items-center justify-center gap-2 transition-all"
                   >
                     <XCircle className="h-4 w-4" /> Batalkan Opname
                   </Button>
@@ -613,29 +613,29 @@ export function StockOpnameDetailPage() {
             {linesWithVariance.length === 0 ? (
               <div className="flex flex-col items-center gap-2 py-8 text-center">
                 <CheckCircle2 className="h-9 w-9 text-emerald-500" />
-                <p className="text-sm font-semibold text-emerald-400">Tidak ada selisih stok</p>
+                <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">Tidak ada selisih stok</p>
                 <p className="text-xs text-slate-500">Semua jumlah fisik sesuai dengan catatan sistem.</p>
               </div>
             ) : (
               <>
-                <p className="text-xs text-slate-400 px-1">
-                  <span className="font-semibold text-white">{linesWithVariance.length}</span> item memiliki selisih dan akan dikoreksi secara otomatis:
+                <p className="text-xs text-slate-500 dark:text-slate-400 px-1">
+                  <span className="font-semibold text-slate-900 dark:text-white">{linesWithVariance.length}</span> item memiliki selisih dan akan dikoreksi secara otomatis:
                 </p>
                 {linesWithVariance.map((line) => {
                   const v = line.physical_quantity - line.system_quantity;
                   return (
                     <div
                       key={line.line_id}
-                      className="flex items-center justify-between gap-3 p-3 rounded-lg bg-slate-800/60 border border-slate-700/50"
+                      className="flex items-center justify-between gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50"
                     >
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-white truncate">{line.item_name}</p>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{line.item_name}</p>
                         <p className="text-[10px] text-slate-500 font-mono">{line.item_code}</p>
                       </div>
                       <div className="flex items-center gap-3 flex-shrink-0 text-xs font-mono">
-                        <span className="text-slate-400">{line.system_quantity}</span>
-                        <span className="text-slate-600">→</span>
-                        <span className="text-white font-bold">{line.physical_quantity}</span>
+                        <span className="text-slate-500 dark:text-slate-400">{line.system_quantity}</span>
+                        <span className="text-slate-400 dark:text-slate-600">→</span>
+                        <span className="text-slate-900 dark:text-white font-bold">{line.physical_quantity}</span>
                         <span className={`font-bold px-2 py-0.5 rounded border ${varianceColor(v)}`}>
                           {v > 0 ? `+${v}` : v}
                         </span>
@@ -648,8 +648,8 @@ export function StockOpnameDetailPage() {
 
             {/* Always-visible irreversible warning */}
             <div className="flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 mt-2">
-              <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-red-400">
+              <AlertTriangle className="h-4 w-4 text-red-500 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-red-600 dark:text-red-400">
                 Tindakan ini <strong>bersifat final dan tidak dapat diubah</strong>. Koreksi stok akan langsung diterapkan ke kartu stok gudang melalui jurnal penyesuaian otomatis.
               </p>
             </div>
